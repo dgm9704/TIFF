@@ -1,12 +1,12 @@
-﻿namespace Diwen.Tiff.Test
+﻿using System.Drawing;
+using System.IO;
+using System.Reflection;
+using NUnit.Framework;
+using Diwen.Tiff;
+using Diwen.Tiff.Tags;
+
+namespace Diwen.Tiff.Test
 {
-    using System;
-    using System.Drawing;
-    using System.IO;
-    using System.Reflection;
-    using Diwen.Tiff;
-    using NUnit.Framework;
-    using Diwen.Tiff.TagValues;
 
 
     /// <summary>
@@ -16,6 +16,7 @@
     [TestFixture]
     public class TiffFileTest
     {
+
         /// <summary>
         ///A test for Load
         ///</summary>
@@ -23,9 +24,9 @@
         public void LoadFileII()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            TiffFile tiff;
+            Tif tiff;
             using (var stream = assembly.GetManifestResourceStream("Diwen.Tiff.Test.lenaII.tif"))
-                tiff = TiffFile.Load(stream);
+                tiff = Tif.Load(stream);
 
             Assert.IsNotNull(tiff);
         }
@@ -37,11 +38,9 @@
         public void LoadFileMM()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            TiffFile tiff;
+            Tif tiff;
             using (var stream = assembly.GetManifestResourceStream("Diwen.Tiff.Test.lenaMM.tif"))
-            {
-                tiff = TiffFile.Load(stream);
-            }
+                tiff = Tif.Load(stream);
 
             Assert.IsNotNull(tiff);
         }
@@ -53,15 +52,13 @@
         public void RoundtripII()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            TiffFile tiff;
+            Tif tiff;
             using (var stream = assembly.GetManifestResourceStream("Diwen.Tiff.Test.lenaII.tif"))
-            {
-                tiff = TiffFile.Load(stream);
-            }
+                tiff = Tif.Load(stream);
 
             var expected = tiff.ToString();
             tiff.Save("saved.tif");
-            tiff = TiffFile.Load("saved.tif");
+            tiff = Tif.Load("saved.tif");
             var actual = tiff.ToString();
             var bitmap = Bitmap.FromFile("saved.tif");
             Assert.IsNotNull(bitmap);
@@ -74,15 +71,13 @@
         public void SaveMMAsII()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            TiffFile tiff;
+            Tif tiff;
             using (var stream = assembly.GetManifestResourceStream("Diwen.Tiff.Test.lenaMM.tif"))
-            {
-                tiff = TiffFile.Load(stream);
-            }
+                tiff = Tif.Load(stream);
 
             var expected = tiff.ToString();
             tiff.Save("II.tif");
-            tiff = TiffFile.Load("II.tif");
+            tiff = Tif.Load("II.tif");
             var actual = tiff.ToString();
             var bitmap = Bitmap.FromFile("II.tif");
             Assert.IsNotNull(bitmap);
@@ -94,11 +89,11 @@
         [Test]
         public void SaveMMAsII_2()
         {
-            TiffFile tiff = TiffFile.Load(@"C:\lena.tif");
+            Tif tiff = Tif.Load(@"C:\lena.tif");
 
             var expected = tiff.ToString();
             tiff.Save(@"c:\lenaII.tif");
-            tiff = TiffFile.Load(@"c:\lenaII.tif");
+            tiff = Tif.Load(@"c:\lenaII.tif");
             var actual = tiff.ToString();
             Assert.AreEqual(expected, actual);
         }
@@ -106,11 +101,11 @@
         [Test]
         public void CombineFirstPages()
         {
-            var newFile = new TiffFile();
+            var newFile = new Tif();
             var files = Directory.GetFiles(@"c:\img");
             for (int i = 0; i < files.Length; i++)
             {
-                var oldFile = TiffFile.Load(files[i]);
+                var oldFile = Tif.Load(files[i]);
                 newFile.Add(oldFile[0]);
             }
             newFile.Save(@"c:\combined.tif");
@@ -119,10 +114,10 @@
         [Test]
         public void CombineAllPages()
         {
-            var newTif = new TiffFile();
+            var newTif = new Tif();
             for (int i = 0; i < 3; i++)
             {
-                var tif = TiffFile.Load(@"C:\combined.tif");
+                var tif = Tif.Load(@"C:\combined.tif");
                 newTif.AddRange(tif);
             }
             newTif.Save(@"c:\combined_combined.tif");
@@ -131,8 +126,8 @@
         [Test]
         public void CopyPages()
         {
-            var newTif = new TiffFile();
-            var tif = TiffFile.Load(@"C:\lena_kodak.tif");
+            var newTif = new Tif();
+            var tif = Tif.Load(@"C:\lena_kodak.tif");
             newTif.Add(tif[0]);
             newTif.Add(tif[0]);
 
@@ -142,20 +137,83 @@
         [Test]
         public void CopyAndModifyPages()
         {
-            var newTif = new TiffFile();
-            var tif = TiffFile.Load(@"C:\lena_kodak.tif");
+            var newTif = new Tif();
+            var tif = Tif.Load(@"C:\lena_kodak.tif");
             newTif.Add(tif[0]);
             newTif.Add(tif[0]);
 
-            newTif[0].Add(new TiffTag{ TagType = TagType.PageNumber, DataType = TiffDataType.Short, Values = new ushort[]{ 1, 20 } });
+            var values = new ushort[] { 0, 2 };
+            var tag = new Tag(TagType.PageNumber, TiffDataType.Short, values);
+            newTif[0].Add(tag);
+            tag = new Tag(TagType.PageNumber, TiffDataType.Short, new ushort[] { 1, 2 });
+            newTif[1].Add(tag);
+
+
+            //newTif[0].Add(new TiffTag{ TagType = TagValues.TagType.PageNumber, DataType=  TiffDataType.Short, Values=new ushort[]{1,20}}
+
             //newTif[1].Find(t=>t.TagType = TagValues.TagType.PageNumber)
-            newTif.Save(@"c:\copiedpages.tif");
+
+            newTif.Save(@"c:\copiedpages_2.tif");
+        }
+
+        [Test]
+        public void PageNumberTag()
+        {
+            var newTif = new Tif();
+            var tif = Tif.Load(@"C:\lena_kodak.tif");
+            newTif.Add(tif[0]);
+            newTif.Add(tif[0]);
+
+            Tag tag = new PageNumberTag(0, 2);
+            newTif[0].Add(tag);
+
+            tag = new PageNumberTag(1, 2);
+            newTif[1].Add(tag);
+
+            newTif.Save(@"c:\pagenumber.tif");
+        }
+
+
+        [Test]
+        public void SoftwareTag()
+        {
+            var tif = Tif.Load(@"C:\lena_kodak.tif");
+            Tag tag = new SoftwareTag("Diwen.Tiff");
+            tif[0].Remove(TagType.Software);
+            tif[0].Add(tag);
+            tif.Save(@"c:\software.tif");
+        }
+
+
+        [Test]
+        public void CombinePagesAndModifyTags()
+        {
+            var newFile = new Tif();
+            var files = Directory.GetFiles(@"c:\img");
+
+            Tag swTag = new SoftwareTag("Diwen.Tiff");
+            
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                var oldFile = Tif.Load(files[i]);
+                Page page = oldFile[0];
+                page.Remove(TagType.Software);
+                page.Add(swTag);
+                Tag numTag = new PageNumberTag((ushort)i, (ushort)files.Length);
+                page.Add(numTag);
+                page.Remove(TagType.DateTime);
+                page.Add(new DateTimeTag());
+                newFile.Add(page);
+            }
+
+            newFile.Save(@"c:\combined_and_updated.tif");
         }
 
         ///// <summary>
         /////A test for Load
         /////</summary>
-        //[TestMethod()]
+        //[Test]
         //public void CombinePages()
         //{
         //    Assembly assembly = Assembly.GetExecutingAssembly();
@@ -181,7 +239,7 @@
         ///// <summary>
         /////A test for Load
         /////</summary>
-        //[TestMethod()]
+        //[Test]
         //public void wtf()
         //{
         //    TiffFile tiff1 = TiffFile.Load(@"C:\Documents and Settings\John\My Documents\My Pictures\lena.tif");
@@ -193,7 +251,7 @@
         ///// <summary>
         /////A test for Load
         /////</summary>
-        //[TestMethod()]
+        //[Test]
         //public void wtf2()
         //{
         //    TiffFile tiff1 = TiffFile.Load(@"C:\lena_kodak.tif");
@@ -208,7 +266,7 @@
 //using System;
 //using System.Text;
 //using System.IO;
-//using Diwen.Tiff.TagValues;
+//using Diwen.Tiff;
 //using System.Collections.ObjectModel;
 //namespace Diwen.Tiff
 //{

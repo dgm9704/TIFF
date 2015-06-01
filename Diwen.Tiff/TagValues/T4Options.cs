@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Diwen.Tiff.TagValues
+namespace Diwen.Tiff
 {
     [Flags()]
     public enum T4Options : uint
