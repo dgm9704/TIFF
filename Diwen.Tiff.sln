@@ -3,19 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diwen.Tiff", "Diwen.Tiff\Diwen.Tiff.csproj", "{05A3F0CE-7CD5-4D7B-B208-33909E97D649}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diwen.Tiff.Test", "Diwen.Tiff.Test\Diwen.Tiff.Test.csproj", "{8FB4765D-FF25-4006-9A6F-ECECC0E63EFB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0FE43A41-D136-47DB-9068-74C1956075E1}"
-	ProjectSection(SolutionItems) = preProject
-		Diwen.Tiff.vsmdi = Diwen.Tiff.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diwen.Tiff.Test", "Diwen.Tiff.Test\Diwen.Tiff.Test.csproj", "{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = Diwen.Tiff.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -25,10 +15,16 @@ Global
 		{05A3F0CE-7CD5-4D7B-B208-33909E97D649}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A3F0CE-7CD5-4D7B-B208-33909E97D649}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05A3F0CE-7CD5-4D7B-B208-33909E97D649}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8FB4765D-FF25-4006-9A6F-ECECC0E63EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8FB4765D-FF25-4006-9A6F-ECECC0E63EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8FB4765D-FF25-4006-9A6F-ECECC0E63EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8FB4765D-FF25-4006-9A6F-ECECC0E63EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Diwen.Tiff\Diwen.Tiff.csproj
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Diwen.Tiff.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
