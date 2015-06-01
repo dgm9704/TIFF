@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
+
     public static class PageExtensions
     {
         /// <summary>

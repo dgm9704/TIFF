@@ -2,7 +2,7 @@
 {
     public enum YCbCrSubSampling : ushort
     {
-        EqualToLuma = 1, 
+        EqualToLuma = 1,
         HalfOfLuma = 2,
         QuarterOfLuma = 4,
     }

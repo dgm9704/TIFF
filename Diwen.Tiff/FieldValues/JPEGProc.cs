@@ -2,7 +2,7 @@
 {
     public enum JPEGProc
     {
-        BaselineSequential = 1, 
+        BaselineSequential = 1,
         LosslessWithHuffman = 14,
     }
 }

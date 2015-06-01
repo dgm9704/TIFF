@@ -7,15 +7,16 @@
     using System.Text;
 
     /// <summary>
-    /// Represents a TIFF Field ie. an IFD Entry ie. a Tag
+    /// Represents a TIFF Field ie. an Ifd Entry ie. a Tag
     /// </summary>
-    [Serializable()]
+    [Serializable]
     public class Field
     {
 
         #region FieldValueReaders
-        private static Dictionary<FieldType, TagValueReader> tagValueReaders =
-            new Dictionary<FieldType, TagValueReader> 
+
+        private static Dictionary<FieldType, FieldValueReader> fieldValueReaders =
+            new Dictionary<FieldType, FieldValueReader>
             { 
                 { FieldType.SByte, ReadSByteValues },
                 { FieldType.Ascii, ReadAsciiValues },
@@ -57,7 +58,7 @@
             this.Count = (uint)values.Length;
         }
 
-        private delegate Array TagValueReader(int count, byte[] data);
+        private delegate Array FieldValueReader(int count,byte[] data,bool flip);
 
         /// <summary>
         /// Returns the values of the field object
@@ -102,7 +103,7 @@
 
         internal uint ValueOffset { get; set; }
 
-        private static Field Create(Tag tag, FieldType type, int count, byte[] data)
+        private static Field Create(Tag tag, FieldType type, int count, byte[] data, bool flip)
         {
             if (data == null)
             {
@@ -111,9 +112,10 @@
 
             Array values = null;
 
-            if (tagValueReaders.ContainsKey(type))
+            if (fieldValueReaders.ContainsKey(type))
             {
-                values = tagValueReaders[type](count, data);
+                //TODO: Move the flippin flippin here
+                values = fieldValueReaders[type](count, data, flip);
             }
             else
             {
@@ -136,8 +138,8 @@
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}\t", this.Tag);
-            
+            sb.AppendFormat("{0}\t{1}\t", this.Tag, this.FieldType);
+
             if (this.FieldType == FieldType.Ascii)
             {
                 return this.AppendAsciiValue(sb);
@@ -150,8 +152,17 @@
             else
             {
                 sb.Append("[");
-                this.AppendValues(sb);
-                return sb.ToString().Remove(sb.Length - 1) + "]";
+                if (this.Count > 10)
+                {
+                    sb.AppendFormat("({0})", this.Count);
+                    return sb.ToString() + "]";
+                }
+                else
+                {
+                    this.AppendValues(sb);
+                    return sb.ToString().Remove(sb.Length - 1) + "]";
+                }
+
             }
         }
 
@@ -170,20 +181,22 @@
             }
         }
 
-        internal static Field Read(byte[] data, int startPosition)
+        internal static Field Read(byte[] data, int startPosition, bool flip)
         {
-            Tag tag = (Tag)BitConverter.ToUInt16(data, startPosition);
-            FieldType type = (FieldType)BitConverter.ToUInt16(data, startPosition + 2);
-            uint count = BitConverter.ToUInt32(data, startPosition + 4);
+            Tag tag = (Tag)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition, 2, flip), 0);
+            FieldType type = (FieldType)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition + 2, 2, flip), 0);
+            if (!Enum.IsDefined(typeof(FieldType), type))
+            {
+                return null;
+            }
+            uint count = BitConverter.ToUInt32(Tif.GetBytes(data, startPosition + 4, 4, flip), 0);
             uint offset = BitConverter.ToUInt32(data, startPosition + 8);
-            byte[] valueBytes = GetValueBytes(data, count, type, offset);
-            return Field.Create(tag, type, (int)count, valueBytes);
+            byte[] valueBytes = GetValueBytes(data, count, type, offset, flip);
+            return Field.Create(tag, type, (int)count, valueBytes, flip);
         }
 
-        internal static Enum EnumeratedFieldValue(string name, string value)
+        internal static Enum EnumeratedFieldValue(Type enumType, string value)
         {
-            Type enumType = Type.GetType(name);
-
             if (enumType != null)
             {
                 return (Enum)Enum.Parse(enumType, value);
@@ -194,12 +207,24 @@
             }
         }
 
-        private static byte[] GetValueBytes(byte[] data, uint valueCount, FieldType type, uint offset)
+        private static byte[] GetValueBytes(byte[] data, uint valueCount, FieldType type, uint offset, bool flip)
         {
+
+
             byte[] valuebytes;
             int valueLength = (int)valueCount * Tif.GetValueLength(type);
+
+            if (data == null || valueLength == 0 || data.Length < valueLength)
+            {
+                return new byte[] { };
+            }
+
             if (valueLength > 4)
             {
+                if (flip)
+                {
+                    offset = Tif.SwapUInt32(offset);
+                }
                 valuebytes = new byte[valueLength];
                 Buffer.BlockCopy(data, (int)offset, valuebytes, 0, valueLength);
             }
@@ -211,77 +236,162 @@
             return valuebytes;
         }
 
-        private static Array ReadDoubleValues(int count, byte[] data)
+        private static double[] ReadDoubleValues(int count, byte[] data, bool flip)
         {
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new double[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 8);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadFloatValues(int count, byte[] data)
+        private static float[] ReadFloatValues(int count, byte[] data, bool flip)
         {
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new float[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadSRationalValues(int count, byte[] data)
+        private static Rational32[] ReadSRationalValues(int count, byte[] data, bool flip)
         {
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new Rational32[count];
             for (int i = 0; i < count; i++)
             {
-                values.SetValue(new Rational32(data, i * 4), i);
+                var value = new Rational32(data, i * 4);
+                if (flip)
+                {
+                    value = value.Inverse();
+                }
+                values.SetValue(value, i);
             }
-
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadRationalValues(int count, byte[] data)
+        private static URational32[] ReadRationalValues(int count, byte[] data, bool flip)
         {
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new URational32[count];
             for (int i = 0; i < count; i++)
             {
-                values.SetValue(new URational32(data, i * 4), i);
+                var value = new URational32(data, i * 4);
+                if (flip)
+                {
+                    value = value.Inverse();
+                }
+                values.SetValue(value, i);
             }
-
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadSLongValues(int count, byte[] data)
+        private static int[] ReadSLongValues(int count, byte[] data, bool flip)
         {
+            if (data == null || data.Length < count * 4)
+            {
+                return new int[] { };
+            }
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new int[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadLongValues(int count, byte[] data)
+        private static uint[] ReadLongValues(int count, byte[] data, bool flip)
         {
+
+            if (data == null || data.Length < count * 4)
+            {
+                return new uint[] { };
+            }
+            if (flip)
+            {
+                Array.Reverse(data);
+            }
             var values = new uint[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadSShortValues(int count, byte[] data)
+        private static short[] ReadSShortValues(int count, byte[] data, bool flip)
         {
+            int pos = 0;
+            if (flip)
+            {
+                Array.Reverse(data);
+                pos = data.Length - count * 2;
+            }
             var values = new short[count];
-            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            Buffer.BlockCopy(data, pos, values, 0, count * 2);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadShortValues(int count, byte[] data)
+        private static ushort[] ReadShortValues(int count, byte[] data, bool flip)
         {
+            int pos = 0;
+            if (flip)
+            {
+                Array.Reverse(data);
+                pos = data.Length - count * 2;
+            }
             var values = new ushort[count];
-            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            Buffer.BlockCopy(data, pos, values, 0, count * 2);
+            if (flip)
+            {
+                Array.Reverse(values);
+            }
             return values;
         }
 
-        private static Array ReadAsciiValues(int count, byte[] data)
+        private static char[] ReadAsciiValues(int count, byte[] data, bool flip)
         {
             var values = Tif.Ascii.GetString(data).ToCharArray();
             return values;
         }
 
-        private static Array ReadSByteValues(int count, byte[] data)
+        private static sbyte[] ReadSByteValues(int count, byte[] data, bool flip)
         {
             var values = new sbyte[data.Length];
             Buffer.BlockCopy(data, 0, values, 0, count);
@@ -290,10 +400,12 @@
 
         private void AppendValues(StringBuilder sb)
         {
+            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.Tag);
+
             foreach (var value in this.Values)
             {
                 string v = value.ToString();
-                Enum temp = EnumeratedFieldValue("Diwen.Tiff.FieldValues." + this.Tag, v);
+                Enum temp = EnumeratedFieldValue(enumType, v);
                 if (temp != null)
                 {
                     v = temp.ToString();
@@ -307,7 +419,8 @@
         private void AppendSingleValue(StringBuilder sb)
         {
             string v = this.Value.ToString();
-            Enum temp = EnumeratedFieldValue("Diwen.Tiff.FieldValues." + this.Tag, v);
+            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.Tag);
+            Enum temp = EnumeratedFieldValue(enumType, v);
             if (temp != null)
             {
                 v = temp.ToString();
@@ -318,8 +431,16 @@
 
         private string AppendAsciiValue(StringBuilder sb)
         {
-            sb.Append(this.Values as char[]);
+            string value = new string(this.Values as char[]);
+            var values = value.Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
+
+            sb.Append(string.Join("|", values));
             return sb.ToString();
+        }
+
+        internal bool IsIfdField()
+        {
+            return new List<Tag> { Tag.ExifIFD }.Contains(this.Tag);
         }
     }
 }

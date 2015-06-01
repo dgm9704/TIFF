@@ -2,7 +2,7 @@
 {
     using System;
 
-    [Serializable()]
+    [Serializable]
     public struct URational32
     {
         public URational32(uint numerator, uint denominator)
@@ -48,6 +48,18 @@
             return this.Numerator + "/" + this.Denominator;
         }
 
+        //public override string ToString(bool reduce)
+        //{
+        //    if (reduce)
+        //    {
+        //        return this.Reduce().ToString();
+        //    }
+        //    else
+        //    {
+        //        return this.ToString();
+        //    }
+        //}
+
         public byte[] GetBytes()
         {
             var bytes = new byte[8];
@@ -69,6 +81,21 @@
         public override int GetHashCode()
         {
             return (int)(this.Numerator / this.Denominator);
+        }
+
+        public URational32 Inverse()
+        {
+            return new URational32 { Denominator = this.Numerator, Numerator = this.Denominator };
+        }
+
+        public URational32 Reduce()
+        {
+            uint gcd = (uint)Util.GCD(this.Numerator, this.Denominator);
+            if (gcd != 1)
+            {
+                return new URational32 { Numerator = this.Numerator / gcd, Denominator = this.Denominator / gcd };
+            }
+            return this;
         }
     }
 }

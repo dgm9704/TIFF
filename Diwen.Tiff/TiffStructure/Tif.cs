@@ -3,20 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
+    using Diwen.Tiff.TiffStructure;
 
     /// <summary>
-    /// Represents a TIF file
+    /// Represents a TIF tif
     /// </summary>
-    [Serializable()]
+    [Serializable]
     public class Tif : PageCollection
     {
+        public string Source { get; private set; }
+
+        public ByteOrder ByteOrder { get; private set; }
 
         internal static ASCIIEncoding Ascii = new ASCIIEncoding();
 
         private static Dictionary<FieldType, ValueBytesMethod> valueByteMethods =
-            new Dictionary<FieldType, ValueBytesMethod> 
+            new Dictionary<FieldType, ValueBytesMethod>
             { 
                 { FieldType.Byte, GetBytes },
                 { FieldType.SByte, GetBytes },
@@ -34,7 +39,7 @@
 
         private static ASCIIEncoding ascii = new ASCIIEncoding();
 
-        private static Dictionary<FieldType, int> valueLength = new Dictionary<FieldType, int> 
+        private static Dictionary<FieldType, int> valueLength = new Dictionary<FieldType, int>
         { 
             { FieldType.Ascii, 1 }, 
             { FieldType.Byte, 1 }, 
@@ -47,7 +52,7 @@
             { FieldType.Float, 4 },
             { FieldType.Rational, 8 },
             { FieldType.SRational, 8 },
-            {FieldType.Double,8},
+            { FieldType.Double,8 },
         };
 
         /// <summary>
@@ -62,12 +67,12 @@
         private delegate byte[] ValueBytesMethod(Array values);
 
         ///// <summary>
-        ///// Gets the collection of pages contained within the file
+        ///// Gets the collection of pages contained within the tif
         ///// </summary>
         //public PageCollection Pages { get; internal set; }
 
         ///// <summary>
-        ///// Gets or sets the page at the specified position in the file
+        ///// Gets or sets the page at the specified position in the tif
         ///// </summary>
         ///// <param name="index">A zero-based page position in the current Tif object</param>
         ///// <returns></returns>
@@ -87,10 +92,11 @@
         /// <summary>
         /// Creates a Tif from the specified stream
         /// </summary>
-        /// <param name="stream">Stream containing a TIFF file</param>
+        /// <param name="stream">Stream containing a TIFF tif</param>
         /// <returns></returns>
         public static Tif Load(Stream stream)
         {
+
             if (stream == null)
             {
                 throw new ArgumentNullException("stream");
@@ -98,43 +104,66 @@
 
             byte[] bytes = new byte[stream.Length];
             stream.Read(bytes, 0, (int)stream.Length - 1);
-            return Load(bytes);
+            Tif tif = Load(bytes);
+            tif.Source = stream.ToString();
+            return tif;
         }
 
         /// <summary>
-        /// Creates a Tif from the specified file
+        /// Creates a Tif from the specified tif
         /// </summary>
-        /// <param name="path">A path to a TIF file</param>
+        /// <param name="path">A path to a TIF tif</param>
         /// <returns></returns>
         public static Tif Load(string path)
         {
-            return Load(File.ReadAllBytes(path));
+            Tif tif = Load(File.ReadAllBytes(path));
+            tif.Source = path;
+            return tif;
         }
 
         /// <summary>
         /// Creates a Tif from the specified bytes
         /// </summary>
-        /// <param name="data">Array of bytes representing a TIF file</param>
+        /// <param name="data">Array of bytes representing a TIF tif</param>
         /// <returns></returns>
         public static Tif Load(byte[] data)
         {
-            Tif file;
+            Tif tif;
             int pos;
-            switch (ascii.GetString(data, 0, 2))
+            bool flip = false;
+
+            ByteOrder byteOrder = (ByteOrder)BitConverter.ToUInt16(data, 0);
+
+            switch (byteOrder)
             {
-                case "II":
-                    pos = (int)BitConverter.ToUInt32(data, 4);
-                    file = ReadPages(data, pos);
+                case ByteOrder.LittleEndian:
+                    break;
+                case ByteOrder.BigEndian:
+                    flip = true;
                     break;
                 default:
-                    throw new NotSupportedException("Sorry, can't read this file.");
+                    throw new NotSupportedException("Not a TIF file");
             }
 
-            return file;
+            ushort magic = BitConverter.ToUInt16(Tif.GetBytes(data, 2, 2, flip), 0);
+            if (magic != 42)
+            {
+                throw new NotSupportedException("Not a TIF file");
+            }
+
+            pos = (int)BitConverter.ToUInt32(Tif.GetBytes(data, 4, 4, flip), 0);
+            if (pos > data.Length)
+            {
+                return null;
+            }
+            tif = ReadPages(data, pos, flip);
+            tif.ByteOrder = byteOrder;
+            tif.Source = data.ToString();
+            return tif;
         }
 
         /// <summary>
-        /// Writes the TIFF data into a file
+        /// Writes the TIFF data into a tif
         /// </summary>
         /// <param name="path">File to write the data to</param>
         public void Save(string path)
@@ -279,19 +308,42 @@
             }
         }
 
-        private static Tif ReadPages(byte[] data, int pos)
+        private static Tif ReadPages(byte[] data, int pos, bool flip)
         {
             var file = new Tif();
             Page page;
             do
             {
-                page = Page.Read(data, pos);
-                //page.Number = file.Count + 1;
-                file.Add(page);
-                pos = (int)page.NextPageAddress;
+                page = Page.Read(data, pos, flip);
+                if (page != null)
+                {
+                    file.Add(page);
+                    pos = (int)page.NextIfdAddress;
+                }
+                else
+                {
+                    pos = 0;
+                }
             }
-            while (pos != 0);
+            while (pos != 0 && pos < data.Length);
             return file;
+        }
+
+        /// <summary>
+        /// Returns a String with information about the Tif, it's pages and their tags
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Source: " + this.Source);
+            sb.AppendLine("ByteOrder: " + this.ByteOrder.ToString());
+            for (int i = 0; i < this.Count; i++)
+            {
+                sb.AppendLine("IFD " + i);
+                sb.AppendLine(this[i].ToString());
+            }
+            return sb.ToString();
         }
 
         private static byte[] ValueBytes(Array values, FieldType type)
@@ -426,6 +478,72 @@
                     fileData.AddRange(new byte[] { 0, 0, 0, 0 });
                 }
             }
+        }
+
+        private static byte[] ReverseBytes(byte[] inArray)
+        {
+            byte temp;
+            int highCtr = inArray.Length - 1;
+
+            for (int ctr = 0; ctr < inArray.Length / 2; ctr++)
+            {
+                temp = inArray[ctr];
+                inArray[ctr] = inArray[highCtr];
+                inArray[highCtr] = temp;
+                highCtr -= 1;
+            }
+            return inArray;
+        }
+
+        internal static byte[] GetBytes(byte[] source, int start, int count, bool flip)
+        {
+            if (source == null || source.Length < (start + count) || count == 0 || start < 0)
+            {
+                return new byte[] { };
+            }
+
+            var bytes = new byte[count];
+            Buffer.BlockCopy(source, start, bytes, 0, count);
+            if (flip)
+            {
+                bytes = ReverseBytes(bytes);
+            }
+
+            return bytes;
+        }
+
+        public static short SwapInt16(short v)
+        {
+            return (short)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
+        }
+
+        public static ushort SwapUInt16(ushort v)
+        {
+            return (ushort)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
+        }
+
+        public static int SwapInt32(int v)
+        {
+            return (int)(((SwapInt16((short)v) & 0xffff) << 0x10) |
+            (SwapInt16((short)(v >> 0x10)) & 0xffff));
+        }
+
+        public static uint SwapUInt32(uint v)
+        {
+            return (uint)(((SwapUInt16((ushort)v) & 0xffff) << 0x10) |
+            (SwapUInt16((ushort)(v >> 0x10)) & 0xffff));
+        }
+
+        public static long SwapInt64(long v)
+        {
+            return (long)(((SwapInt32((int)v) & 0xffffffffL) << 0x20) |
+            (SwapInt32((int)(v >> 0x20)) & 0xffffffffL));
+        }
+
+        public static ulong SwapUInt64(ulong v)
+        {
+            return (ulong)(((SwapUInt32((uint)v) & 0xffffffffL) << 0x20) |
+            (SwapUInt32((uint)(v >> 0x20)) & 0xffffffffL));
         }
     }
 }

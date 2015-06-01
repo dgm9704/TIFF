@@ -1,86 +1,33 @@
-﻿using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-
-
-namespace Diwen.Tiff.Test
+﻿namespace Diwen.Tiff.Test
 {
-
+    using System.Drawing;
+    using System.IO;
+    using System.Reflection;
+    using System.Linq;
+    using System;
+    using Diwen.Tiff;
+    using System.Diagnostics;
+    using NUnit.Framework;
 
     /// <summary>
     ///This is a test class for TiffFileTest and is intended
     ///to contain all TiffFileTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class TifTest
     {
+        private static string testFilePath = Path.Combine("testfiles", "TIFF_file_format_test.tif");
 
-
-        string testFilePath = "TIFF_file_format_test.tif";
-
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-
-        //}
-
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        [TestMethod()]
+        [Test]
         public void LoadFromFile()
         {
             Tif tif;
             tif = Tif.Load(testFilePath);
 
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
         public void LoadFromStream()
         {
             Tif tif;
@@ -88,10 +35,22 @@ namespace Diwen.Tiff.Test
             using (var stream = new FileStream(testFilePath, FileMode.Open))
                 tif = Tif.Load(stream);
 
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LoadFromStreamNull()
+        {
+            Tif tif;
+            FileStream stream = null;
+            using (stream)
+                tif = Tif.Load(stream);
+
+            Assert.IsInstanceOfType(typeof(Tif), tif);
+        }
+
+        [Test]
         public void LoadFromBytes()
         {
             Tif tif;
@@ -99,10 +58,10 @@ namespace Diwen.Tiff.Test
 
             tif = Tif.Load(bytes);
 
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
         public void SaveToFile()
         {
             Tif tif;
@@ -111,10 +70,10 @@ namespace Diwen.Tiff.Test
             string path = @"\TIFF_file_format_test.new";
             tif.Save(path);
             tif = Tif.Load(path);
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
         public void SaveToStream()
         {
             Tif tif;
@@ -126,10 +85,27 @@ namespace Diwen.Tiff.Test
                 stream.Position = 0;
                 tif = Tif.Load(stream);
             }
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SaveToStreamNull()
+        {
+            Tif tif;
+            tif = Tif.Load(testFilePath);
+            MemoryStream stream = null;
+
+            using (stream)
+            {
+                tif.Save(stream);
+                stream.Position = 0;
+                tif = Tif.Load(stream);
+            }
+            Assert.IsInstanceOfType(typeof(Tif), tif);
+        }
+
+        [Test]
         public void GetData()
         {
             Tif tif;
@@ -138,40 +114,40 @@ namespace Diwen.Tiff.Test
 
             tif = Tif.Load(buffer);
 
-            Assert.IsInstanceOfType(tif, typeof(Tif));
+            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [TestMethod()]
+        [Test]
         public void DuplicatePage()
         {
             var tif = Tif.Load(testFilePath);
-            int numPages = tif.Pages.Count;
-            tif.Pages.Add(tif.Pages[0]);
+            int numPages = tif.Count;
+            tif.Add(tif[0]);
 
-            Assert.AreEqual(numPages + 1, tif.Pages.Count);
+            Assert.AreEqual(numPages + 1, tif.Count);
         }
 
-        [TestMethod()]
+        [Test]
         public void RemovePage()
         {
             var tif = Tif.Load(testFilePath);
-            int numPages = tif.Pages.Count;
-            tif.Pages.RemoveAt(0);
+            int numPages = tif.Count;
+            tif.RemoveAt(0);
 
-            Assert.AreEqual(numPages - 1, tif.Pages.Count);
+            Assert.AreEqual(numPages - 1, tif.Count);
         }
 
-        [TestMethod()]
+        [Test]
         public void AddPages()
         {
             var tif1 = Tif.Load(testFilePath);
             var tif2 = Tif.Load(testFilePath);
 
             var newTif = new Tif();
-            newTif.Pages.Add(tif1.Pages[0]);
-            newTif.Pages.Add(tif2.Pages[0]);
+            newTif.Add(tif1[0]);
+            newTif.Add(tif2[0]);
 
-            Assert.AreEqual(2, newTif.Pages.Count);
+            Assert.AreEqual(2, newTif.Count);
 
             using (var stream = new MemoryStream())
             {
@@ -179,13 +155,10 @@ namespace Diwen.Tiff.Test
                 stream.Position = 0;
                 newTif = Tif.Load(stream);
             }
-            Assert.AreEqual(2, newTif.Pages.Count);
+            Assert.AreEqual(2, newTif.Count);
         }
 
-
-
-
-        [TestMethod()]
+        [Test]
         public void CopyAndModifyPages()
         {
             string originalName = @"C:\lena_kodak.tif";
@@ -193,34 +166,34 @@ namespace Diwen.Tiff.Test
 
             var newTif = new Tif();
             var tif = Tif.Load(originalName);
-            newTif.Pages.Add(tif.Pages[0]);
-            newTif.Pages.Add(tif.Pages[0]);
+            newTif.Add(tif[0]);
+            newTif.Add(tif[0]);
 
             var values = new ushort[] { 0, 2 };
-            var tag = new Tag(TagType.PageNumber, TiffDataType.Short, values);
-            newTif.Pages[0].Tags.Add(tag);
-            tag = new Tag(TagType.PageNumber, TiffDataType.Short, new ushort[] { 1, 2 });
-            newTif.Pages[1].Tags.Add(tag);
+            var tag = new Field(Tag.PageNumber, FieldType.Short, values);
+            newTif[0].Add(tag);
+            tag = new Field(Tag.PageNumber, FieldType.Short, new ushort[] { 1, 2 });
+            newTif[1].Add(tag);
 
             newTif.Save(newName);
 
             newTif = Tif.Load(newName);
 
-            Assert.AreEqual(2, newTif.Pages.Count);
+            Assert.AreEqual(2, newTif.Count);
             ushort[] pageNumber;
 
-            pageNumber = (ushort[])newTif.Pages[0][TagType.PageNumber].Values;
+            pageNumber = (ushort[])newTif[0][Tag.PageNumber].Values;
             Assert.AreEqual(0, pageNumber[0]);
             Assert.AreEqual(2, pageNumber[1]);
 
-            pageNumber = (ushort[])newTif.Pages[1][TagType.PageNumber].Values;
+            pageNumber = (ushort[])newTif[1][Tag.PageNumber].Values;
             Assert.AreEqual(1, pageNumber[0]);
             Assert.AreEqual(2, pageNumber[1]);
 
         }
 
 
-        //[TestMethod()]
+        //[Test]
         //public void CombinePagesAndModifyTags()
         //{
         //    var newFile = new Tif();
@@ -232,16 +205,84 @@ namespace Diwen.Tiff.Test
         //    {
         //        var oldFile = Tif.Load(files[i]);
         //        Page page = oldFile.Pages[0];
-        //        page.Tags.Add(swTag);
+        //        page.Add(swTag);
         //        Tag pageNumber = new PageNumberTag((ushort)i, (ushort)files.Length);
         //        Tag artist = new AsciiTag(TagType.Artist, "John Nordberg");
         //        var subfile = new SubfileTypeTag(SubfileType.Page);
         //        var tags = new Tag[] { pageNumber, artist, new DateTimeTag(), subfile };
-        //        page.Tags.AddRange(tags);
+        //        page.AddRange(tags);
         //        newFile.Pages.Add(page);
         //    }
 
         //    newFile.Save(@"c:\combined_and_modified.tif");
         //}
+
+        [Test]
+        public void TiledTiffTest()
+        {
+            var tif = Tif.Load("tiled.tif");
+            var page = tif[0];
+
+        }
+
+        [Test]
+        public void SetPagenumbersTest()
+        {
+            var tif = Tif.Load(@"c:\pruned.tif");
+            tif.SetPageNumbers();
+            tif.Save(@"C:\paged.tif");
+        }
+
+        /// <summary>
+        ///A test for Copy
+        ///</summary>
+        [Test]
+        public void CopyTest()
+        {
+            Tif original = Tif.Load(testFilePath);
+            Tif copy = original.Copy();
+            Assert.AreNotSame(original, copy);
+        }
+
+
+        //[Test]
+        //public void LibTiffPicTest()
+        //{
+        //    string folder = @"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic";
+        //    foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
+        //    {
+        //        Console.WriteLine(Tif.Load(file));
+        //    }
+        //}
+
+        //[Test]
+        //public void LibTiffPicTest1()
+        //{
+        //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\cramps-tile.tif"));
+        //}
+
+        //[Test]
+        //public void LibTiffPicTest2()
+        //{
+        //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif"));
+        //}
+
+        ////C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif
+
+        //[Test]
+        //public void MMTest1()
+        //{
+        //    Console.WriteLine(Tif.Load(@"c:\lena.tif"));
+        //}
+
+        [Test]
+        public void TiffTestSuiteComplete()
+        {
+            string folder = @"D:\tiff_test_images";
+            foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
+            {
+                Console.WriteLine(Tif.Load(file));
+            }
+        }
     }
 }

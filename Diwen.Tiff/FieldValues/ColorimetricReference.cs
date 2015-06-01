@@ -2,7 +2,7 @@
 {
     public enum ColorimetricReference
     {
-        SceneReferred = 0, 
+        SceneReferred = 0,
         OutputReferred = 1,
     }
 }

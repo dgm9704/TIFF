@@ -1,12 +1,12 @@
-﻿// This file is used by Code Analysis to maintain SuppressMessage 
+﻿// This tif is used by Code Analysis to maintain SuppressMessage 
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 //
-// To add a suppression to this file, right-click the message in the 
+// To add a suppression to this tif, right-click the message in the 
 // Error List, point to "Suppress Message(s)", and click 
 // "In Project Suppression File".
-// You do not need to add suppressions to this file manually.
+// You do not need to add suppressions to this tif manually.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers", Scope = "member", Target = "Diwen.Tiff.Page.#Item[Diwen.Tiff.TagType]")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "tag", Scope = "member", Target = "Diwen.Tiff.Page.#Item[Diwen.Tiff.TagType]")]
@@ -78,8 +78,8 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Thunderscan", Scope = "member", Target = "Diwen.Tiff.Compression.#Thunderscan")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tiepoint", Scope = "member", Target = "Diwen.Tiff.TagType.#ModelTiepointTag")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Zlib", Scope = "member", Target = "Diwen.Tiff.Compression.#AdobeDeflateZlib")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_METADATA")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_NODATA")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALMetadata")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALNoData")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Cb", Scope = "member", Target = "Diwen.Tiff.PhotometricInterpretation.#YCbCr")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Cb", Scope = "member", Target = "Diwen.Tiff.TagType.#YCbCrCoefficients")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Cb", Scope = "member", Target = "Diwen.Tiff.TagType.#YCbCrPositioning")]
@@ -108,15 +108,15 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "FAX", Scope = "member", Target = "Diwen.Tiff.TagType.#HylaFAXFaxRecvParams")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "FAX", Scope = "member", Target = "Diwen.Tiff.TagType.#HylaFAXFaxRecvTime")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "FAX", Scope = "member", Target = "Diwen.Tiff.TagType.#HylaFAXFaxSubAddress")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "GDAL", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_METADATA")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "GDAL", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_NODATA")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "GDAL", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALMetadata")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "GDAL", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALNoData")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "GPSIFD", Scope = "member", Target = "Diwen.Tiff.TagType.#GPSIFD")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "ICC", Scope = "member", Target = "Diwen.Tiff.TagType.#ICCProfile")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "ID", Scope = "member", Target = "Diwen.Tiff.TagType.#ImageID")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "IEEE", Scope = "member", Target = "Diwen.Tiff.SampleFormat.#IEEEFloatingPoint")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "IFD", Scope = "member", Target = "Diwen.Tiff.TagType.#ExifIFD")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "IFD", Scope = "member", Target = "Diwen.Tiff.TagType.#GlobalParametersIFD")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "IFD", Scope = "member", Target = "Diwen.Tiff.TagType.#InteroperabilityIFD")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ifd", Scope = "member", Target = "Diwen.Tiff.TagType.#ExifIFD")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ifd", Scope = "member", Target = "Diwen.Tiff.TagType.#GlobalParametersIFD")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ifd", Scope = "member", Target = "Diwen.Tiff.TagType.#InteroperabilityIFD")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "IFDs", Scope = "member", Target = "Diwen.Tiff.TagType.#SubIFDs")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "INGR", Scope = "member", Target = "Diwen.Tiff.TagType.#INGRFlagRegisters")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "INGR", Scope = "member", Target = "Diwen.Tiff.TagType.#INGRPacketDataTag")]
@@ -134,8 +134,8 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JPEGDC", Scope = "member", Target = "Diwen.Tiff.TagType.#JPEGDCTables")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "JPEGQ", Scope = "member", Target = "Diwen.Tiff.TagType.#JPEGQTables")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "LZW", Scope = "member", Target = "Diwen.Tiff.Compression.#LZW")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "METADATA", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_METADATA")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "NODATA", Scope = "member", Target = "Diwen.Tiff.TagType.#GDAL_NODATA")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "METADATA", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALMetadata")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "NODATA", Scope = "member", Target = "Diwen.Tiff.TagType.#GDALNoData")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "OJPEG", Scope = "member", Target = "Diwen.Tiff.Compression.#OJPEG")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "OPI", Scope = "member", Target = "Diwen.Tiff.TagType.#OPIProxy")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "RGB", Scope = "member", Target = "Diwen.Tiff.PhotometricInterpretation.#RGB")]

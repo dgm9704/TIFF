@@ -3,7 +3,7 @@
     public enum CleanFaxData
     {
         NoBadLines = 0,
-        BadLinesWereRegenerated, 
-        BadLinesNotRegenerated, 
+        BadLinesWereRegenerated,
+        BadLinesNotRegenerated,
     }
 }

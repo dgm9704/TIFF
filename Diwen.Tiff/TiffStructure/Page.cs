@@ -6,12 +6,13 @@
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
     using Diwen.Tiff.FieldValues;
+    using System.Net;
 
     /// <summary>
-    /// Represents an IFD (Image File Directory) of TIFF file
+    /// Represents an Ifd (Image File Directory) of TIFF tif
     /// </summary>
-    [Serializable()]
-    public class Page : FieldCollection
+    [Serializable]
+    public class Page : Ifd
     {
         /// <summary>
         /// Initializes a new instance of the Page class
@@ -20,8 +21,6 @@
             : base()
         {
         }
-
-        internal uint NextPageAddress { get; set; }
 
         internal List<byte[]> ImageData { get; set; }
 
@@ -38,54 +37,6 @@
             }
 
             return sb.ToString();
-        }
-
-       
-
-        internal static Page Read(byte[] data, int pos)
-        {
-            var page = new Page();
-            ushort tagCount = BitConverter.ToUInt16(data, pos);
-            pos += 2;
-            for (int i = 0; i < tagCount; i++)
-            {
-                page.Add(Field.Read(data, pos));
-                pos += 12;
-            }
-
-            page.NextPageAddress = BitConverter.ToUInt32(data, pos);
-
-            Field offsetTag;
-            Field countTag;
-            if (page.Contains(Tag.StripOffsets))
-            {
-                offsetTag = page[Tag.StripOffsets];
-                countTag = page[Tag.StripByteCounts];
-            }
-            else
-            {
-                offsetTag = page[Tag.TileOffsets];
-                countTag = page[Tag.TileByteCounts];
-            }
-
-            page.ImageData = GetImageData(data, offsetTag, countTag);
-
-            return page;
-        }
-
-        private static List<byte[]> GetImageData(byte[] data, Field stripOffsetTag, Field stripByteCountTag)
-        {
-            var stripData = new List<byte[]>();
-            for (int i = 0; i < stripOffsetTag.Values.Length; i++)
-            {
-                long pos = (long)(uint)stripOffsetTag.Values.GetValue(i);
-                long count = (long)(uint)stripByteCountTag.Values.GetValue(i);
-                var strip = new byte[count];
-                Array.Copy(data, pos, strip, 0, count);
-                stripData.Add(strip);
-            }
-
-            return stripData;
         }
 
         /// <summary>
@@ -944,6 +895,5 @@
                 this.Add(Tag.YResolution, value);
             }
         }
-
     }
 }

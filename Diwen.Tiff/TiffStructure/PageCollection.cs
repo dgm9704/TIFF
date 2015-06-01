@@ -5,7 +5,7 @@
     using System.Collections.ObjectModel;
     using System.Text;
 
-    [Serializable()]
+    [Serializable]
     public class PageCollection : Collection<Page>
     {
         public PageCollection()
@@ -36,19 +36,6 @@
             }
         }
 
-        /// <summary>
-        /// Returns a String with information about the Tif, it's pages and their tags
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            foreach (var page in this)
-            {
-                sb.Append(page.ToString());
-            }
-
-            return sb.ToString();
-        }
+        
     }
 }

@@ -2,7 +2,7 @@
 {
     using System;
 
-    [Serializable()]
+    [Serializable]
     public struct Rational32
     {
         public Rational32(int numerator, int denominator)
@@ -56,6 +56,18 @@
             return this.Numerator + "/" + this.Denominator;
         }
 
+        //public override string ToString(bool reduce)
+        //{
+        //    if (reduce)
+        //    {
+        //        return this.Reduce().ToString();
+        //    }
+        //    else
+        //    {
+        //        return this.ToString();
+        //    }
+        //}
+
         public override int GetHashCode()
         {
             return this.Numerator / this.Denominator;
@@ -69,6 +81,21 @@
             }
 
             return this == (Rational32)obj;
+        }
+
+        public Rational32 Inverse()
+        {
+            return new Rational32 { Denominator = this.Numerator, Numerator = this.Denominator };
+        }
+
+        public Rational32 Reduce()
+        {
+            int gcd = (int)Util.GCD(this.Numerator, this.Denominator);
+            if (gcd != 1)
+            {
+                return new Rational32 { Numerator = this.Numerator / gcd, Denominator = this.Denominator / gcd };
+            }
+            return this;
         }
     }
 }

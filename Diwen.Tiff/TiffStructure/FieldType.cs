@@ -10,9 +10,9 @@
         SByte = 6,
         Undefined = 7,
         SShort = 8,
-        SLong = 9, 
+        SLong = 9,
         SRational = 10,
-        Float = 11, 
+        Float = 11,
         Double = 12,
         IFD = 13,
     }
