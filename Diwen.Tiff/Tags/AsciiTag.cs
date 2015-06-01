@@ -7,7 +7,7 @@ namespace Diwen.Tiff.Tags
     {
         public AsciiTag(TagType type)
         {
-            this.DataType = DataType.Ascii;
+            this.DataType = TiffDataType.Ascii;
             this.TagType = type;
         }
 

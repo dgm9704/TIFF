@@ -1,4 +1,4 @@
-﻿namespace Diwen.Tiff.TagValues
+﻿namespace Diwen.Tiff
 {
     public enum YCbCrSubSampling : ushort
     {

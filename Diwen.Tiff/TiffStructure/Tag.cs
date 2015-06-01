@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Diwen.Tiff;
 
 namespace Diwen.Tiff
 {
@@ -11,14 +12,14 @@ namespace Diwen.Tiff
     {
         public Array Values { get; internal set; }
         public TagType TagType { get; set; }
-        public DataType DataType { get; set; }
+        public TiffDataType DataType { get; set; }
 
         internal uint ValueCount { get; set; }
         internal uint ValueOffset { get; set; }
 
         public Tag() { }
 
-        public Tag(TagType tagType, DataType dataType, Array values)
+        public Tag(TagType tagType, TiffDataType dataType, Array values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -33,7 +34,7 @@ namespace Diwen.Tiff
             var tag = new Tag
             {
                 TagType = (TagType)BitConverter.ToUInt16(data, startPosition),
-                DataType = (DataType)BitConverter.ToUInt16(data, startPosition + 2),
+                DataType = (TiffDataType)BitConverter.ToUInt16(data, startPosition + 2),
                 ValueCount = BitConverter.ToUInt32(data, startPosition + 4),
                 ValueOffset = BitConverter.ToUInt32(data, startPosition + 8),
             };
@@ -50,7 +51,7 @@ namespace Diwen.Tiff
             var tag = new Tag
             {
                 TagType = (TagType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition)),
-                DataType = (DataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
+                DataType = (TiffDataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
                 ValueCount = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 4)),
 
             };
@@ -88,7 +89,7 @@ namespace Diwen.Tiff
             sb.AppendFormat("{0:D}({0})", this.TagType);
             sb.Append("[");
 
-            if (this.DataType == DataType.Ascii)
+            if (this.DataType == TiffDataType.Ascii)
             {
                 sb.Append(Values as char[]);
                 sb.Append("]");
@@ -128,54 +129,54 @@ namespace Diwen.Tiff
             }
         }
 
-        private static Array ReadValues(byte[] data, DataType type, int count)
+        private static Array ReadValues(byte[] data, TiffDataType type, int count)
         {
             Array values = null;
 
             switch (type)
             {
-                case DataType.Byte:
-                case DataType.Undefined:
+                case TiffDataType.Byte:
+                case TiffDataType.Undefined:
                     values = data;
                     break;
-                case DataType.SByte:
+                case TiffDataType.SByte:
                     values = new sbyte[data.Length];
                     Buffer.BlockCopy(data, 0, values, 0, count);
                     break;
-                case DataType.Ascii:
+                case TiffDataType.Ascii:
                     values = Tif.Ascii.GetString(data).ToCharArray();
                     break;
-                case DataType.Short:
+                case TiffDataType.Short:
                     values = new ushort[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 2);
                     break;
-                case DataType.SShort:
+                case TiffDataType.SShort:
                     values = new short[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 2);
                     break;
-                case DataType.Long:
+                case TiffDataType.Long:
                     values = new uint[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 4);
                     break;
-                case DataType.SLong:
+                case TiffDataType.SLong:
                     values = new int[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 4);
                     break;
-                case DataType.Rational:
+                case TiffDataType.Rational:
                     values = new URational32[count];
                     for (int i = 0; i < count; i++)
                         values.SetValue(new URational32(data, i * 4), i);
                     break;
-                case DataType.SRational:
+                case TiffDataType.SRational:
                     values = new Rational32[count];
                     for (int i = 0; i < count; i++)
                         values.SetValue(new Rational32(data, i * 4), i);
                     break;
-                case DataType.Float:
+                case TiffDataType.Float:
                     values = new float[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 4);
                     break;
-                case DataType.Double:
+                case TiffDataType.Double:
                     values = new double[count];
                     Buffer.BlockCopy(data, 0, values, 0, count * 8);
                     break;

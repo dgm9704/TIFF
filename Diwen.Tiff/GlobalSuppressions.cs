@@ -151,4 +151,3 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pixar", Scope = "member", Target = "Diwen.Tiff.Compression.#PixarFilm")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pixar", Scope = "member", Target = "Diwen.Tiff.Compression.#PixarLog")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tif", Scope = "type", Target = "Diwen.Tiff.Tif")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Subfile", Scope = "type", Target = "Diwen.Tiff.Tags.NewSubfileTypeTag")]

@@ -8,7 +8,7 @@ namespace Diwen.Tiff.Tags
         public PageNumberTag(ushort pageNumber, ushort totalPages)
             : base(pageNumber, totalPages)
         {
-            this.TagType = TagType.PageNumber;
+            this.TagType = Tiff.TagType.PageNumber;
         }
 
     }
