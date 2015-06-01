@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Diwen.Tiff;
-using System.Net;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace Diwen.Tiff
 {
     [Serializable()]
-    public class Page : KeyedCollection<TagType, Tag>
+    public class Page
     {
         public int Number { get; set; }
         internal uint NextPageAddress { get; set; }
         internal List<byte[]> ImageData { get; set; }
 
-        private Page() : base() { }
+        public TagCollection Tags { get; internal set; }
 
-        protected override TagType GetKeyForItem(Tag item)
+        public Page()
         {
-            return item.TagType;
+            Tags = new TagCollection();
+        }
+
+        public Tag this[TagType tagType]
+        {
+            get
+            {
+                return Tags[tagType];
+            }
+            set
+            {
+                Tags.Insert(0, value);
+            }
         }
 
         internal static Page Read(byte[] data, int pos)
@@ -30,13 +40,13 @@ namespace Diwen.Tiff
             pos += 2;
             for (int i = 0; i < tagCount; i++)
             {
-                page.Add(Tag.Read(data, pos));
+                page.Tags.Add(Tag.Read(data, pos));
                 pos += 12;
             }
             page.NextPageAddress = BitConverter.ToUInt32(data, pos);
 
-            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
-            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
+            var offsetTag = page.Tags[TagType.StripOffsets] ?? page.Tags[TagType.TileOffsets];
+            var countTag = page.Tags[TagType.StripByteCounts] ?? page.Tags[TagType.TileByteCounts];
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;
@@ -50,13 +60,13 @@ namespace Diwen.Tiff
             pos += 2;
             for (int i = 0; i < tagCount; i++)
             {
-                page.Add(Tag.ReadMM(data, pos));
+                page.Tags.Add(Tag.ReadMM(data, pos));
                 pos += 12;
             }
             page.NextPageAddress = (uint)IPAddress.NetworkToHostOrder((int)BitConverter.ToUInt32(data, pos));
 
-            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
-            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
+            var offsetTag = page.Tags[TagType.StripOffsets] ?? page.Tags[TagType.TileOffsets];
+            var countTag = page.Tags[TagType.StripByteCounts] ?? page.Tags[TagType.TileByteCounts];
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;
@@ -70,16 +80,8 @@ namespace Diwen.Tiff
                 long pos = (long)(uint)stripOffsetTag.Values.GetValue(i);
                 long count = (long)(uint)stripByteCountTag.Values.GetValue(i);
                 var strip = new byte[count];
-                try
-                {
-                    Array.Copy(data, pos, strip, 0, count);
-                    stripData.Add(strip);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-
+                Array.Copy(data, pos, strip, 0, count);
+                stripData.Add(strip);
             }
             return stripData;
         }
@@ -88,16 +90,10 @@ namespace Diwen.Tiff
         {
             var sb = new StringBuilder();
             sb.AppendFormat("-Page {0}: \r\n", this.Number);
-            foreach (var tag in this)
+            foreach (var tag in this.Tags)
                 sb.AppendLine(tag.ToString());
 
             return sb.ToString();
-        }
-
-        public void AddRange(IEnumerable<Tag> tags)
-        {
-            foreach (var tag in tags)
-                Add(tag);
         }
 
         public Page Copy()
@@ -109,11 +105,6 @@ namespace Diwen.Tiff
                 stream.Position = 0;
                 return (Page)formatter.Deserialize(stream);
             }
-        }
-
-        public void Sort()
-        {
-            ((List<Tag>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
         }
 
     }

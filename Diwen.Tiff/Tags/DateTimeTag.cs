@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Diwen.Tiff.Tags
 {
@@ -11,9 +12,8 @@ namespace Diwen.Tiff.Tags
         }
 
         public DateTimeTag(DateTime value)
-            : base(value.ToString("yyyy:MM:dd hh:mm:ss"))
+            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss",CultureInfo.InvariantCulture))
         {
-            this.TagType = TagType.DateTime;
         }
 
     }

@@ -6,10 +6,9 @@ namespace Diwen.Tiff.Tags
     public class SoftwareTag : AsciiTag
     {
         public SoftwareTag(string value)
-            : base(value)
+            : base(TagType.Software, value)
         {
-            this.TagType = TagType.Software;
-       }
+        }
 
     }
 }

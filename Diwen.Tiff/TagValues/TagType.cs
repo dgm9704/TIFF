@@ -1,10 +1,12 @@
 ﻿
+using System;
 namespace Diwen.Tiff
 {
     public enum TagType : ushort
     {
         Unknown = 0,
         NewSubfileType = 254,
+        [Obsolete("NewSubfileType should be used instead.")]
         SubfileType = 255,
         ImageWidth = 256,
         ImageLength = 257,

@@ -21,6 +21,8 @@ namespace Diwen.Tiff
 
         public Tag(TagType tagType, TiffDataType dataType, Array values)
         {
+            if (values == null)
+                throw new ArgumentNullException("values");
             this.TagType = tagType;
             this.DataType = dataType;
             this.Values = values;

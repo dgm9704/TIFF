@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace Diwen.Tiff
 {
+    [Obsolete("NewSubfileType should be used instead.")]
     public enum SubfileType : ushort
     {
         FullResolution = 1,
