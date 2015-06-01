@@ -7,13 +7,13 @@ namespace Diwen.Tiff.Tags
     {
         public LongTag()
         {
-            this.DataType = TiffDataType.Long;
+            this.DataType = DataType.Long;
         }
 
-        public LongTag(params uint[] args)
+        public LongTag(params uint[] values)
             : base()
         {
-            this.Values = args;
+            this.Values = values;
             this.ValueCount = (uint)Values.Length;
         }
     }

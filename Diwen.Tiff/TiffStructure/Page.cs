@@ -107,5 +107,15 @@ namespace Diwen.Tiff
             }
         }
 
+
+        public void Add(Tag tag)
+        {
+            Tags.Add(tag);
+        }
+
+        public void AddRange(IEnumerable<Tag> tags)
+        {
+            Tags.AddRange(tags);
+        }
     }
 }

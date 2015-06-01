@@ -7,12 +7,12 @@ namespace Diwen.Tiff.Tags
     {
         public ShortTag()
         {
-            this.DataType = TiffDataType.Short;
+            this.DataType = DataType.Short;
         }
 
-        public ShortTag(params ushort[] args) : this()
+        public ShortTag(params ushort[] values) : this()
         {
-            this.Values = args;
+            this.Values = values;
             this.ValueCount = (uint)Values.Length;
         }
     }

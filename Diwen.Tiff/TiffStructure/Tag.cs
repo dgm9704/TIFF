@@ -3,23 +3,22 @@ using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using Diwen.Tiff;
 
 namespace Diwen.Tiff
 {
     [Serializable()]
-    public class Tag //: IComparable<Tag>
+    public class Tag
     {
         public Array Values { get; internal set; }
         public TagType TagType { get; set; }
-        public TiffDataType DataType { get; set; }
+        public DataType DataType { get; set; }
 
         internal uint ValueCount { get; set; }
         internal uint ValueOffset { get; set; }
 
         public Tag() { }
 
-        public Tag(TagType tagType, TiffDataType dataType, Array values)
+        public Tag(TagType tagType, DataType dataType, Array values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -34,13 +33,13 @@ namespace Diwen.Tiff
             var tag = new Tag
             {
                 TagType = (TagType)BitConverter.ToUInt16(data, startPosition),
-                DataType = (TiffDataType)BitConverter.ToUInt16(data, startPosition + 2),
+                DataType = (DataType)BitConverter.ToUInt16(data, startPosition + 2),
                 ValueCount = BitConverter.ToUInt32(data, startPosition + 4),
                 ValueOffset = BitConverter.ToUInt32(data, startPosition + 8),
             };
 
             byte[] valuebytes = GetValueBytes(data, tag);
-            tag.Values = Tif.ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
+            tag.Values = ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
 
             return tag;
         }
@@ -51,7 +50,7 @@ namespace Diwen.Tiff
             var tag = new Tag
             {
                 TagType = (TagType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition)),
-                DataType = (TiffDataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
+                DataType = (DataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
                 ValueCount = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 4)),
 
             };
@@ -60,9 +59,9 @@ namespace Diwen.Tiff
             else
                 tag.ValueOffset = (uint)BitConverter.ToInt32(data, startPosition + 8);
 
-            byte[] valuebytes = Tif.SwitchEndian(GetValueBytes(data, tag), Tif.ValueLength[tag.DataType]);
+            byte[] valuebytes = SwitchEndian(GetValueBytes(data, tag), Tif.ValueLength[tag.DataType]);
 
-            tag.Values = Tif.ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
+            tag.Values = ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
 
             return tag;
         }
@@ -89,7 +88,7 @@ namespace Diwen.Tiff
             sb.AppendFormat("{0:D}({0})", this.TagType);
             sb.Append("[");
 
-            if (this.DataType == TiffDataType.Ascii)
+            if (this.DataType == DataType.Ascii)
             {
                 sb.Append(Values as char[]);
                 sb.Append("]");
@@ -129,61 +128,77 @@ namespace Diwen.Tiff
             }
         }
 
-        //#region comparison and operators
+        private static Array ReadValues(byte[] data, DataType type, int count)
+        {
+            Array values = null;
 
-        //public int CompareTo(Tag other)
-        //{
-        //    if (this.TagType < other.TagType)
-        //        return -1;
+            switch (type)
+            {
+                case DataType.Byte:
+                case DataType.Undefined:
+                    values = data;
+                    break;
+                case DataType.SByte:
+                    values = new sbyte[data.Length];
+                    Buffer.BlockCopy(data, 0, values, 0, count);
+                    break;
+                case DataType.Ascii:
+                    values = Tif.Ascii.GetString(data).ToCharArray();
+                    break;
+                case DataType.Short:
+                    values = new ushort[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
+                    break;
+                case DataType.SShort:
+                    values = new short[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
+                    break;
+                case DataType.Long:
+                    values = new uint[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case DataType.SLong:
+                    values = new int[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case DataType.Rational:
+                    values = new URational32[count];
+                    for (int i = 0; i < count; i++)
+                        values.SetValue(new URational32(data, i * 4), i);
+                    break;
+                case DataType.SRational:
+                    values = new Rational32[count];
+                    for (int i = 0; i < count; i++)
+                        values.SetValue(new Rational32(data, i * 4), i);
+                    break;
+                case DataType.Float:
+                    values = new float[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case DataType.Double:
+                    values = new double[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 8);
+                    break;
+                default:
+                    break;
+            }
 
-        //    if (this.TagType > other.TagType)
-        //        return 1;
+            return values;
+        }
 
-        //    return 0;
-        //}
+        private static byte[] SwitchEndian(byte[] data, int typeLength)
+        {
+            byte[] temp = new byte[typeLength];
+            byte[] switched = new byte[data.Length];
+            for (int i = 0; i < data.Length; i += typeLength)
+            {
+                Buffer.BlockCopy(data, i, temp, 0, typeLength);
+                Array.Reverse(temp);
+                Buffer.BlockCopy(temp, 0, switched, i, typeLength);
+            }
 
-        //public override bool Equals(object obj)
-        //{
-        //    var tag = obj as Tag;
+            return switched;
+        }
 
-        //    if (obj == null)
-        //        return false;
-        //    return (this.CompareTo(tag) == 0);
-        //}
-
-        //public override int GetHashCode()
-        //{
-        //    return (int)this.TagType;
-        //}
-
-        //public static bool operator ==(Tag tag1, Tag tag2)
-        //{
-        //    try
-        //    {
-        //        return tag1.CompareTo(tag2) == 0;
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //    }
-        //    return false;
-        //}
-
-        //public static bool operator !=(Tag tag1, Tag tag2)
-        //{
-        //    return !(tag1 == tag2);
-        //}
-
-        //public static bool operator <(Tag tag1, Tag tag2)
-        //{
-        //    return (tag1.CompareTo(tag2) < 0);
-        //}
-
-        //public static bool operator >(Tag tag1, Tag tag2)
-        //{
-        //    return (tag1.CompareTo(tag2) > 0);
-        //}
-
-        //#endregion
     }
 }

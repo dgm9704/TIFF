@@ -1,5 +1,5 @@
 ﻿
-namespace Diwen.Tiff
+namespace Diwen.Tiff.TagValues
 {
     public enum PhotometricInterpretation : ushort
     {

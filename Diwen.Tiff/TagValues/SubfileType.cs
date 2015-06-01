@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Diwen.Tiff
+namespace Diwen.Tiff.TagValues
 {
     [Obsolete("NewSubfileType should be used instead.")]
     public enum SubfileType : ushort
