@@ -7,22 +7,17 @@ using Diwen.Tiff;
 
 namespace Diwen.Tiff
 {
-    [Serializable]
+    [Serializable()]
     public class Tag //: IComparable<Tag>
     {
         public Array Values { get; internal set; }
-
         public TagType TagType { get; set; }
-
         public TiffDataType DataType { get; set; }
 
         internal uint ValueCount { get; set; }
-
         internal uint ValueOffset { get; set; }
 
-        public Tag()
-        {
-        }
+        public Tag() { }
 
         public Tag(TagType tagType, TiffDataType dataType, Array values)
         {

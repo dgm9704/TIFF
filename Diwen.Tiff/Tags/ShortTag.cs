@@ -10,7 +10,7 @@ namespace Diwen.Tiff.Tags
             this.DataType = TiffDataType.Short;
         }
 
-        public ShortTag(params ushort[] args) : base()
+        public ShortTag(params ushort[] args) : this()
         {
             this.Values = args;
             this.ValueCount = (uint)Values.Length;

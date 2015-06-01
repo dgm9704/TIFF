@@ -113,19 +113,28 @@ namespace Diwen.Tiff
             int valueLength;
             foreach (var tag in page)
             {
-                valueLength = tag.Values.Length * ValueLength[tag.DataType];
-                if (valueLength > 4)
+                try
                 {
-                    tag.ValueOffset = (uint)(filelen);
-                    pageData.AddRange(ValueBytes(tag.Values, tag.DataType));
-                    filelen += valueLength;
+                    valueLength = tag.Values.Length * ValueLength[tag.DataType];
+                    if (valueLength > 4)
+                    {
+                        tag.ValueOffset = (uint)(filelen);
+                        pageData.AddRange(ValueBytes(tag.Values, tag.DataType));
+                        filelen += valueLength;
+                    }
+                    else
+                    {
+                        byte[] value = new byte[4];
+                        Buffer.BlockCopy(tag.Values, 0, value, 0, valueLength);
+                        tag.ValueOffset = BitConverter.ToUInt32(value, 0);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    byte[] value = new byte[4];
-                    Buffer.BlockCopy(tag.Values, 0, value, 0, valueLength);
-                    tag.ValueOffset = BitConverter.ToUInt32(value, 0);
+                    
+                    throw;
                 }
+                
             }
             return filelen;
         }

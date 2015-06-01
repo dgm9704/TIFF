@@ -35,8 +35,6 @@ namespace Diwen.Tiff
             }
             page.NextPageAddress = BitConverter.ToUInt32(data, pos);
 
-            //var offsetTag = page.Find(t => t.TagType == TagType.StripOffsets || t.TagType == TagType.TileOffsets);
-            //var countTag = page.Find(t => t.TagType == TagType.StripByteCounts || t.TagType == TagType.TileByteCounts);
             var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
             var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
             page.ImageData = GetImageData(data, offsetTag, countTag);
@@ -57,8 +55,6 @@ namespace Diwen.Tiff
             }
             page.NextPageAddress = (uint)IPAddress.NetworkToHostOrder((int)BitConverter.ToUInt32(data, pos));
 
-            //var offsetTag = page.Find(t => t.TagType == TagType.StripOffsets || t.TagType == TagType.TileOffsets);
-            //var countTag = page.Find(t => t.TagType == TagType.StripByteCounts || t.TagType == TagType.TileByteCounts);
             var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
             var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
             page.ImageData = GetImageData(data, offsetTag, countTag);
@@ -98,19 +94,8 @@ namespace Diwen.Tiff
             return sb.ToString();
         }
 
-        //public new void Add(TiffTag tag)
-        //{
-        //    if (null == tag)
-        //        throw new ArgumentNullException("tag");
-
-        //    Items.Add(tag.Copy());
-        //}
-
         public void AddRange(IEnumerable<Tag> tags)
         {
-            //if (tags == null)
-            //    throw new ArgumentNullException("tags");
-
             foreach (var tag in tags)
                 Add(tag);
         }
@@ -126,14 +111,10 @@ namespace Diwen.Tiff
             }
         }
 
-        //public Tag Find(Predicate<Tag> match)
-        //{
-        //    return ((List<Tag>)Items).Find(match);
-        //}
-
         public void Sort()
         {
             ((List<Tag>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
         }
+
     }
 }

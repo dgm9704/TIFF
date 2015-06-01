@@ -6,7 +6,6 @@ namespace Diwen.Tiff
     public struct Rational32
     {
         public int Numerator { get; set; }
-
         public int Denominator { get; set; }
 
         public Rational32(int numerator, int denominator)
@@ -21,7 +20,7 @@ namespace Diwen.Tiff
         {
             if (data == null)
                 throw new ArgumentNullException("data");
-            if (data.Length < startIndex)
+            if (data.Length < startIndex )
                 throw new ArgumentOutOfRangeException("startIndex");
 
             Numerator = BitConverter.ToInt32(data, startIndex);
