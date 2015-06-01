@@ -5,12 +5,13 @@
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
+    using Diwen.Tiff.FieldValues;
 
     /// <summary>
     /// Represents an IFD (Image File Directory) of TIFF file
     /// </summary>
     [Serializable()]
-    public class Page : TagCollection
+    public class Page : FieldCollection
     {
         /// <summary>
         /// Initializes a new instance of the Page class
@@ -19,8 +20,6 @@
             : base()
         {
         }
-
-        //public int Number { get; set; }
 
         internal uint NextPageAddress { get; set; }
 
@@ -33,7 +32,6 @@
         public override string ToString()
         {
             var sb = new StringBuilder();
-            //sb.AppendFormat("-Page {0}: \r\n", this.Number);
             foreach (var tag in this)
             {
                 sb.AppendLine(tag.ToString());
@@ -42,20 +40,7 @@
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Creates a deep copy of the Page object
-        /// </summary>
-        /// <returns></returns>
-        public Page Copy()
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, this);
-                stream.Position = 0;
-                return (Page)formatter.Deserialize(stream);
-            }
-        }
+       
 
         internal static Page Read(byte[] data, int pos)
         {
@@ -64,20 +49,31 @@
             pos += 2;
             for (int i = 0; i < tagCount; i++)
             {
-                page.Add(Tag.Read(data, pos));
+                page.Add(Field.Read(data, pos));
                 pos += 12;
             }
 
             page.NextPageAddress = BitConverter.ToUInt32(data, pos);
 
-            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
-            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
+            Field offsetTag;
+            Field countTag;
+            if (page.Contains(Tag.StripOffsets))
+            {
+                offsetTag = page[Tag.StripOffsets];
+                countTag = page[Tag.StripByteCounts];
+            }
+            else
+            {
+                offsetTag = page[Tag.TileOffsets];
+                countTag = page[Tag.TileByteCounts];
+            }
+
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;
         }
 
-        private static List<byte[]> GetImageData(byte[] data, Tag stripOffsetTag, Tag stripByteCountTag)
+        private static List<byte[]> GetImageData(byte[] data, Field stripOffsetTag, Field stripByteCountTag)
         {
             var stripData = new List<byte[]>();
             for (int i = 0; i < stripOffsetTag.Values.Length; i++)
@@ -93,100 +89,20 @@
         }
 
         /// <summary>
-        /// adds a new tag to the page
+        /// Set the value of an Ascii tag for the page. If the field doues not exist, it is created.
         /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="tiffDataType">data type</param>
-        /// <param name="values">tag values</param>
-        public void Add(TagType tagType, TiffDataType tiffDataType, Array values)
-        {
-            this.Add(new Tag(tagType, tiffDataType, values));
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, ushort value)
-        {
-            Add(tagType, TiffDataType.Short, new ushort[] { value });
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, uint value)
-        {
-            Add(tagType, TiffDataType.Long, new uint[] { value });
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, Enum value)
-        {
-            Type underType = Enum.GetUnderlyingType(value.GetType());
-
-            switch (underType.Name)
-            {
-                case "UInt16":
-                    Add(tagType, (ushort)Convert.ChangeType(value, underType));
-                    break;
-
-                case "UInt32":
-                default:
-                    Add(tagType, (uint)Convert.ChangeType(value, underType));
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="tiffDataType">type of data contained in the tag</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, TiffDataType tiffDataType, string value)
-        {
-            if (value == null)
-            {
-                value = string.Empty;
-            }
-
-            this.Add(tagType, tiffDataType, value.ToCharArray());
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, string value)
-        {
-            this.Add(tagType, TiffDataType.Ascii, value);
-        }
-
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="tagType">tag type</param>
-        /// <param name="value">tag data</param>
-        public void Add(TagType tagType, URational32 value)
-        {
-            Add(tagType, TiffDataType.Rational, new URational32[] { value });
-        }
-
-        private void SetAsciiTagValue(TagType tag, string value)
+        /// <param name="tag">tag to set value for</param>
+        /// <param name="value">tag value</param>
+        public void SetAsciiFieldValue(Tag tag, string value)
         {
             this.Add(tag, value ?? string.Empty);
         }
 
-        private string GetAsciiTagValue(TagType tag)
+        /// <summary>
+        /// Get the value of an Ascii tag for the page. If the field doues not exist, it is created.
+        /// </summary>
+        /// <param name="tag">tag to set value for</param>
+        public string GetAsciiFieldValue(Tag tag)
         {
             if (this.Contains(tag))
             {
@@ -199,17 +115,28 @@
         }
 
         /// <summary>
+        /// adds a new tag to the page
+        /// </summary>
+        /// <param name="tag">tag type</param>
+        /// <param name="type">data type</param>
+        /// <param name="values">tag values</param>
+        public void Add(Tag tag, FieldType type, Array values)
+        {
+            this.Add(new Field(tag, type, values));
+        }
+
+        /// <summary>
         /// Gets or sets the value of baseline tag Artist
         /// </summary>
         public string Artist
         {
             get
             {
-                return GetAsciiTagValue(TagType.Artist);
+                return this.GetAsciiFieldValue(Tag.Artist);
             }
             set
             {
-                SetAsciiTagValue(TagType.Artist, value);
+                this.SetAsciiFieldValue(Tag.Artist, value);
             }
         }
 
@@ -220,9 +147,9 @@
         {
             get
             {
-                if (this.Contains(TagType.PageNumber))
+                if (this.Contains(Tag.PageNumber))
                 {
-                    return (ushort)this[TagType.PageNumber].Value;
+                    return (ushort)this[Tag.PageNumber].Value;
                 }
                 else
                 {
@@ -231,13 +158,13 @@
             }
             set
             {
-                if (this.Contains(TagType.PageNumber))
+                if (this.Contains(Tag.PageNumber))
                 {
-                    this[TagType.PageNumber].Values.SetValue(value, 0);
+                    this[Tag.PageNumber].Values.SetValue(value, 0);
                 }
                 else
                 {
-                    this.Add(TagType.PageNumber, TiffDataType.Short, new ushort[] { value, 0 });
+                    this.Add(Tag.PageNumber, FieldType.Short, new ushort[] { value, 0 });
                 }
             }
         }
@@ -249,9 +176,9 @@
         {
             get
             {
-                if (this.Contains(TagType.PageNumber))
+                if (this.Contains(Tag.PageNumber))
                 {
-                    return (ushort)this[TagType.PageNumber].Values.GetValue(1);
+                    return (ushort)this[Tag.PageNumber].Values.GetValue(1);
                 }
                 else
                 {
@@ -260,13 +187,13 @@
             }
             set
             {
-                if (this.Contains(TagType.PageNumber))
+                if (this.Contains(Tag.PageNumber))
                 {
-                    this[TagType.PageNumber].Values.SetValue(value, 1);
+                    this[Tag.PageNumber].Values.SetValue(value, 1);
                 }
                 else
                 {
-                    this.Add(TagType.PageNumber, TiffDataType.Short, new ushort[] { 0, value });
+                    this.Add(Tag.PageNumber, FieldType.Short, new ushort[] { 0, value });
                 }
             }
         }
@@ -278,9 +205,9 @@
         {
             get
             {
-                if (this.Contains(TagType.BitsPerSample))
+                if (this.Contains(Tag.BitsPerSample))
                 {
-                    return (ushort)this[TagType.BitsPerSample].Value;
+                    return (ushort)this[Tag.BitsPerSample].Value;
                 }
                 else
                 {
@@ -289,7 +216,7 @@
             }
             set
             {
-                this.Add(TagType.BitsPerSample, value);
+                this.Add(Tag.BitsPerSample, value);
             }
         }
 
@@ -300,9 +227,9 @@
         {
             get
             {
-                if (this.Contains(TagType.CellLength))
+                if (this.Contains(Tag.CellLength))
                 {
-                    return (ushort)this[TagType.CellLength].Value;
+                    return (ushort)this[Tag.CellLength].Value;
                 }
                 else
                 {
@@ -311,7 +238,7 @@
             }
             set
             {
-                this.Add(TagType.CellLength, value);
+                this.Add(Tag.CellLength, value);
             }
         }
 
@@ -322,9 +249,9 @@
         {
             get
             {
-                if (this.Contains(TagType.CellWidth))
+                if (this.Contains(Tag.CellWidth))
                 {
-                    return (ushort)this[TagType.CellWidth].Value;
+                    return (ushort)this[Tag.CellWidth].Value;
                 }
                 else
                 {
@@ -333,7 +260,7 @@
             }
             set
             {
-                this.Add(TagType.CellWidth, value);
+                this.Add(Tag.CellWidth, value);
             }
         }
 
@@ -344,9 +271,9 @@
         {
             get
             {
-                if (this.Contains(TagType.ColorMap))
+                if (this.Contains(Tag.ColorMap))
                 {
-                    return (ushort[])this[TagType.ColorMap].Values;
+                    return (ushort[])this[Tag.ColorMap].Values;
                 }
                 else
                 {
@@ -355,7 +282,7 @@
             }
             set
             {
-                this.Add(TagType.ColorMap, TiffDataType.Short, value);
+                this.Add(Tag.ColorMap, FieldType.Short, value);
             }
         }
 
@@ -366,9 +293,9 @@
         {
             get
             {
-                if (this.Contains(TagType.Compression))
+                if (this.Contains(Tag.Compression))
                 {
-                    return (Compression)this[TagType.Compression].Value;
+                    return (Compression)this[Tag.Compression].Value;
                 }
                 else
                 {
@@ -377,7 +304,7 @@
             }
             set
             {
-                this.Add(TagType.Compression, value);
+                this.Add(Tag.Compression, value);
             }
         }
 
@@ -388,11 +315,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.Copyright);
+                return GetAsciiFieldValue(Tag.Copyright);
             }
             set
             {
-                SetAsciiTagValue(TagType.Copyright, value);
+                SetAsciiFieldValue(Tag.Copyright, value);
             }
         }
 
@@ -403,11 +330,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.DateTime);
+                return GetAsciiFieldValue(Tag.DateTime);
             }
             set
             {
-                SetAsciiTagValue(TagType.DateTime, value);
+                SetAsciiFieldValue(Tag.DateTime, value);
             }
         }
 
@@ -418,9 +345,9 @@
         {
             get
             {
-                if (this.Contains(TagType.ExtraSamples))
+                if (this.Contains(Tag.ExtraSamples))
                 {
-                    return (ExtraSampleType[])this[TagType.ExtraSamples].Values;
+                    return (ExtraSampleType[])this[Tag.ExtraSamples].Values;
                 }
                 else
                 {
@@ -434,7 +361,7 @@
                     value = new ExtraSampleType[] { };
                 }
 
-                this.Add(TagType.ExtraSamples, TiffDataType.Short, value);
+                this.Add(Tag.ExtraSamples, FieldType.Short, value);
             }
         }
 
@@ -445,9 +372,9 @@
         {
             get
             {
-                if (this.Contains(TagType.FillOrder))
+                if (this.Contains(Tag.FillOrder))
                 {
-                    return (FillOrder)this[TagType.ExtraSamples].Value;
+                    return (FillOrder)this[Tag.FillOrder].Value;
                 }
                 else
                 {
@@ -456,7 +383,7 @@
             }
             set
             {
-                this.Add(TagType.FillOrder, value);
+                this.Add(Tag.FillOrder, value);
             }
         }
 
@@ -467,9 +394,9 @@
         {
             get
             {
-                if (this.Contains(TagType.FreeByteCounts))
+                if (this.Contains(Tag.FreeByteCounts))
                 {
-                    return (uint)this[TagType.FreeByteCounts].Value;
+                    return (uint)this[Tag.FreeByteCounts].Value;
                 }
                 else
                 {
@@ -478,7 +405,7 @@
             }
             set
             {
-                this.Add(TagType.FreeByteCounts, value);
+                this.Add(Tag.FreeByteCounts, value);
             }
         }
 
@@ -489,9 +416,9 @@
         {
             get
             {
-                if (this.Contains(TagType.FreeOffsets))
+                if (this.Contains(Tag.FreeOffsets))
                 {
-                    return (uint)this[TagType.FreeOffsets].Value;
+                    return (uint)this[Tag.FreeOffsets].Value;
                 }
                 else
                 {
@@ -500,7 +427,7 @@
             }
             set
             {
-                this.Add(TagType.FreeOffsets, value);
+                this.Add(Tag.FreeOffsets, value);
             }
         }
 
@@ -511,9 +438,9 @@
         {
             get
             {
-                if (this.Contains(TagType.GrayResponseCurve))
+                if (this.Contains(Tag.GrayResponseCurve))
                 {
-                    return (ushort[])this[TagType.GrayResponseCurve].Values;
+                    return (ushort[])this[Tag.GrayResponseCurve].Values;
                 }
                 else
                 {
@@ -522,7 +449,7 @@
             }
             set
             {
-                this.Add(TagType.GrayResponseCurve, TiffDataType.Short, value);
+                this.Add(Tag.GrayResponseCurve, FieldType.Short, value);
             }
         }
 
@@ -533,9 +460,9 @@
         {
             get
             {
-                if (this.Contains(TagType.GrayResponseUnit))
+                if (this.Contains(Tag.GrayResponseUnit))
                 {
-                    return (GrayResponseUnit)this[TagType.GrayResponseUnit].Value;
+                    return (GrayResponseUnit)this[Tag.GrayResponseUnit].Value;
                 }
                 else
                 {
@@ -544,7 +471,7 @@
             }
             set
             {
-                this.Add(TagType.GrayResponseUnit, value);
+                this.Add(Tag.GrayResponseUnit, value);
             }
         }
 
@@ -555,11 +482,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.HostComputer);
+                return GetAsciiFieldValue(Tag.HostComputer);
             }
             set
             {
-                SetAsciiTagValue(TagType.HostComputer, value);
+                SetAsciiFieldValue(Tag.HostComputer, value);
             }
         }
 
@@ -570,11 +497,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.ImageDescription);
+                return GetAsciiFieldValue(Tag.ImageDescription);
             }
             set
             {
-                SetAsciiTagValue(TagType.ImageDescription, value);
+                SetAsciiFieldValue(Tag.ImageDescription, value);
             }
         }
 
@@ -585,9 +512,9 @@
         {
             get
             {
-                if (this.Contains(TagType.ImageLength))
+                if (this.Contains(Tag.ImageLength))
                 {
-                    return (uint)this[TagType.ImageLength].Value;
+                    return Convert.ToUInt32(this[Tag.ImageLength].Value);
                 }
                 else
                 {
@@ -596,7 +523,7 @@
             }
             set
             {
-                this.Add(TagType.ImageLength, value);
+                this.Add(Tag.ImageLength, value);
             }
         }
 
@@ -607,9 +534,9 @@
         {
             get
             {
-                if (this.Contains(TagType.ImageWidth))
+                if (this.Contains(Tag.ImageWidth))
                 {
-                    return (uint)this[TagType.ImageWidth].Value;
+                    return (uint)this[Tag.ImageWidth].Value;
                 }
                 else
                 {
@@ -618,7 +545,7 @@
             }
             set
             {
-                this.Add(TagType.ImageWidth, value);
+                this.Add(Tag.ImageWidth, value);
             }
         }
 
@@ -629,11 +556,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.Make);
+                return GetAsciiFieldValue(Tag.Make);
             }
             set
             {
-                SetAsciiTagValue(TagType.Make, value);
+                SetAsciiFieldValue(Tag.Make, value);
             }
         }
 
@@ -644,9 +571,9 @@
         {
             get
             {
-                if (this.Contains(TagType.MaxSampleValue))
+                if (this.Contains(Tag.MaxSampleValue))
                 {
-                    return (ushort)this[TagType.MaxSampleValue].Value;
+                    return (ushort)this[Tag.MaxSampleValue].Value;
                 }
                 else
                 {
@@ -655,7 +582,7 @@
             }
             set
             {
-                this.Add(TagType.MaxSampleValue, value);
+                this.Add(Tag.MaxSampleValue, value);
             }
         }
 
@@ -666,9 +593,9 @@
         {
             get
             {
-                if (this.Contains(TagType.MinSampleValue))
+                if (this.Contains(Tag.MinSampleValue))
                 {
-                    return (ushort)this[TagType.MinSampleValue].Value;
+                    return (ushort)this[Tag.MinSampleValue].Value;
                 }
                 else
                 {
@@ -677,7 +604,7 @@
             }
             set
             {
-                this.Add(TagType.MinSampleValue, value);
+                this.Add(Tag.MinSampleValue, value);
             }
         }
 
@@ -688,11 +615,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.Model);
+                return GetAsciiFieldValue(Tag.Model);
             }
             set
             {
-                SetAsciiTagValue(TagType.Model, value);
+                SetAsciiFieldValue(Tag.Model, value);
             }
         }
 
@@ -703,9 +630,9 @@
         {
             get
             {
-                if (this.Contains(TagType.NewSubfileType))
+                if (this.Contains(Tag.NewSubfileType))
                 {
-                    return (NewSubfileType)this[TagType.NewSubfileType].Value;
+                    return (NewSubfileType)this[Tag.NewSubfileType].Value;
                 }
                 else
                 {
@@ -714,7 +641,7 @@
             }
             set
             {
-                this.Add(TagType.NewSubfileType, value);
+                this.Add(Tag.NewSubfileType, value);
             }
         }
 
@@ -725,9 +652,9 @@
         {
             get
             {
-                if (this.Contains(TagType.Orientation))
+                if (this.Contains(Tag.Orientation))
                 {
-                    return (Orientation)this[TagType.Orientation].Value;
+                    return (Orientation)this[Tag.Orientation].Value;
                 }
                 else
                 {
@@ -736,7 +663,7 @@
             }
             set
             {
-                this.Add(TagType.Orientation, value);
+                this.Add(Tag.Orientation, value);
             }
         }
 
@@ -747,9 +674,9 @@
         {
             get
             {
-                if (this.Contains(TagType.PhotometricInterpretation))
+                if (this.Contains(Tag.PhotometricInterpretation))
                 {
-                    return (PhotometricInterpretation)this[TagType.PhotometricInterpretation].Value;
+                    return (PhotometricInterpretation)this[Tag.PhotometricInterpretation].Value;
                 }
                 else
                 {
@@ -758,7 +685,7 @@
             }
             set
             {
-                this.Add(TagType.PhotometricInterpretation, value);
+                this.Add(Tag.PhotometricInterpretation, value);
             }
         }
 
@@ -769,9 +696,9 @@
         {
             get
             {
-                if (this.Contains(TagType.PlanarConfiguration))
+                if (this.Contains(Tag.PlanarConfiguration))
                 {
-                    return (PlanarConfiguration)this[TagType.PlanarConfiguration].Value;
+                    return (PlanarConfiguration)this[Tag.PlanarConfiguration].Value;
                 }
                 else
                 {
@@ -780,7 +707,7 @@
             }
             set
             {
-                this.Add(TagType.PlanarConfiguration, value);
+                this.Add(Tag.PlanarConfiguration, value);
             }
         }
 
@@ -791,9 +718,9 @@
         {
             get
             {
-                if (this.Contains(TagType.ResolutionUnit))
+                if (this.Contains(Tag.ResolutionUnit))
                 {
-                    return (ResolutionUnit)this[TagType.ResolutionUnit].Value;
+                    return (ResolutionUnit)this[Tag.ResolutionUnit].Value;
                 }
                 else
                 {
@@ -802,7 +729,7 @@
             }
             set
             {
-                this.Add(TagType.ResolutionUnit, value);
+                this.Add(Tag.ResolutionUnit, value);
             }
         }
 
@@ -813,9 +740,9 @@
         {
             get
             {
-                if (this.Contains(TagType.RowsPerStrip))
+                if (this.Contains(Tag.RowsPerStrip))
                 {
-                    return (uint)this[TagType.RowsPerStrip].Value;
+                    return Convert.ToUInt32(this[Tag.RowsPerStrip].Value);
                 }
                 else
                 {
@@ -824,7 +751,7 @@
             }
             set
             {
-                this.Add(TagType.RowsPerStrip, value);
+                this.Add(Tag.RowsPerStrip, value);
             }
         }
 
@@ -846,9 +773,9 @@
         {
             get
             {
-                if (this.Contains(TagType.SamplesPerPixel))
+                if (this.Contains(Tag.SamplesPerPixel))
                 {
-                    return (ushort)this[TagType.SamplesPerPixel].Value;
+                    return (ushort)this[Tag.SamplesPerPixel].Value;
                 }
                 else
                 {
@@ -857,7 +784,7 @@
             }
             set
             {
-                this.Add(TagType.SamplesPerPixel, value);
+                this.Add(Tag.SamplesPerPixel, value);
             }
         }
 
@@ -868,11 +795,11 @@
         {
             get
             {
-                return GetAsciiTagValue(TagType.Software);
+                return GetAsciiFieldValue(Tag.Software);
             }
             set
             {
-                SetAsciiTagValue(TagType.Software, value);
+                SetAsciiFieldValue(Tag.Software, value);
             }
         }
 
@@ -883,9 +810,9 @@
         {
             get
             {
-                if (this.Contains(TagType.StripByteCounts))
+                if (this.Contains(Tag.StripByteCounts))
                 {
-                    return (uint[])this[TagType.StripByteCounts].Values;
+                    return (uint[])this[Tag.StripByteCounts].Values;
                 }
                 else
                 {
@@ -894,7 +821,12 @@
             }
             set
             {
-                this.Add(TagType.StripByteCounts, TiffDataType.Long, value);
+                if (value == null)
+                {
+                    value = new uint[] { };
+                }
+
+                this.Add(Tag.StripByteCounts, FieldType.Long, value);
             }
         }
 
@@ -905,9 +837,9 @@
         {
             get
             {
-                if (this.Contains(TagType.StripOffsets))
+                if (this.Contains(Tag.StripOffsets))
                 {
-                    return (uint[])this[TagType.StripOffsets].Values;
+                    return (uint[])this[Tag.StripOffsets].Values;
                 }
                 else
                 {
@@ -916,7 +848,12 @@
             }
             set
             {
-                this.Add(TagType.StripOffsets, TiffDataType.Long, value);
+                if (value == null)
+                {
+                    value = new uint[] { };
+                }
+
+                this.Add(Tag.StripOffsets, FieldType.Long, value);
             }
         }
 
@@ -927,9 +864,9 @@
         //{
         //    get
         //    {
-        //        if (this.Contains(TagType.SubfileType))
+        //        if (this.Contains(tag.SubfileType))
         //        {
-        //            return (SubfileType)this[TagType.SubfileType].Value;
+        //            return (SubfileType)this[tag.SubfileType].Value;
         //        }
         //        else
         //        {
@@ -938,7 +875,7 @@
         //    }
         //    set
         //    {
-        //        this.Add(TagType.SubfileType, value);
+        //        this.Add(tag.SubfileType, value);
         //    }
         //}
 
@@ -949,9 +886,9 @@
         {
             get
             {
-                if (this.Contains(TagType.Threshholding))
+                if (this.Contains(Tag.Threshholding))
                 {
-                    return (Threshholding)this[TagType.Threshholding].Value;
+                    return (Threshholding)this[Tag.Threshholding].Value;
                 }
                 else
                 {
@@ -960,7 +897,7 @@
             }
             set
             {
-                this.Add(TagType.Threshholding, value);
+                this.Add(Tag.Threshholding, value);
             }
         }
 
@@ -971,9 +908,9 @@
         {
             get
             {
-                if (this.Contains(TagType.XResolution))
+                if (this.Contains(Tag.XResolution))
                 {
-                    return (URational32)this[TagType.XResolution].Value;
+                    return (URational32)this[Tag.XResolution].Value;
                 }
                 else
                 {
@@ -982,7 +919,7 @@
             }
             set
             {
-                this.Add(TagType.XResolution, value);
+                this.Add(Tag.XResolution, value);
             }
         }
 
@@ -993,9 +930,9 @@
         {
             get
             {
-                if (this.Contains(TagType.YResolution))
+                if (this.Contains(Tag.YResolution))
                 {
-                    return (URational32)this[TagType.YResolution].Value;
+                    return (URational32)this[Tag.YResolution].Value;
                 }
                 else
                 {
@@ -1004,7 +941,7 @@
             }
             set
             {
-                this.Add(TagType.YResolution, value);
+                this.Add(Tag.YResolution, value);
             }
         }
 

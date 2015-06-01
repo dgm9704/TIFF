@@ -20,7 +20,7 @@
                 throw new ArgumentNullException("data");
             }
 
-            if (data.Length < startIndex)
+            if (data.Length < startIndex + 8)
             {
                 throw new ArgumentOutOfRangeException("startIndex");
             }
@@ -35,12 +35,12 @@
 
         public static bool operator ==(URational32 value1, URational32 value2)
         {
-            return value1.Equals(value2);
+            return value1.Numerator == value2.Numerator && value1.Denominator == value2.Denominator;
         }
 
         public static bool operator !=(URational32 value1, URational32 value2)
         {
-            return !value1.Equals(value2);
+            return !(value1 == value2);
         }
 
         public override string ToString()

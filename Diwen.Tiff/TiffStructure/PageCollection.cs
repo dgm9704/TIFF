@@ -5,6 +5,7 @@
     using System.Collections.ObjectModel;
     using System.Text;
 
+    [Serializable()]
     public class PageCollection : Collection<Page>
     {
         public PageCollection()

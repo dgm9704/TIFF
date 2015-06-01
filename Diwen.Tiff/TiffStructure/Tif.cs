@@ -15,33 +15,39 @@
 
         internal static ASCIIEncoding Ascii = new ASCIIEncoding();
 
-        private static Dictionary<TiffDataType, ValueBytesMethod> valueByteMethods =
-            new Dictionary<TiffDataType, ValueBytesMethod> 
+        private static Dictionary<FieldType, ValueBytesMethod> valueByteMethods =
+            new Dictionary<FieldType, ValueBytesMethod> 
             { 
-                { TiffDataType.Byte, GetBytes },
-                { TiffDataType.SByte, GetBytes },
-                { TiffDataType.Undefined, GetBytes },
-                { TiffDataType.Ascii, GetAsciiBytes },
-                { TiffDataType.Short, GetShortBytes },
-                { TiffDataType.SShort, GetSShortBytes },
-                { TiffDataType.Long, GetLongBytes },
-                { TiffDataType.SLong, GetSLongBytes },
-                { TiffDataType.Rational, GetRationalBytes },
-                { TiffDataType.SRational, GetSRationalBytes },
-                { TiffDataType.Float, GetFloatBytes },
-                { TiffDataType.Double, GetDoubleBytes },
+                { FieldType.Byte, GetBytes },
+                { FieldType.SByte, GetBytes },
+                { FieldType.Undefined, GetBytes },
+                { FieldType.Ascii, GetAsciiBytes },
+                { FieldType.Short, GetShortBytes },
+                { FieldType.SShort, GetSShortBytes },
+                { FieldType.Long, GetLongBytes },
+                { FieldType.SLong, GetSLongBytes },
+                { FieldType.Rational, GetRationalBytes },
+                { FieldType.SRational, GetSRationalBytes },
+                { FieldType.Float, GetFloatBytes },
+                { FieldType.Double, GetDoubleBytes },
             };
 
         private static ASCIIEncoding ascii = new ASCIIEncoding();
 
-        private static Dictionary<TiffDataType, int> valueLength = new Dictionary<TiffDataType, int> 
+        private static Dictionary<FieldType, int> valueLength = new Dictionary<FieldType, int> 
         { 
-            { TiffDataType.Ascii, 1 }, 
-            { TiffDataType.Byte, 1 }, 
-            { TiffDataType.Long, 4 }, 
-            { TiffDataType.Short, 2 }, 
-            { TiffDataType.Rational, 8 },
-            { TiffDataType.Undefined, 1 },
+            { FieldType.Ascii, 1 }, 
+            { FieldType.Byte, 1 }, 
+            { FieldType.SByte, 1 }, 
+            { FieldType.Undefined, 1 },
+            { FieldType.Short, 2 }, 
+            { FieldType.SShort, 2 }, 
+            { FieldType.Long, 4 }, 
+            { FieldType.SLong, 4 }, 
+            { FieldType.Float, 4 },
+            { FieldType.Rational, 8 },
+            { FieldType.SRational, 8 },
+            {FieldType.Double,8},
         };
 
         /// <summary>
@@ -186,7 +192,7 @@
             stream.Write(buffer, 0, buffer.Length);
         }
 
-        internal static int GetValueLength(TiffDataType type)
+        internal static int GetValueLength(FieldType type)
         {
             int len = 0;
             valueLength.TryGetValue(type, out len);
@@ -198,11 +204,11 @@
             int valueLength;
             foreach (var tag in page)
             {
-                valueLength = tag.Values.Length * GetValueLength(tag.DataType);
+                valueLength = tag.Values.Length * GetValueLength(tag.FieldType);
                 if (valueLength > 4)
                 {
                     tag.ValueOffset = (uint)filelen;
-                    pageData.AddRange(ValueBytes(tag.Values, tag.DataType));
+                    pageData.AddRange(ValueBytes(tag.Values, tag.FieldType));
                     filelen += valueLength;
                 }
                 else
@@ -227,13 +233,13 @@
             return filelen;
         }
 
-        private static uint GenerateValueOffset(Tag offsetTag, Tag byteCountTag, List<byte> offsetData, uint offset, long valueLength)
+        private static uint GenerateValueOffset(Field offsetTag, Field byteCountTag, List<byte> offsetData, uint offset, long valueLength)
         {
             if (valueLength > 4)
             {
-                for (int o = 0; o < offsetTag.ValueCount; o++)
+                for (int o = 0; o < offsetTag.Count; o++)
                 {
-                    if (offsetTag.DataType == TiffDataType.Short)
+                    if (offsetTag.FieldType == FieldType.Short)
                     {
                         offsetData.AddRange(BitConverter.GetBytes((ushort)offset));
                     }
@@ -266,9 +272,9 @@
 
             foreach (var tag in page)
             {
-                fileData.AddRange(BitConverter.GetBytes((ushort)tag.TagType));
-                fileData.AddRange(BitConverter.GetBytes((ushort)tag.DataType));
-                fileData.AddRange(BitConverter.GetBytes((uint)tag.ValueCount));
+                fileData.AddRange(BitConverter.GetBytes((ushort)tag.Tag));
+                fileData.AddRange(BitConverter.GetBytes((ushort)tag.FieldType));
+                fileData.AddRange(BitConverter.GetBytes((uint)tag.Count));
                 fileData.AddRange(BitConverter.GetBytes((uint)tag.ValueOffset));
             }
         }
@@ -288,7 +294,7 @@
             return file;
         }
 
-        private static byte[] ValueBytes(Array values, TiffDataType type)
+        private static byte[] ValueBytes(Array values, FieldType type)
         {
             if (valueByteMethods.ContainsKey(type))
             {
@@ -385,13 +391,13 @@
             page.Sort();
             int ifdlen = 2 + (this[i].Count * 12) + 4;
 
-            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
-            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
+            var offsetTag = page[Tag.StripOffsets] ?? page[Tag.TileOffsets];
+            var countTag = page[Tag.StripByteCounts] ?? page[Tag.TileByteCounts];
 
             var offsetData = new List<byte>();
             uint offset = (uint)filelen;
 
-            long valueLength = offsetTag.ValueCount * GetValueLength(offsetTag.DataType);
+            long valueLength = offsetTag.Count * GetValueLength(offsetTag.FieldType);
             offset = GenerateValueOffset(offsetTag, countTag, offsetData, offset, valueLength);
 
             filelen = GeneratePageData(filelen, pageData, page);
