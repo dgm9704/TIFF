@@ -1,5 +1,4 @@
-﻿
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
     public enum Compression : ushort
     {

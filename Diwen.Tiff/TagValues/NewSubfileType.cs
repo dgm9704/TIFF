@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+
     [Flags()]
     public enum NewSubfileType : uint
     {

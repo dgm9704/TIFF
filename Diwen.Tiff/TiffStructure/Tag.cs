@@ -1,86 +1,107 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using Diwen.Tiff;
-
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
+    using System.Text;
+
     [Serializable()]
     public class Tag
     {
-        public Array Values { get; internal set; }
-        public TagType TagType { get; set; }
-        public TiffDataType DataType { get; set; }
 
-        internal uint ValueCount { get; set; }
-        internal uint ValueOffset { get; set; }
+        #region TagValueReaders
+        private static Dictionary<TiffDataType, TagValueReader> tagValueReaders =
+            new Dictionary<TiffDataType, TagValueReader> 
+            { 
+                { TiffDataType.SByte, ReadSByteValues },
+                { TiffDataType.Ascii, ReadAsciiValues },
+                { TiffDataType.Short, ReadShortValues },
+                { TiffDataType.SShort, ReadSShortValues },
+                { TiffDataType.Long, ReadLongValues },
+                { TiffDataType.SLong, ReadSLongValues },
+                { TiffDataType.Rational, ReadRationalValues },
+                { TiffDataType.SRational, ReadSRationalValues },
+                { TiffDataType.Float, ReadFloatValues },
+                { TiffDataType.Double, ReadDoubleValues },
+            };
 
-        public Tag() { }
+        #endregion
+
+        public Tag()
+        {
+        }
 
         public Tag(TagType tagType, TiffDataType dataType, Array values)
         {
             if (values == null)
+            {
                 throw new ArgumentNullException("values");
+            }
+
             this.TagType = tagType;
             this.DataType = dataType;
             this.Values = values;
             this.ValueCount = (uint)values.Length;
         }
 
-        internal static Tag Read(byte[] data, int startPosition)
+        private delegate Array TagValueReader(int count, byte[] data);
+
+        public Array Values { get; private set; }
+
+        public object Value
         {
-            var tag = new Tag
+            get
             {
-                TagType = (TagType)BitConverter.ToUInt16(data, startPosition),
-                DataType = (TiffDataType)BitConverter.ToUInt16(data, startPosition + 2),
-                ValueCount = BitConverter.ToUInt32(data, startPosition + 4),
-                ValueOffset = BitConverter.ToUInt32(data, startPosition + 8),
-            };
+                if (this.Values == null || this.Values.Length == 0)
+                {
+                    return null;
+                }
 
-            byte[] valuebytes = GetValueBytes(data, tag);
-            tag.Values = ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
-
-            return tag;
+                return this.Values.GetValue(0);
+            }
+            set
+            {
+                if (this.Values == null)
+                {
+                    this.Values = new object[] {value };
+                }
+            }
         }
 
+        public TagType TagType { get; set; }
 
-        internal static Tag ReadMM(byte[] data, int startPosition)
+        public TiffDataType DataType { get; set; }
+
+        internal uint ValueCount { get; set; }
+
+        internal uint ValueOffset { get; set; }
+
+        public static Tag Create(TagType tagType, TiffDataType dataType, int count, byte[] data)
         {
-            var tag = new Tag
+            if (data == null)
             {
-                TagType = (TagType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition)),
-                DataType = (TiffDataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
-                ValueCount = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 4)),
+                throw new ArgumentNullException("data");
+            }
 
-            };
-            if ((int)tag.ValueCount * Tif.ValueLength[tag.DataType] > 4)
-                tag.ValueOffset = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 8));
-            else
-                tag.ValueOffset = (uint)BitConverter.ToInt32(data, startPosition + 8);
+            Array values = null;
 
-            byte[] valuebytes = SwitchEndian(GetValueBytes(data, tag), Tif.ValueLength[tag.DataType]);
-
-            tag.Values = ReadValues(valuebytes, tag.DataType, (int)tag.ValueCount);
-
-            return tag;
-        }
-
-        private static byte[] GetValueBytes(byte[] data, Tag tag)
-        {
-            byte[] valuebytes;
-            int valueLength = (int)tag.ValueCount * Tif.ValueLength[tag.DataType];
-            if (valueLength > 4)
+            if (tagValueReaders.ContainsKey(dataType))
             {
-                valuebytes = new byte[valueLength];
-                Buffer.BlockCopy(data, (int)tag.ValueOffset, valuebytes, 0, valueLength);
+                values = tagValueReaders[dataType](count, data);
             }
             else
             {
-                valuebytes = BitConverter.GetBytes(tag.ValueOffset);
+                values = data;
             }
-            return valuebytes;
+
+            return new Tag
+            {
+                TagType = tagType,
+                DataType = dataType,
+                Values = values,
+                ValueCount = (uint)values.Length,
+            };
         }
 
         public override string ToString()
@@ -88,34 +109,15 @@ namespace Diwen.Tiff
             var sb = new StringBuilder();
             sb.AppendFormat("{0:D}({0})", this.TagType);
             sb.Append("[");
-
             if (this.DataType == TiffDataType.Ascii)
             {
-                sb.Append(Values as char[]);
-                sb.Append("]");
-                return sb.ToString();
+                return this.AppendAsciiValue(sb);
             }
-
-            foreach (var value in this.Values)
-            {
-                string v = value.ToString();
-                Enum temp = EnumeratedTagValue("Tiff.TagValues." + this.TagType, v);
-                if (temp != null)
-                    v = temp.ToString();
-                sb.Append(v);
-                sb.Append(",");
-            }
-            return sb.ToString().Remove(sb.Length - 1) + "]";
-        }
-
-        internal static Enum EnumeratedTagValue(string name, string value)
-        {
-            Type enumType = System.Type.GetType(name);
-
-            if (enumType != null)
-                return (Enum)Enum.Parse(enumType, value);
             else
-                return null;
+            {
+                this.AppendValues(sb);
+                return sb.ToString().Remove(sb.Length - 1) + "]";
+            }
         }
 
         public Tag Copy()
@@ -129,77 +131,146 @@ namespace Diwen.Tiff
             }
         }
 
-        private static Array ReadValues(byte[] data, TiffDataType type, int count)
+        internal static Tag Read(byte[] data, int startPosition)
         {
-            Array values = null;
+            TagType tagType = (TagType)BitConverter.ToUInt16(data, startPosition);
+            TiffDataType dataType = (TiffDataType)BitConverter.ToUInt16(data, startPosition + 2);
+            uint count = BitConverter.ToUInt32(data, startPosition + 4);
+            uint offset = BitConverter.ToUInt32(data, startPosition + 8);
+            byte[] valueBytes = GetValueBytes(data, count, dataType, offset);
+            return Tag.Create(tagType, dataType, (int)count, valueBytes);
+        }
 
-            switch (type)
+        internal static Enum EnumeratedTagValue(string name, string value)
+        {
+            Type enumType = Type.GetType(name);
+
+            if (enumType != null)
             {
-                case TiffDataType.Byte:
-                case TiffDataType.Undefined:
-                    values = data;
-                    break;
-                case TiffDataType.SByte:
-                    values = new sbyte[data.Length];
-                    Buffer.BlockCopy(data, 0, values, 0, count);
-                    break;
-                case TiffDataType.Ascii:
-                    values = Tif.Ascii.GetString(data).ToCharArray();
-                    break;
-                case TiffDataType.Short:
-                    values = new ushort[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
-                    break;
-                case TiffDataType.SShort:
-                    values = new short[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
-                    break;
-                case TiffDataType.Long:
-                    values = new uint[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case TiffDataType.SLong:
-                    values = new int[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case TiffDataType.Rational:
-                    values = new URational32[count];
-                    for (int i = 0; i < count; i++)
-                        values.SetValue(new URational32(data, i * 4), i);
-                    break;
-                case TiffDataType.SRational:
-                    values = new Rational32[count];
-                    for (int i = 0; i < count; i++)
-                        values.SetValue(new Rational32(data, i * 4), i);
-                    break;
-                case TiffDataType.Float:
-                    values = new float[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case TiffDataType.Double:
-                    values = new double[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 8);
-                    break;
-                default:
-                    break;
+                return (Enum)Enum.Parse(enumType, value);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static byte[] GetValueBytes(byte[] data, uint valueCount, TiffDataType dataType, uint offset)
+        {
+            byte[] valuebytes;
+            int valueLength = (int)valueCount * Tif.GetValueLength(dataType);
+            if (valueLength > 4)
+            {
+                valuebytes = new byte[valueLength];
+                Buffer.BlockCopy(data, (int)offset, valuebytes, 0, valueLength);
+            }
+            else
+            {
+                valuebytes = BitConverter.GetBytes(offset);
+            }
+
+            return valuebytes;
+        }
+
+        private static Array ReadDoubleValues(int count, byte[] data)
+        {
+            var values = new double[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 8);
+            return values;
+        }
+
+        private static Array ReadFloatValues(int count, byte[] data)
+        {
+            var values = new float[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static Array ReadSRationalValues(int count, byte[] data)
+        {
+            var values = new Rational32[count];
+            for (int i = 0; i < count; i++)
+            {
+                values.SetValue(new Rational32(data, i * 4), i);
             }
 
             return values;
         }
 
-        private static byte[] SwitchEndian(byte[] data, int typeLength)
+        private static Array ReadRationalValues(int count, byte[] data)
         {
-            byte[] temp = new byte[typeLength];
-            byte[] switched = new byte[data.Length];
-            for (int i = 0; i < data.Length; i += typeLength)
+            var values = new URational32[count];
+            for (int i = 0; i < count; i++)
             {
-                Buffer.BlockCopy(data, i, temp, 0, typeLength);
-                Array.Reverse(temp);
-                Buffer.BlockCopy(temp, 0, switched, i, typeLength);
+                values.SetValue(new URational32(data, i * 4), i);
             }
 
-            return switched;
+            return values;
         }
 
+        private static Array ReadSLongValues(int count, byte[] data)
+        {
+            var values = new int[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static Array ReadLongValues(int count, byte[] data)
+        {
+            var values = new uint[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static Array ReadSShortValues(int count, byte[] data)
+        {
+            var values = new short[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            return values;
+        }
+
+        private static Array ReadShortValues(int count, byte[] data)
+        {
+            var values = new ushort[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            return values;
+        }
+
+        private static Array ReadAsciiValues(int count, byte[] data)
+        {
+            var values = new char[data.Length];
+            Buffer.BlockCopy(data, 0, values, 0, count);
+            return values;
+        }
+
+        private static Array ReadSByteValues(int count, byte[] data)
+        {
+            var values = new sbyte[data.Length];
+            Buffer.BlockCopy(data, 0, values, 0, count);
+            return values;
+        }
+
+        private void AppendValues(StringBuilder sb)
+        {
+            foreach (var value in this.Values)
+            {
+                string v = value.ToString();
+                Enum temp = EnumeratedTagValue("Tiff.TagValues." + this.TagType, v);
+                if (temp != null)
+                {
+                    v = temp.ToString();
+                }
+
+                sb.Append(v);
+                sb.Append(",");
+            }
+        }
+
+        private string AppendAsciiValue(StringBuilder sb)
+        {
+            sb.Append(this.Values as char[]);
+            sb.Append("]");
+            return sb.ToString();
+        }
     }
 }

@@ -1,7 +1,7 @@
-﻿
-using System;
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+
     public enum TagType : ushort
     {
         Unknown = 0,

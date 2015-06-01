@@ -1,44 +1,37 @@
-﻿using System;
-
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+
     [Serializable()]
     public struct Rational32
     {
-        public int Numerator { get; set; }
-        public int Denominator { get; set; }
-
         public Rational32(int numerator, int denominator)
             : this()
         {
-            Numerator = numerator;
-            Denominator = denominator;
+            this.Numerator = numerator;
+            this.Denominator = denominator;
         }
 
         public Rational32(byte[] data, int startIndex)
             : this()
         {
             if (data == null)
+            {
                 throw new ArgumentNullException("data");
-            if (data.Length < startIndex )
+            }
+
+            if (data.Length < startIndex)
+            {
                 throw new ArgumentOutOfRangeException("startIndex");
+            }
 
-            Numerator = BitConverter.ToInt32(data, startIndex);
-            Denominator = BitConverter.ToInt32(data, startIndex + 4);
+            this.Numerator = BitConverter.ToInt32(data, startIndex);
+            this.Denominator = BitConverter.ToInt32(data, startIndex + 4);
         }
 
-        public override string ToString()
-        {
-            return Numerator + "/" + Denominator;
-        }
+        public int Numerator { get; set; }
 
-        public byte[] GetBytes()
-        {
-            var bytes = new byte[8];
-            Array.Copy(BitConverter.GetBytes(this.Numerator), bytes, 4);
-            Array.Copy(BitConverter.GetBytes(this.Denominator), 0, bytes, 4, 4);
-            return bytes;
-        }
+        public int Denominator { get; set; }
 
         public static bool operator ==(Rational32 value1, Rational32 value2)
         {
@@ -50,18 +43,32 @@ namespace Diwen.Tiff
             return !value1.Equals(value2);
         }
 
+        public byte[] GetBytes()
+        {
+            var bytes = new byte[8];
+            Array.Copy(BitConverter.GetBytes(this.Numerator), bytes, 4);
+            Array.Copy(BitConverter.GetBytes(this.Denominator), 0, bytes, 4, 4);
+            return bytes;
+        }
+
+        public override string ToString()
+        {
+            return this.Numerator + "/" + this.Denominator;
+        }
+
         public override int GetHashCode()
         {
-            return Numerator / Denominator;
+            return this.Numerator / this.Denominator;
         }
 
         public override bool Equals(object obj)
         {
             if (!(obj is Rational32))
+            {
                 return false;
+            }
 
             return this == (Rational32)obj;
         }
-
     }
 }

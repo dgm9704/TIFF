@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+
     [Obsolete("NewSubfileType should be used instead.")]
     public enum SubfileType : ushort
     {
