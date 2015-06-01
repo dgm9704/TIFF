@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Text;
 
     public class PageCollection : Collection<Page>
     {
@@ -32,6 +33,21 @@
             {
                 this.Add(page);
             }
+        }
+
+        /// <summary>
+        /// Returns a String with information about the Tif, it's pages and their tags
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var page in this)
+            {
+                sb.Append(page.ToString());
+            }
+
+            return sb.ToString();
         }
     }
 }

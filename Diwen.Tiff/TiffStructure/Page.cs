@@ -6,58 +6,35 @@
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
 
+    /// <summary>
+    /// Represents an IFD (Image File Directory) of TIFF file
+    /// </summary>
     [Serializable()]
-    public class Page
+    public class Page : TagCollection
     {
+        /// <summary>
+        /// Initializes a new instance of the Page class
+        /// </summary>
         public Page()
+            : base()
         {
-            this.Tags = new TagCollection();
         }
 
-        public int Number { get; set; }
-
-        public TagCollection Tags { get; internal set; }
+        //public int Number { get; set; }
 
         internal uint NextPageAddress { get; set; }
 
         internal List<byte[]> ImageData { get; set; }
 
-        public Tag this[TagType tagType]
-        {
-            get
-            {
-                return this.Tags[tagType];
-            }
-
-            set
-            {
-                this.Tags.Insert(0, value);
-            }
-        }
-
-        public void Add(Tag item)
-        {
-            this.Tags.Add(item);
-        }
-
-        public void AddRange(IEnumerable<Tag> items)
-        {
-            if (items != null)
-            {
-                this.Tags.AddRange(items);
-            }
-        }
-
-        public bool HasTag(TagType type)
-        {
-            return this.Tags.Contains(type);
-        }
-
+        /// <summary>
+        /// Returns a string representation of the page
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("-Page {0}: \r\n", this.Number);
-            foreach (var tag in this.Tags)
+            //sb.AppendFormat("-Page {0}: \r\n", this.Number);
+            foreach (var tag in this)
             {
                 sb.AppendLine(tag.ToString());
             }
@@ -65,6 +42,10 @@
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Creates a deep copy of the Page object
+        /// </summary>
+        /// <returns></returns>
         public Page Copy()
         {
             using (MemoryStream stream = new MemoryStream())
@@ -83,14 +64,14 @@
             pos += 2;
             for (int i = 0; i < tagCount; i++)
             {
-                page.Tags.Add(Tag.Read(data, pos));
+                page.Add(Tag.Read(data, pos));
                 pos += 12;
             }
 
             page.NextPageAddress = BitConverter.ToUInt32(data, pos);
 
-            var offsetTag = page.Tags[TagType.StripOffsets] ?? page.Tags[TagType.TileOffsets];
-            var countTag = page.Tags[TagType.StripByteCounts] ?? page.Tags[TagType.TileByteCounts];
+            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
+            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;
@@ -111,22 +92,43 @@
             return stripData;
         }
 
+        /// <summary>
+        /// adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="tiffDataType">data type</param>
+        /// <param name="values">tag values</param>
         public void Add(TagType tagType, TiffDataType tiffDataType, Array values)
         {
             this.Add(new Tag(tagType, tiffDataType, values));
         }
 
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="value">tag data</param>
         public void Add(TagType tagType, ushort value)
         {
             Add(tagType, TiffDataType.Short, new ushort[] { value });
         }
 
-        private void Add(TagType tagType, uint value)
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="value">tag data</param>
+        public void Add(TagType tagType, uint value)
         {
             Add(tagType, TiffDataType.Long, new uint[] { value });
         }
 
-        private void Add(TagType tagType, Enum value)
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="value">tag data</param>
+        public void Add(TagType tagType, Enum value)
         {
             Type underType = Enum.GetUnderlyingType(value.GetType());
 
@@ -143,6 +145,12 @@
             }
         }
 
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="tiffDataType">type of data contained in the tag</param>
+        /// <param name="value">tag data</param>
         public void Add(TagType tagType, TiffDataType tiffDataType, string value)
         {
             if (value == null)
@@ -153,45 +161,66 @@
             this.Add(tagType, tiffDataType, value.ToCharArray());
         }
 
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="value">tag data</param>
         public void Add(TagType tagType, string value)
         {
             this.Add(tagType, TiffDataType.Ascii, value);
         }
 
-        private void Add(TagType tagType, URational32 value)
+        /// <summary>
+        /// Adds a new tag to the page
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="value">tag data</param>
+        public void Add(TagType tagType, URational32 value)
         {
             Add(tagType, TiffDataType.Rational, new URational32[] { value });
         }
 
+        private void SetAsciiTagValue(TagType tag, string value)
+        {
+            this.Add(tag, value ?? string.Empty);
+        }
+
+        private string GetAsciiTagValue(TagType tag)
+        {
+            if (this.Contains(tag))
+            {
+                return string.Join("\n", new string((char[])this[tag].Values).Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries));
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the value of baseline tag Artist
+        /// </summary>
         public string Artist
         {
             get
             {
-                if (this.HasTag(TagType.Artist))
-                {
-                    return new string((char[])this[TagType.Artist].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.Artist);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.Artist, value);
+                SetAsciiTagValue(TagType.Artist, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the first component of tag PageNumber
+        /// </summary>
         public ushort PageNumber
         {
             get
             {
-                if (this.HasTag(TagType.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
                     return (ushort)this[TagType.PageNumber].Value;
                 }
@@ -202,7 +231,7 @@
             }
             set
             {
-                if (this.HasTag(TagType.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
                     this[TagType.PageNumber].Values.SetValue(value, 0);
                 }
@@ -213,11 +242,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the second component of tag PageNumber
+        /// </summary>
         public ushort PageTotal
         {
             get
             {
-                if (this.HasTag(TagType.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
                     return (ushort)this[TagType.PageNumber].Values.GetValue(1);
                 }
@@ -228,7 +260,7 @@
             }
             set
             {
-                if (this.HasTag(TagType.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
                     this[TagType.PageNumber].Values.SetValue(value, 1);
                 }
@@ -239,11 +271,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag BitsPerSample
+        /// </summary>
         public ushort BitsPerSample
         {
             get
             {
-                if (this.HasTag(TagType.BitsPerSample))
+                if (this.Contains(TagType.BitsPerSample))
                 {
                     return (ushort)this[TagType.BitsPerSample].Value;
                 }
@@ -258,11 +293,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag CellLength
+        /// </summary>
         public ushort CellLength
         {
             get
             {
-                if (this.HasTag(TagType.CellLength))
+                if (this.Contains(TagType.CellLength))
                 {
                     return (ushort)this[TagType.CellLength].Value;
                 }
@@ -277,11 +315,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag CellWidth
+        /// </summary>
         public ushort CellWidth
         {
             get
             {
-                if (this.HasTag(TagType.CellWidth))
+                if (this.Contains(TagType.CellWidth))
                 {
                     return (ushort)this[TagType.CellWidth].Value;
                 }
@@ -296,11 +337,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag ColorMap
+        /// </summary>
         public ushort[] ColorMap
         {
             get
             {
-                if (this.HasTag(TagType.ColorMap))
+                if (this.Contains(TagType.ColorMap))
                 {
                     return (ushort[])this[TagType.ColorMap].Values;
                 }
@@ -315,11 +359,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Compression
+        /// </summary>
         public Compression Compression
         {
             get
             {
-                if (this.HasTag(TagType.Compression))
+                if (this.Contains(TagType.Compression))
                 {
                     return (Compression)this[TagType.Compression].Value;
                 }
@@ -334,59 +381,44 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Copyright
+        /// </summary>
         public string Copyright
         {
             get
             {
-                if (this.HasTag(TagType.Copyright))
-                {
-                    return new string((char[])this[TagType.Copyright].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.Copyright);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.Copyright, value);
+                SetAsciiTagValue(TagType.Copyright, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag DateTime
+        /// </summary>
         public string DateTime
         {
             get
             {
-                if (this.HasTag(TagType.DateTime))
-                {
-                    return new string((char[])this[TagType.DateTime].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.DateTime);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.DateTime, value);
+                SetAsciiTagValue(TagType.DateTime, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag ExtraSamples
+        /// </summary>
         public ExtraSampleType[] ExtraSamples
         {
             get
             {
-                if (this.HasTag(TagType.ExtraSamples))
+                if (this.Contains(TagType.ExtraSamples))
                 {
                     return (ExtraSampleType[])this[TagType.ExtraSamples].Values;
                 }
@@ -406,11 +438,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag FillOrder
+        /// </summary>
         public FillOrder FillOrder
         {
             get
             {
-                if (this.HasTag(TagType.FillOrder))
+                if (this.Contains(TagType.FillOrder))
                 {
                     return (FillOrder)this[TagType.ExtraSamples].Value;
                 }
@@ -425,11 +460,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag FreeByteCounts
+        /// </summary>
         public uint FreeByteCounts
         {
             get
             {
-                if (this.HasTag(TagType.FreeByteCounts))
+                if (this.Contains(TagType.FreeByteCounts))
                 {
                     return (uint)this[TagType.FreeByteCounts].Value;
                 }
@@ -444,11 +482,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag FreeOffsets
+        /// </summary>
         public uint FreeOffsets
         {
             get
             {
-                if (this.HasTag(TagType.FreeOffsets))
+                if (this.Contains(TagType.FreeOffsets))
                 {
                     return (uint)this[TagType.FreeOffsets].Value;
                 }
@@ -463,11 +504,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag GrayResponseCurve
+        /// </summary>
         public ushort[] GrayResponseCurve
         {
             get
             {
-                if (this.HasTag(TagType.GrayResponseCurve))
+                if (this.Contains(TagType.GrayResponseCurve))
                 {
                     return (ushort[])this[TagType.GrayResponseCurve].Values;
                 }
@@ -482,11 +526,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag GrayResponseUnit
+        /// </summary>
         public GrayResponseUnit GrayResponseUnit
         {
             get
             {
-                if (this.HasTag(TagType.GrayResponseUnit))
+                if (this.Contains(TagType.GrayResponseUnit))
                 {
                     return (GrayResponseUnit)this[TagType.GrayResponseUnit].Value;
                 }
@@ -501,59 +548,44 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag HostComputer
+        /// </summary>
         public string HostComputer
         {
             get
             {
-                if (this.HasTag(TagType.HostComputer))
-                {
-                    return new string((char[])this[TagType.HostComputer].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.HostComputer);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.HostComputer, value);
+                SetAsciiTagValue(TagType.HostComputer, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag ImageDescription
+        /// </summary>
         public string ImageDescription
         {
             get
             {
-                if (this.HasTag(TagType.ImageDescription))
-                {
-                    return new string((char[])this[TagType.ImageDescription].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.ImageDescription);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.ImageDescription, value);
+                SetAsciiTagValue(TagType.ImageDescription, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag ImageLebgth
+        /// </summary>
         public uint ImageLength
         {
             get
             {
-                if (this.HasTag(TagType.ImageLength))
+                if (this.Contains(TagType.ImageLength))
                 {
                     return (uint)this[TagType.ImageLength].Value;
                 }
@@ -568,11 +600,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag ImageWidth
+        /// </summary>
         public uint ImageWidth
         {
             get
             {
-                if (this.HasTag(TagType.ImageWidth))
+                if (this.Contains(TagType.ImageWidth))
                 {
                     return (uint)this[TagType.ImageWidth].Value;
                 }
@@ -587,35 +622,29 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Make
+        /// </summary>
         public string Make
         {
             get
             {
-                if (this.HasTag(TagType.Make))
-                {
-                    return new string((char[])this[TagType.Make].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.Make);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.Make, value);
+                SetAsciiTagValue(TagType.Make, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag MaxSampleValue
+        /// </summary>
         public ushort MaxSampleValue
         {
             get
             {
-                if (this.HasTag(TagType.MaxSampleValue))
+                if (this.Contains(TagType.MaxSampleValue))
                 {
                     return (ushort)this[TagType.MaxSampleValue].Value;
                 }
@@ -630,11 +659,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag MinSampleValue
+        /// </summary>
         public ushort MinSampleValue
         {
             get
             {
-                if (this.HasTag(TagType.MinSampleValue))
+                if (this.Contains(TagType.MinSampleValue))
                 {
                     return (ushort)this[TagType.MinSampleValue].Value;
                 }
@@ -649,35 +681,29 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Model
+        /// </summary>
         public string Model
         {
             get
             {
-                if (this.HasTag(TagType.Model))
-                {
-                    return new string((char[])this[TagType.Model].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.Model);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.Model, value);
+                SetAsciiTagValue(TagType.Model, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag NewSubfileType
+        /// </summary>
         public NewSubfileType NewSubfileType
         {
             get
             {
-                if (this.HasTag(TagType.NewSubfileType))
+                if (this.Contains(TagType.NewSubfileType))
                 {
                     return (NewSubfileType)this[TagType.NewSubfileType].Value;
                 }
@@ -692,11 +718,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Orientation
+        /// </summary>
         public Orientation Orientation
         {
             get
             {
-                if (this.HasTag(TagType.Orientation))
+                if (this.Contains(TagType.Orientation))
                 {
                     return (Orientation)this[TagType.Orientation].Value;
                 }
@@ -711,11 +740,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag PhotometricInterpretation
+        /// </summary>
         public PhotometricInterpretation PhotometricInterpretation
         {
             get
             {
-                if (this.HasTag(TagType.PhotometricInterpretation))
+                if (this.Contains(TagType.PhotometricInterpretation))
                 {
                     return (PhotometricInterpretation)this[TagType.PhotometricInterpretation].Value;
                 }
@@ -730,11 +762,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag PlanarConfiguration
+        /// </summary>
         public PlanarConfiguration PlanarConfiguration
         {
             get
             {
-                if (this.HasTag(TagType.PlanarConfiguration))
+                if (this.Contains(TagType.PlanarConfiguration))
                 {
                     return (PlanarConfiguration)this[TagType.PlanarConfiguration].Value;
                 }
@@ -749,11 +784,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag ResolutionUnit
+        /// </summary>
         public ResolutionUnit ResolutionUnit
         {
             get
             {
-                if (this.HasTag(TagType.ResolutionUnit))
+                if (this.Contains(TagType.ResolutionUnit))
                 {
                     return (ResolutionUnit)this[TagType.ResolutionUnit].Value;
                 }
@@ -768,11 +806,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag RowsPerStrip
+        /// </summary>
         public uint RowsPerStrip
         {
             get
             {
-                if (this.HasTag(TagType.RowsPerStrip))
+                if (this.Contains(TagType.RowsPerStrip))
                 {
                     return (uint)this[TagType.RowsPerStrip].Value;
                 }
@@ -787,6 +828,9 @@
             }
         }
 
+        /// <summary>
+        /// Gets the number of strips per image calculated from ImageLength and RowsPerStrip
+        /// </summary>
         public uint StripsPerImage
         {
             get
@@ -795,11 +839,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag SamplesPerPixel
+        /// </summary>
         public ushort SamplesPerPixel
         {
             get
             {
-                if (this.HasTag(TagType.SamplesPerPixel))
+                if (this.Contains(TagType.SamplesPerPixel))
                 {
                     return (ushort)this[TagType.SamplesPerPixel].Value;
                 }
@@ -814,35 +861,29 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value of baseline tag Software
+        /// </summary>
         public string Software
         {
             get
             {
-                if (this.HasTag(TagType.Software))
-                {
-                    return new string((char[])this[TagType.Software].Values);
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                return GetAsciiTagValue(TagType.Software);
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
-                this.Add(TagType.Software, value);
+                SetAsciiTagValue(TagType.Software, value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag StripByteCounts
+        /// </summary>
         public uint[] StripByteCounts
         {
             get
             {
-                if (this.HasTag(TagType.StripByteCounts))
+                if (this.Contains(TagType.StripByteCounts))
                 {
                     return (uint[])this[TagType.StripByteCounts].Values;
                 }
@@ -857,11 +898,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag StripOffsets
+        /// </summary>
         public uint[] StripOffsets
         {
             get
             {
-                if (this.HasTag(TagType.StripOffsets))
+                if (this.Contains(TagType.StripOffsets))
                 {
                     return (uint[])this[TagType.StripOffsets].Values;
                 }
@@ -876,30 +920,36 @@
             }
         }
 
-        public SubfileType SubfileType
-        {
-            get
-            {
-                if (this.HasTag(TagType.SubfileType))
-                {
-                    return (SubfileType)this[TagType.SubfileType].Value;
-                }
-                else
-                {
-                    return default(SubfileType);
-                }
-            }
-            set
-            {
-                this.Add(TagType.SubfileType, value);
-            }
-        }
+        ///// <summary>
+        ///// Gets or sets the values of baseline tag SubfileType
+        ///// </summary>
+        //public SubfileType SubfileType
+        //{
+        //    get
+        //    {
+        //        if (this.Contains(TagType.SubfileType))
+        //        {
+        //            return (SubfileType)this[TagType.SubfileType].Value;
+        //        }
+        //        else
+        //        {
+        //            return default(SubfileType);
+        //        }
+        //    }
+        //    set
+        //    {
+        //        this.Add(TagType.SubfileType, value);
+        //    }
+        //}
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag Threshholding
+        /// </summary>
         public Threshholding Threshholding
         {
             get
             {
-                if (this.HasTag(TagType.Threshholding))
+                if (this.Contains(TagType.Threshholding))
                 {
                     return (Threshholding)this[TagType.Threshholding].Value;
                 }
@@ -914,11 +964,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag XResolution
+        /// </summary>
         public URational32 XResolution
         {
             get
             {
-                if (this.HasTag(TagType.XResolution))
+                if (this.Contains(TagType.XResolution))
                 {
                     return (URational32)this[TagType.XResolution].Value;
                 }
@@ -933,11 +986,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the values of baseline tag YResolution
+        /// </summary>
         public URational32 YResolution
         {
             get
             {
-                if (this.HasTag(TagType.YResolution))
+                if (this.Contains(TagType.YResolution))
                 {
                     return (URational32)this[TagType.YResolution].Value;
                 }

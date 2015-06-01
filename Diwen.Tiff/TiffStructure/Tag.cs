@@ -6,6 +6,9 @@
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
 
+    /// <summary>
+    /// Represents a TIFF Field ie. an IFD Entry ie. a Tag
+    /// </summary>
     [Serializable()]
     public class Tag
     {
@@ -28,10 +31,19 @@
 
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the Tag class
+        /// </summary>
         public Tag()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the Tag class with the given properties
+        /// </summary>
+        /// <param name="tagType">tag type</param>
+        /// <param name="dataType">data type</param>
+        /// <param name="values">values</param>
         public Tag(TagType tagType, TiffDataType dataType, Array values)
         {
             if (values == null)
@@ -47,8 +59,15 @@
 
         private delegate Array TagValueReader(int count, byte[] data);
 
+        /// <summary>
+        /// Returns the values of the Tag object
+        /// </summary>
         public Array Values { get; private set; }
 
+        /// <summary>
+        /// Return the value of the Tag object
+        /// If the tag has more than one value, then the first value is returned.
+        /// </summary>
         public object Value
         {
             get
@@ -64,20 +83,26 @@
             {
                 if (this.Values == null)
                 {
-                    this.Values = new object[] {value };
+                    this.Values = new object[] { value };
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the tag type of the tag
+        /// </summary>
         public TagType TagType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the data type of the tag
+        /// </summary>
         public TiffDataType DataType { get; set; }
 
         internal uint ValueCount { get; set; }
 
         internal uint ValueOffset { get; set; }
 
-        public static Tag Create(TagType tagType, TiffDataType dataType, int count, byte[] data)
+        private static Tag Create(TagType tagType, TiffDataType dataType, int count, byte[] data)
         {
             if (data == null)
             {
@@ -104,6 +129,10 @@
             };
         }
 
+        /// <summary>
+        /// Returns a string representation of the tag
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -120,6 +149,10 @@
             }
         }
 
+        /// <summary>
+        /// Returns a deep copy of this Tag instance
+        /// </summary>
+        /// <returns></returns>
         public Tag Copy()
         {
             using (MemoryStream stream = new MemoryStream())
@@ -238,8 +271,7 @@
 
         private static Array ReadAsciiValues(int count, byte[] data)
         {
-            var values = new char[data.Length];
-            Buffer.BlockCopy(data, 0, values, 0, count);
+            var values = Tif.Ascii.GetString(data).ToCharArray();
             return values;
         }
 

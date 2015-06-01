@@ -10,8 +10,11 @@
     /// Represents a TIF file
     /// </summary>
     [Serializable()]
-    public class Tif //: PageCollection
+    public class Tif : PageCollection
     {
+
+        internal static ASCIIEncoding Ascii = new ASCIIEncoding();
+
         private static Dictionary<TiffDataType, ValueBytesMethod> valueByteMethods =
             new Dictionary<TiffDataType, ValueBytesMethod> 
             { 
@@ -45,16 +48,17 @@
         /// Creates a new instance of the Tif class
         /// </summary>
         public Tif()
+            : base()
         {
-            this.Pages = new PageCollection();
+
         }
 
         private delegate byte[] ValueBytesMethod(Array values);
 
-        /// <summary>
-        /// Gets the collection of pages contained within the file
-        /// </summary>
-        public PageCollection Pages { get; internal set; }
+        ///// <summary>
+        ///// Gets the collection of pages contained within the file
+        ///// </summary>
+        //public PageCollection Pages { get; internal set; }
 
         ///// <summary>
         ///// Gets or sets the page at the specified position in the file
@@ -132,13 +136,17 @@
             File.WriteAllBytes(path, this.GetData());
         }
 
+        /// <summary>
+        /// Returns the contents of the Tif as a byte array
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetData()
         {
             var pageDatas = new List<List<byte>>();
             var fileData = new List<byte>();
             int filelen = 8;
 
-            for (int i = 0; i < this.Pages.Count; i++)
+            for (int i = 0; i < this.Count; i++)
             {
                 filelen = GeneratePageData(pageDatas, filelen, i);
             }
@@ -163,6 +171,10 @@
             }
         }
 
+        /// <summary>
+        /// Saves the Tif to a stream
+        /// </summary>
+        /// <param name="stream">An open Stream object</param>
         public void Save(Stream stream)
         {
             if (stream == null)
@@ -172,21 +184,6 @@
 
             byte[] buffer = this.GetData();
             stream.Write(buffer, 0, buffer.Length);
-        }
-
-        /// <summary>
-        /// Returns a String with information about the Tif, it's pages and their tags
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            foreach (var page in this.Pages)
-            {
-                sb.Append(page.ToString());
-            }
-
-            return sb.ToString();
         }
 
         internal static int GetValueLength(TiffDataType type)
@@ -199,7 +196,7 @@
         private static int GenerateTagData(int filelen, List<byte> pageData, Page page)
         {
             int valueLength;
-            foreach (var tag in page.Tags)
+            foreach (var tag in page)
             {
                 valueLength = tag.Values.Length * GetValueLength(tag.DataType);
                 if (valueLength > 4)
@@ -265,9 +262,9 @@
 
         private static void WriteIfd(List<byte> fileData, Page page)
         {
-            fileData.AddRange(BitConverter.GetBytes((ushort)page.Tags.Count));
+            fileData.AddRange(BitConverter.GetBytes((ushort)page.Count));
 
-            foreach (var tag in page.Tags)
+            foreach (var tag in page)
             {
                 fileData.AddRange(BitConverter.GetBytes((ushort)tag.TagType));
                 fileData.AddRange(BitConverter.GetBytes((ushort)tag.DataType));
@@ -283,8 +280,8 @@
             do
             {
                 page = Page.Read(data, pos);
-                page.Number = file.Pages.Count + 1;
-                file.Pages.Add(page);
+                //page.Number = file.Count + 1;
+                file.Add(page);
                 pos = (int)page.NextPageAddress;
             }
             while (pos != 0);
@@ -384,12 +381,12 @@
         private int GeneratePageData(List<List<byte>> pageDatas, int filelen, int i)
         {
             var pageData = new List<byte>();
-            var page = this.Pages[i];
-            page.Tags.Sort();
-            int ifdlen = 2 + (this.Pages[i].Tags.Count * 12) + 4;
+            var page = this[i];
+            page.Sort();
+            int ifdlen = 2 + (this[i].Count * 12) + 4;
 
-            var offsetTag = page.Tags[TagType.StripOffsets] ?? page.Tags[TagType.TileOffsets];
-            var countTag = page.Tags[TagType.StripByteCounts] ?? page.Tags[TagType.TileByteCounts];
+            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
+            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
 
             var offsetData = new List<byte>();
             uint offset = (uint)filelen;
@@ -408,13 +405,13 @@
 
         private void WritePageDatas(List<List<byte>> pageDatas, List<byte> fileData)
         {
-            for (int i = 0; i < this.Pages.Count; i++)
+            for (int i = 0; i < this.Count; i++)
             {
                 var pd = pageDatas[i];
                 fileData.AddRange(pd);
-                WriteIfd(fileData, this.Pages[i]);
+                WriteIfd(fileData, this[i]);
 
-                if (i < this.Pages.Count - 1)
+                if (i < this.Count - 1)
                 {
                     fileData.AddRange(BitConverter.GetBytes((uint)(fileData.Count + pageDatas[i + 1].Count + 4)));
                 }
