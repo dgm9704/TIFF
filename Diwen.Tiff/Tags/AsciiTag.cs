@@ -1,18 +1,17 @@
 ﻿namespace Diwen.Tiff.Tags
 {
     using System;
-    using Diwen.Tiff.TagValues;
 
     [Serializable()]
     public class AsciiTag : TiffTag
     {
-        public AsciiTag(TagType type)
+        public AsciiTag(Tag type)
         {
             this.DataType = TiffDataType.Ascii;
-            this.TagType = type;
+            this.Tag = type;
         }
 
-        public AsciiTag(TagType type, string value)
+        public AsciiTag(Tag type, string value)
             : this(type)
         {
             this.Values = (value + '\0').ToCharArray();

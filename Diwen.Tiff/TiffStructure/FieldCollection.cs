@@ -14,7 +14,7 @@
         { 
         }
 
-        //public Tag this[TagType tag]
+        //public Tag this[Tag tag]
         //{
         //    get
         //    {

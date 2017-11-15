@@ -9,17 +9,17 @@
     /// Represents a collection of tags
     /// </summary>
     [Serializable()]
-    public class TagCollection : KeyedCollection<TagType, TiffTag>
+    public class TagCollection : KeyedCollection<Tag, TiffTag>
     {
         internal TagCollection() : base(null, 0) 
         { 
         }
 
-        //public Tag this[TagType tagType]
+        //public Tag this[Tag Tag]
         //{
         //    get
         //    {
-        //        return base[tagType];
+        //        return base[Tag];
         //    }
 
         //    set
@@ -39,7 +39,7 @@
                 throw new ArgumentNullException("item");
             }
 
-            this.Remove(item.TagType);
+            this.Remove(item.Tag);
             base.Add(item);
         }
 
@@ -65,7 +65,7 @@
         /// </summary>
         public void Sort()
         {
-            ((List<TiffTag>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
+            ((List<TiffTag>)Items).Sort((t1, t2) => { return t1.Tag.CompareTo(t2.Tag); });
         }
 
         /// <summary>
@@ -73,14 +73,14 @@
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected override TagType GetKeyForItem(TiffTag item)
+        protected override Tag GetKeyForItem(TiffTag item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
 
-            return item.TagType;
+            return item.Tag;
         }
     }
 }

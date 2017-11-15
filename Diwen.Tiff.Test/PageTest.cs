@@ -141,56 +141,56 @@
         public void AddTest2()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             uint value = 0;
-            target.Add(tagType, value);
+            target.Add(Tag, value);
         }
 
         [Fact]
         public void AddTest3()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             FieldType type = new FieldType();
             string value = string.Empty;
-            target.Add(tagType, type, value);
+            target.Add(Tag, type, value);
         }
 
         [Fact]
         public void AddTest3withnull()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             FieldType type = new FieldType();
             string value = null;
-            target.Add(tagType, type, value);
+            target.Add(Tag, type, value);
         }
 
         [Fact]
         public void AddTest4()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             URational32 value = new URational32();
-            target.Add(tagType, value);
+            target.Add(Tag, value);
         }
 
         [Fact]
         public void AddTest5()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             string value = string.Empty;
-            target.Add(tagType, value);
+            target.Add(Tag, value);
         }
 
         [Fact]
         public void AddTest6()
         {
             Page target = new Page();
-            Tag tagType = new Tag();
+            Tag Tag = new Tag();
             ushort value = 0;
-            target.Add(tagType, value);
+            target.Add(Tag, value);
         }
 
         [Fact]

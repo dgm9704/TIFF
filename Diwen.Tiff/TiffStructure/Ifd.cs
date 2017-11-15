@@ -4,9 +4,6 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
-    /// <summary>
-    /// Represents an image tif directory
-    /// </summary>
     [Serializable]
     public class Ifd : KeyedCollection<Tag, Field>
     {
@@ -92,7 +89,6 @@
             if (data == null || stripOffsetTag == null || stripByteCountTag == null || stripByteCountTag.Count != stripOffsetTag.Count)
             {
                 return new List<byte[]>();
-                ;
             }
 
             var stripData = new List<byte[]>();
@@ -105,7 +101,6 @@
                 if (data.Length < pos + count)
                 {
                     return new List<byte[]>();
-                    ;
                 }
 
                 var strip = new byte[count];
@@ -119,10 +114,6 @@
 
         public uint NextIfdAddress { get; set; }
 
-        /// <summary>
-        /// Adds a new tag to the collection
-        /// </summary>
-        /// <param name="item"></param>
         public new void Add(Field item)
         {
             if (item == null)
@@ -134,10 +125,6 @@
             base.Add(item);
         }
 
-        /// <summary>
-        /// Adds a range of tags to collection
-        /// </summary>
-        /// <param name="items"></param>
         public void AddRange(IEnumerable<Field> items)
         {
             if (items == null)
@@ -151,9 +138,6 @@
             }
         }
 
-        /// <summary>
-        /// Sorts the fields in the collection
-        /// </summary>
         public void Sort()
         {
             ((List<Field>)Items).Sort((t1, t2) =>
@@ -162,11 +146,6 @@
                 });
         }
 
-        /// <summary>
-        /// Returns the key of an item
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
         protected override Tag GetKeyForItem(Field item)
         {
             if (item == null)

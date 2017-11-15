@@ -8,26 +8,16 @@
     using Diwen.Tiff.FieldValues;
     using System.Net;
 
-    /// <summary>
-    /// Represents an Ifd (Image File Directory) of TIFF tif
-    /// </summary>
     [Serializable]
     public class Page : Ifd
     {
-        /// <summary>
-        /// Initializes a new instance of the Page class
-        /// </summary>
         public Page()
             : base()
         {
         }
 
-        internal List<byte[]> ImageData { get; set; }
+        public List<byte[]> ImageData { get; set; }
 
-        /// <summary>
-        /// Returns a string representation of the page
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -39,20 +29,11 @@
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Set the value of an Ascii tag for the page. If the field doues not exist, it is created.
-        /// </summary>
-        /// <param name="tag">tag to set value for</param>
-        /// <param name="value">tag value</param>
         public void SetAsciiFieldValue(Tag tag, string value)
         {
             this.Add(tag, value ?? string.Empty);
         }
 
-        /// <summary>
-        /// Get the value of an Ascii tag for the page. If the field doues not exist, it is created.
-        /// </summary>
-        /// <param name="tag">tag to set value for</param>
         public string GetAsciiFieldValue(Tag tag)
         {
             if (this.Contains(tag))
@@ -65,20 +46,16 @@
             }
         }
 
-        /// <summary>
-        /// adds a new tag to the page
-        /// </summary>
-        /// <param name="tag">tag type</param>
-        /// <param name="type">data type</param>
-        /// <param name="values">tag values</param>
         public void Add(Tag tag, FieldType type, Array values)
         {
             this.Add(new Field(tag, type, values));
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Artist
-        /// </summary>
+        public void Add(TiffTag tag)
+        {
+            this.Add(new Field(tag.Tag, (FieldType)tag.DataType, tag.Values));
+        }
+
         public string Artist
         {
             get
@@ -91,9 +68,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the first component of tag PageNumber
-        /// </summary>
         public ushort PageNumber
         {
             get
@@ -120,9 +94,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the second component of tag PageNumber
-        /// </summary>
         public ushort PageTotal
         {
             get
@@ -149,9 +120,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag BitsPerSample
-        /// </summary>
         public ushort BitsPerSample
         {
             get
@@ -171,9 +139,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag CellLength
-        /// </summary>
         public ushort CellLength
         {
             get
@@ -193,9 +158,6 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag CellWidth
-        /// </summary>
         public ushort CellWidth
         {
             get

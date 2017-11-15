@@ -11,7 +11,7 @@ namespace Diwen.Tiff
     public class TiffTag : IComparable<TiffTag>
     {
         public Array Values { get; internal set; }
-        public TagType TagType { get; set; }
+        public Tag Tag { get; set; }
         public TiffDataType DataType { get; set; }
 
         internal uint ValueCount { get; set; }
@@ -19,9 +19,9 @@ namespace Diwen.Tiff
 
         public TiffTag() { }
 
-        public TiffTag(TagType tagType, TiffDataType dataType, Array values)
+        public TiffTag(Tag Tag, TiffDataType dataType, Array values)
         {
-            this.TagType = tagType;
+            this.Tag = Tag;
             this.DataType = dataType;
             this.Values = values;
         }
@@ -30,7 +30,7 @@ namespace Diwen.Tiff
         {
             var tag = new TiffTag
             {
-                TagType = (TagType)BitConverter.ToUInt16(data, startPosition),
+                Tag = (Tag)BitConverter.ToUInt16(data, startPosition),
                 DataType = (TiffDataType)BitConverter.ToUInt16(data, startPosition + 2),
                 ValueCount = BitConverter.ToUInt32(data, startPosition + 4),
                 ValueOffset = BitConverter.ToUInt32(data, startPosition + 8),
@@ -47,7 +47,7 @@ namespace Diwen.Tiff
         {
             var tag = new TiffTag
             {
-                TagType = (TagType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition)),
+                Tag = (Tag)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition)),
                 DataType = (TiffDataType)(ushort)IPAddress.NetworkToHostOrder((short)BitConverter.ToUInt16(data, startPosition + 2)),
                 ValueCount = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 4)),
 
@@ -83,7 +83,7 @@ namespace Diwen.Tiff
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0:D}({0})", this.TagType);
+            sb.AppendFormat("{0:D}({0})", this.Tag);
             sb.Append("[");
 
             if (this.DataType == TiffDataType.Ascii)
@@ -96,7 +96,7 @@ namespace Diwen.Tiff
             foreach (var value in this.Values)
             {
                 string v = value.ToString();
-                Enum temp = EnumeratedTagValue("Tiff.TagValues." + this.TagType, v);
+                Enum temp = EnumeratedTagValue("Tiff.TagValues." + this.Tag, v);
                 if (temp != null)
                     v = temp.ToString();
                 sb.Append(v);
@@ -130,10 +130,10 @@ namespace Diwen.Tiff
 
         public int CompareTo(TiffTag other)
         {
-            if (this.TagType < other.TagType)
+            if (this.Tag < other.Tag)
                 return -1;
 
-            if (this.TagType > other.TagType)
+            if (this.Tag > other.Tag)
                 return 1;
 
             return 0;
@@ -150,7 +150,7 @@ namespace Diwen.Tiff
 
         public override int GetHashCode()
         {
-            return (int)this.TagType;
+            return (int)this.Tag;
         }
 
         public static bool operator ==(TiffTag tag1, TiffTag tag2)

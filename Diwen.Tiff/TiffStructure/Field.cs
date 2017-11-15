@@ -6,9 +6,6 @@
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
 
-    /// <summary>
-    /// Represents a TIFF Field ie. an Ifd Entry ie. a Tag
-    /// </summary>
     [Serializable]
     public class Field
     {

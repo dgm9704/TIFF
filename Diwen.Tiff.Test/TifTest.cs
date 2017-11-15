@@ -197,7 +197,7 @@
         //        Page page = oldFile.Pages[0];
         //        page.Add(swTag);
         //        Tag pageNumber = new PageNumberTag((ushort)i, (ushort)files.Length);
-        //        Tag artist = new AsciiTag(TagType.Artist, "John Nordberg");
+        //        Tag artist = new AsciiTag(Tag.Artist, "John Nordberg");
         //        var subfile = new SubfileTypeTag(SubfileType.Page);
         //        var tags = new Tag[] { pageNumber, artist, new DateTimeTag(), subfile };
         //        page.AddRange(tags);

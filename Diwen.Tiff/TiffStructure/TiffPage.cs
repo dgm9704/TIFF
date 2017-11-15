@@ -10,7 +10,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Diwen.Tiff
 {
     [Serializable()]
-    public class TiffPage : KeyedCollection<TagType, TiffTag>
+    public class TiffPage : KeyedCollection<Tag, TiffTag>
     {
         public int Number { get; set; }
         internal uint NextPageAddress { get; set; }
@@ -18,9 +18,9 @@ namespace Diwen.Tiff
 
         private TiffPage() : base() { }
 
-        protected override TagType GetKeyForItem(TiffTag item)
+        protected override Tag GetKeyForItem(TiffTag item)
         {
-            return item.TagType;
+            return item.Tag;
         }
 
         internal static TiffPage Read(byte[] data, int pos)
@@ -35,8 +35,8 @@ namespace Diwen.Tiff
             }
             page.NextPageAddress = BitConverter.ToUInt32(data, pos);
 
-            var offsetTag = page.Find(t => t.TagType == TagType.StripOffsets || t.TagType == TagType.TileOffsets);
-            var countTag = page.Find(t => t.TagType == TagType.StripByteCounts || t.TagType == TagType.TileByteCounts);
+            var offsetTag = page.Find(t => t.Tag == Tag.StripOffsets || t.Tag == Tag.TileOffsets);
+            var countTag = page.Find(t => t.Tag == Tag.StripByteCounts || t.Tag == Tag.TileByteCounts);
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;
@@ -55,8 +55,8 @@ namespace Diwen.Tiff
             }
             page.NextPageAddress = (uint)IPAddress.NetworkToHostOrder((int)BitConverter.ToUInt32(data, pos));
 
-            var offsetTag = page.Find(t => t.TagType == TagType.StripOffsets || t.TagType == TagType.TileOffsets);
-            var countTag = page.Find(t => t.TagType == TagType.StripByteCounts || t.TagType == TagType.TileByteCounts);
+            var offsetTag = page.Find(t => t.Tag == Tag.StripOffsets || t.Tag == Tag.TileOffsets);
+            var countTag = page.Find(t => t.Tag == Tag.StripByteCounts || t.Tag == Tag.TileByteCounts);
             page.ImageData = GetImageData(data, offsetTag, countTag);
 
             return page;

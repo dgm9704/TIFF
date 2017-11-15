@@ -2,7 +2,8 @@
 {
     using System;
 
-    public enum TagType : ushort
+    [Obsolete]
+    public enum Tag : ushort
     {
         Unknown = 0,
         NewSubfileType = 254,

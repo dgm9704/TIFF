@@ -15,16 +15,16 @@
         [Fact]
         public void CopyAndModifyPages()
         {
-            var newTif = new Tif();
-            var tif = Tif.Load(@"C:\lena_kodak.tif");
-            newTif.Pages.Add(tif.Pages[0]);
-            newTif.Pages.Add(tif.Pages[0]);
+            var newTif = new TiffFile();
+            var tif = TiffFile.Load(@"C:\lena_kodak.tif");
+            newTif.Add(tif[0]);
+            newTif.Add(tif[0]);
 
             var values = new ushort[] { 0, 2 };
-            var tag = new Tag(TagType.PageNumber, DataType.Short, values);
-            newTif.Pages[0].Tags.Add(tag);
-            tag = new TiffTag(TagType.PageNumber, DataType.Short, new ushort[] { 1, 2 });
-            newTif.Pages[1].Tags.Add(tag);
+            var tag = new TiffTag(Tag.PageNumber, DataType.Short, values);
+            newTif[0].Add(tag);
+            tag = new TiffTag(Tag.PageNumber, DataType.Short, new ushort[] { 1, 2 });
+            newTif[1].Add(tag);
 
             newTif.Save(@"c:\copiedpages_2.tif");
         }
@@ -38,17 +38,18 @@
 
             TiffTag swTag = new SoftwareTag("Diwen.Tiff");
 
-            var comp = new CompressionTag(Compression.CCITT4);
+            //var comp = new CompressionTag(Compression.CCITT4);
+            var comp = new TiffTag(Tag.Compression, TiffDataType.Ascii, new[]{Compression.CCITT4});
 
             for (int i = 0; i < files.Length; i++)
             {
                 var oldFile = Tif.Load(files[i]);
-                Page page = oldFile.Pages[0];
-                page.Tags.Add(swTag);
-                Tag pageNumber = new PageNumberTag((ushort)i, (ushort)files.Length);
-                Tag artist = new AsciiTag(TagType.Artist, "John Nordberg");
+                Page page = oldFile[0];
+                page.Add(swTag);
+                TiffTag pageNumber = new PageNumberTag((ushort)i, (ushort)files.Length);
+                TiffTag artist = new AsciiTag(Tag.Artist, "John Nordberg");
                 var subfile = new SubfileTypeTag(SubfileType.Page);
-                var tags = new Tag[] { pageNumber, artist, new DateTimeTag(), subfile };
+                var tags = new TiffTag[] { pageNumber, artist, new DateTimeTag(), subfile };
                 page.Tags.AddRange(tags);
                 newFile.Pages.Add(page);
             }
@@ -64,7 +65,7 @@
             Page page = tif[0];
             page.Add(new SoftwareTag("Diwen.Tiff"));
 
-            var tag = page[TagType.StripByteCounts];
+            var tag = page[Tag.StripByteCounts];
 
 
             tif.Save(@"c:\tagged.tif");

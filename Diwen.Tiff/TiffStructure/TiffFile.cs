@@ -86,8 +86,8 @@
             page.Sort();
             int ifdlen = 2 + this[i].Count * 12 + 4;
 
-            var offsetTag = page.Find(t => t.TagType == TagType.StripOffsets || t.TagType == TagType.TileOffsets);
-            var countTag = page.Find(t => t.TagType == TagType.StripByteCounts || t.TagType == TagType.TileByteCounts);
+            var offsetTag = page.Find(t => t.Tag == Tag.StripOffsets || t.Tag == Tag.TileOffsets);
+            var countTag = page.Find(t => t.Tag == Tag.StripByteCounts || t.Tag == Tag.TileByteCounts);
 
             var offsetData = new List<byte>();
             uint offset = (uint)filelen;
@@ -186,7 +186,7 @@
 
             foreach (var tag in page)
             {
-                fileData.AddRange(BitConverter.GetBytes((ushort)tag.TagType));
+                fileData.AddRange(BitConverter.GetBytes((ushort)tag.Tag));
                 fileData.AddRange(BitConverter.GetBytes((ushort)tag.DataType));
                 fileData.AddRange(BitConverter.GetBytes((uint)tag.ValueCount));
                 fileData.AddRange(BitConverter.GetBytes((uint)tag.ValueOffset));
