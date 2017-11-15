@@ -6,7 +6,6 @@
     using Diwen.Tiff.Tags;
     using System.Linq;
     using System;
-    using Diwen.Tiff.TagValues;
     using Xunit;
 
     public class TiffFileTest
@@ -21,9 +20,9 @@
             newTif.Add(tif[0]);
 
             var values = new ushort[] { 0, 2 };
-            var tag = new TiffTag(Tag.PageNumber, DataType.Short, values);
+            var tag = new TiffTag(Tag.PageNumber, TiffDataType.Short, values);
             newTif[0].Add(tag);
-            tag = new TiffTag(Tag.PageNumber, DataType.Short, new ushort[] { 1, 2 });
+            tag = new TiffTag(Tag.PageNumber, TiffDataType.Short, new ushort[] { 1, 2 });
             newTif[1].Add(tag);
 
             newTif.Save(@"c:\copiedpages_2.tif");
@@ -39,7 +38,7 @@
             TiffTag swTag = new SoftwareTag("Diwen.Tiff");
 
             //var comp = new CompressionTag(Compression.CCITT4);
-            var comp = new TiffTag(Tag.Compression, TiffDataType.Ascii, new[]{Compression.CCITT4});
+            var comp = new TiffTag(Tag.Compression, TiffDataType.Ascii, new[]{ FieldValues.Compression.CCITT4});
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -48,10 +47,10 @@
                 page.Add(swTag);
                 TiffTag pageNumber = new PageNumberTag((ushort)i, (ushort)files.Length);
                 TiffTag artist = new AsciiTag(Tag.Artist, "John Nordberg");
-                var subfile = new SubfileTypeTag(SubfileType.Page);
+                var subfile = new SubfileTypeTag(TagValues.SubfileType.Page);
                 var tags = new TiffTag[] { pageNumber, artist, new DateTimeTag(), subfile };
-                page.Tags.AddRange(tags);
-                newFile.Pages.Add(page);
+                page.AddRange(tags);
+                newFile.Add(page);
             }
 
             newFile.Save(@"c:\combined_and_modified.tif");

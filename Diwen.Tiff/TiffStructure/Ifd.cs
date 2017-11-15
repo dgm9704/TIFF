@@ -45,7 +45,7 @@
                 {
                     //The field data is fucked
                 }
-                
+
                 pos += 12;
             }
 
@@ -85,7 +85,7 @@
         private static List<byte[]> GetImageData(byte[] data, Field stripOffsetTag, Field stripByteCountTag)
         {
 
-            
+
             if (data == null || stripOffsetTag == null || stripByteCountTag == null || stripByteCountTag.Count != stripOffsetTag.Count)
             {
                 return new List<byte[]>();
@@ -135,6 +135,19 @@
             foreach (var item in items)
             {
                 this.Add(item);
+            }
+        }
+
+        public void AddRange(IEnumerable<TiffTag> items)
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+
+            foreach (var item in items)
+            {
+                this.Add(new Field(item.Tag, (FieldType)item.DataType, item.Values));
             }
         }
 

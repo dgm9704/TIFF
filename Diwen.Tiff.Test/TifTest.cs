@@ -19,7 +19,7 @@
             Tif tif;
             tif = Tif.Load(testFilePath);
 
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -30,7 +30,7 @@
             using (var stream = new FileStream(testFilePath, FileMode.Open))
                 tif = Tif.Load(stream);
 
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -50,7 +50,7 @@
 
             tif = Tif.Load(bytes);
 
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -62,7 +62,7 @@
             string path = @"\TIFF_file_format_test.new";
             tif.Save(path);
             tif = Tif.Load(path);
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -77,7 +77,7 @@
                 stream.Position = 0;
                 tif = Tif.Load(stream);
             }
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
