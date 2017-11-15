@@ -17,7 +17,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual(true, page.Contains(Tag.NewSubfileType));
+            Assert.Equal(true, page.Contains(Tag.NewSubfileType));
         }
 
         [Fact]
@@ -25,7 +25,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual(false, page.Contains(Tag.TargetPrinter));
+            Assert.Equal(false, page.Contains(Tag.TargetPrinter));
         }
 
         [Fact]
@@ -34,20 +34,19 @@
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
             var tag = page[Tag.ImageWidth];
-            Assert.IsNotNull(tag);
-            Assert.AreEqual(FieldType.Short, tag.FieldType);
-            Assert.AreEqual(1, tag.Values.Length);
+            Assert.NotNull(tag);
+            Assert.Equal(FieldType.Short, tag.FieldType);
+            Assert.Equal(1, tag.Values.Length);
             var values = (ushort[])tag.Values;
-            Assert.AreEqual(288, values[0]);
+            Assert.Equal(288, values[0]);
         }
 
         [Fact]
-        [ExpectedException(typeof(System.Collections.Generic.KeyNotFoundException))]
         public void ReadNonExistingField()
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            var tag = page[Tag.AliasLayerMetadata];
+            Assert.Throws<KeyNotFoundException>(() => page[Tag.AliasLayerMetadata]);
         }
 
         [Fact]
@@ -55,13 +54,13 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual(false, page.Contains(Tag.Artist));
+            Assert.Equal(false, page.Contains(Tag.Artist));
             var name = "Leonardo DaVinci";
             page.Add(Tag.Artist, FieldType.Ascii, name.ToCharArray());
             var tag = page[Tag.Artist];
             var values = (char[])tag.Values;
             string value = new String(values);
-            Assert.AreEqual(name, value);
+            Assert.Equal(name, value);
         }
 
         [Fact]
@@ -69,7 +68,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual(false, page.Contains(Tag.Artist));
+            Assert.Equal(false, page.Contains(Tag.Artist));
             var name = "Leonardo DaVinci";
             page.Artist = name;
 
@@ -79,7 +78,7 @@
             var tag = page[Tag.Artist];
             var values = (char[])tag.Values;
             string value = new String(values);
-            Assert.AreEqual(name, value);
+            Assert.Equal(name, value);
         }
 
         [Fact]
@@ -87,15 +86,15 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual(false, page.Contains(Tag.PageNumber));
+            Assert.Equal(false, page.Contains(Tag.PageNumber));
             ushort number = 42;
             ushort total = 666;
             page.PageNumber = number;
             page.PageTotal = total;
             var tag = page[Tag.PageNumber];
             var values = (ushort[])tag.Values;
-            Assert.AreEqual(number, values[0]);
-            Assert.AreEqual(total, values[1]);
+            Assert.Equal(number, values[0]);
+            Assert.Equal(total, values[1]);
         }
 
         [Fact]
@@ -110,7 +109,7 @@
 
             var tag = page[Tag.BitsPerSample];
             var values = (ushort[])tag.Values;
-            Assert.AreEqual(bitsper, values[0]);
+            Assert.Equal(bitsper, values[0]);
         }
 
         [Fact]
@@ -118,8 +117,8 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.AreEqual("Adobe Photoshop CS2 Windows", page.Software);
-            Assert.AreEqual("2009:04:07 18:33:11", page.DateTime);
+            Assert.Equal("Adobe Photoshop CS2 Windows", page.Software);
+            Assert.Equal("2009:04:07 18:33:11", page.DateTime);
         }
 
         [Fact]
@@ -200,10 +199,10 @@
             var tif = Tif.Load(testFilePath);
             var original = tif[0];
             var copy = original.Copy();
-            Assert.AreEqual(original.Count, copy.Count);
+            Assert.Equal(original.Count, copy.Count);
             foreach (var tag in original)
             {
-                Assert.AreEqual(true, copy.Contains(tag.Tag));
+                Assert.Equal(true, copy.Contains(tag.Tag));
             }
 
         }
@@ -215,7 +214,7 @@
             string expected = string.Empty;
             string actual;
             actual = target.ToString();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -226,7 +225,7 @@
             string actual;
             target.Artist = expected;
             actual = target.Artist;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -237,7 +236,7 @@
             ushort actual;
             target.BitsPerSample = expected;
             actual = target.BitsPerSample;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -248,7 +247,7 @@
             ushort actual;
             target.CellLength = expected;
             actual = target.CellLength;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -259,7 +258,7 @@
             ushort actual;
             target.CellWidth = expected;
             actual = target.CellWidth;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -270,7 +269,7 @@
             ushort[] actual;
             target.ColorMap = expected;
             actual = target.ColorMap;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -281,7 +280,7 @@
             Compression actual;
             target.Compression = expected;
             actual = target.Compression;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -292,7 +291,7 @@
             string actual;
             target.Copyright = expected;
             actual = target.Copyright;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -303,7 +302,7 @@
             string actual;
             target.DateTime = expected;
             actual = target.DateTime;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -314,7 +313,7 @@
             ExtraSampleType[] actual;
             target.ExtraSamples = expected;
             actual = target.ExtraSamples;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -326,7 +325,7 @@
             FillOrder actual;
             target.FillOrder = expected;
             actual = target.FillOrder;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -337,7 +336,7 @@
             uint actual;
             target.FreeByteCounts = expected;
             actual = target.FreeByteCounts;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -348,7 +347,7 @@
             uint actual;
             target.FreeOffsets = expected;
             actual = target.FreeOffsets;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -360,7 +359,7 @@
             ushort[] actual;
             target.GrayResponseCurve = expected;
             actual = target.GrayResponseCurve;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -371,7 +370,7 @@
             GrayResponseUnit actual;
             target.GrayResponseUnit = expected;
             actual = target.GrayResponseUnit;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -382,7 +381,7 @@
             string actual;
             target.HostComputer = expected;
             actual = target.HostComputer;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -393,7 +392,7 @@
             List<byte[]> actual;
             target.ImageData = expected;
             actual = target.ImageData;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -404,7 +403,7 @@
             string actual;
             target.ImageDescription = expected;
             actual = target.ImageDescription;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -415,7 +414,7 @@
             uint actual;
             target.ImageLength = expected;
             actual = target.ImageLength;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -426,7 +425,7 @@
             uint actual;
             target.ImageWidth = expected;
             actual = target.ImageWidth;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -437,7 +436,7 @@
             string actual;
             target.Make = expected;
             actual = target.Make;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -448,7 +447,7 @@
             ushort actual;
             target.MaxSampleValue = expected;
             actual = target.MaxSampleValue;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -459,7 +458,7 @@
             ushort actual;
             target.MinSampleValue = expected;
             actual = target.MinSampleValue;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -470,7 +469,7 @@
             string actual;
             target.Model = expected;
             actual = target.Model;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -481,7 +480,7 @@
             NewSubfileType actual;
             target.NewSubfileType = expected;
             actual = target.NewSubfileType;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -492,7 +491,7 @@
             uint actual;
             target.NextIfdAddress = expected;
             actual = target.NextIfdAddress;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -503,7 +502,7 @@
             Orientation actual;
             target.Orientation = expected;
             actual = target.Orientation;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -514,7 +513,7 @@
             ushort actual;
             target.PageNumber = expected;
             actual = target.PageNumber;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -525,7 +524,7 @@
             ushort actual;
             target.PageTotal = expected;
             actual = target.PageTotal;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -536,7 +535,7 @@
             PhotometricInterpretation actual;
             target.PhotometricInterpretation = expected;
             actual = target.PhotometricInterpretation;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -547,7 +546,7 @@
             PlanarConfiguration actual;
             target.PlanarConfiguration = expected;
             actual = target.PlanarConfiguration;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -558,7 +557,7 @@
             ResolutionUnit actual;
             target.ResolutionUnit = expected;
             actual = target.ResolutionUnit;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -569,7 +568,7 @@
             uint actual;
             target.RowsPerStrip = expected;
             actual = target.RowsPerStrip;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -580,7 +579,7 @@
             ushort actual;
             target.SamplesPerPixel = expected;
             actual = target.SamplesPerPixel;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -591,7 +590,7 @@
             string actual;
             target.Software = expected;
             actual = target.Software;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -603,7 +602,7 @@
             uint[] actual;
             target.StripByteCounts = expected;
             actual = target.StripByteCounts;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -615,7 +614,7 @@
             uint[] actual;
             target.StripOffsets = expected;
             actual = target.StripOffsets;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -625,7 +624,7 @@
             Page target = tif[0];
             uint actual;
             actual = target.StripsPerImage;
-            Assert.AreEqual((uint)1, actual);
+            Assert.Equal((uint)1, actual);
         }
 
         [Fact]
@@ -636,7 +635,7 @@
             Threshholding actual;
             target.Threshholding = expected;
             actual = target.Threshholding;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -647,7 +646,7 @@
             URational32 actual;
             target.XResolution = expected;
             actual = target.XResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -658,7 +657,7 @@
             URational32 actual;
             target.YResolution = expected;
             actual = target.YResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -669,7 +668,7 @@
             string expected = string.Empty;
             string actual;
             actual = page.GetAsciiFieldValue(Tag.PageName);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -679,7 +678,7 @@
             Tag tag = Tag.Software;
             string value = null;
             target.SetAsciiFieldValue(tag, value);
-            Assert.AreEqual(string.Empty, target.GetAsciiFieldValue(tag));
+            Assert.Equal(string.Empty, target.GetAsciiFieldValue(tag));
         }
 
         [Fact]
@@ -687,7 +686,7 @@
         {
             var tif = Tif.Load(testFilePath);
             string foo = tif[0].ToString();
-            Assert.AreEqual(false, string.IsNullOrEmpty(foo));
+            Assert.Equal(false, string.IsNullOrEmpty(foo));
         }
 
         [Fact]
@@ -697,7 +696,7 @@
             ushort expected = 1;
             ushort actual;
             actual = target.BitsPerSample;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -707,7 +706,7 @@
             ushort expected = 0;
             ushort actual;
             actual = target.CellLength;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -717,7 +716,7 @@
             ushort expected = 0;
             ushort actual;
             actual = target.CellWidth;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -727,7 +726,7 @@
             ushort[] expected = new ushort[]{ };
             ushort[] actual;
             actual = target.ColorMap;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -737,7 +736,7 @@
             Compression expected = Compression.NoCompression;
             Compression actual;
             actual = target.Compression;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -747,7 +746,7 @@
             ExtraSampleType[] expected = new ExtraSampleType[]{ };
             ExtraSampleType[] actual;
             actual = target.ExtraSamples;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -757,7 +756,7 @@
             FillOrder expected = FillOrder.LowBitsFirst;
             FillOrder actual;
             actual = target.FillOrder;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -767,7 +766,7 @@
             uint expected = 0;
             uint actual;
             actual = target.FreeByteCounts;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -777,7 +776,7 @@
             uint expected = 0;
             uint actual;
             actual = target.FreeOffsets;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -787,7 +786,7 @@
             ushort[] expected = new ushort[] { };
             ushort[] actual;
             actual = target.GrayResponseCurve;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -797,7 +796,7 @@
             GrayResponseUnit expected = GrayResponseUnit.Hundredths;
             GrayResponseUnit actual;
             actual = target.GrayResponseUnit;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -807,7 +806,7 @@
             uint expected = 0;
             uint actual;
             actual = target.ImageLength;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -817,7 +816,7 @@
             uint expected = 0;
             uint actual;
             actual = target.ImageWidth;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -827,7 +826,7 @@
             ushort expected = 1;
             ushort actual;
             actual = target.MaxSampleValue;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -837,7 +836,7 @@
             ushort expected = 0;
             ushort actual;
             actual = target.MinSampleValue;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -847,7 +846,7 @@
             NewSubfileType expected = new NewSubfileType();
             NewSubfileType actual;
             actual = target.NewSubfileType;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -857,7 +856,7 @@
             Orientation expected = Orientation.TopLeft;
             Orientation actual;
             actual = target.Orientation;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -867,7 +866,7 @@
             ushort expected = 0;
             ushort actual;
             actual = target.PageNumber;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -877,7 +876,7 @@
             ushort expected = 0;
             ushort actual;
             actual = target.PageTotal;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -887,7 +886,7 @@
             PhotometricInterpretation expected = new PhotometricInterpretation();
             PhotometricInterpretation actual;
             actual = target.PhotometricInterpretation;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -897,7 +896,7 @@
             PlanarConfiguration expected = PlanarConfiguration.Chunky;
             PlanarConfiguration actual;
             actual = target.PlanarConfiguration;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -907,7 +906,7 @@
             ResolutionUnit expected = ResolutionUnit.Inch;
             ResolutionUnit actual;
             actual = target.ResolutionUnit;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -917,7 +916,7 @@
             uint expected = uint.MaxValue; 
             uint actual;
             actual = target.RowsPerStrip;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -927,7 +926,7 @@
             ushort expected = 1; 
             ushort actual;
             actual = target.SamplesPerPixel;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -937,7 +936,7 @@
             uint[] expected = new uint[]{ }; 
             uint[] actual;
             actual = target.StripByteCounts;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -947,7 +946,7 @@
             uint[] expected = new uint[]{ }; 
             uint[] actual;
             actual = target.StripOffsets;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -957,7 +956,7 @@
             Threshholding expected = Threshholding.None;
             Threshholding actual;
             actual = target.Threshholding;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -967,7 +966,7 @@
             URational32 expected = new URational32(); 
             URational32 actual;
             actual = target.XResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -977,25 +976,25 @@
             URational32 expected = new URational32(); 
             URational32 actual;
             actual = target.YResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void PageNumberTest2()
         {
             Page target = new Page();
-            Assert.AreEqual(target.PageNumber, 0);
-            Assert.AreEqual(target.PageTotal, 0);
+            Assert.Equal(target.PageNumber, 0);
+            Assert.Equal(target.PageTotal, 0);
             target.PageNumber = 5;
             target.PageTotal = 7;
-            Assert.AreEqual(target.PageNumber, 5);
-            Assert.AreEqual(target.PageTotal, 7);
+            Assert.Equal(target.PageNumber, 5);
+            Assert.Equal(target.PageTotal, 7);
             target.PageTotal = 8;
-            Assert.AreEqual(target.PageNumber, 5);
-            Assert.AreEqual(target.PageTotal, 8);
+            Assert.Equal(target.PageNumber, 5);
+            Assert.Equal(target.PageTotal, 8);
             target.PageNumber = 3;
-            Assert.AreEqual(target.PageNumber, 3);
-            Assert.AreEqual(target.PageTotal, 8);
+            Assert.Equal(target.PageNumber, 3);
+            Assert.Equal(target.PageTotal, 8);
         }
 
         [Fact]
@@ -1006,7 +1005,7 @@
             uint[] actual;
             target.StripByteCounts = null;
             actual = target.StripByteCounts;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -1017,7 +1016,7 @@
             uint[] actual;
             target.StripOffsets = null;
             actual = target.StripOffsets;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -1027,7 +1026,7 @@
             URational32 expected = new URational32(); 
             URational32 actual;
             actual = target.XResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -1038,7 +1037,7 @@
             URational32 actual;
 
             actual = target.YResolution;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -1049,7 +1048,7 @@
             ExtraSampleType[] actual;
             target.ExtraSamples = null;
             actual = target.ExtraSamples;
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -1059,7 +1058,7 @@
             ushort expected = 0; 
             ushort actual;
             actual = target.PageNumber;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

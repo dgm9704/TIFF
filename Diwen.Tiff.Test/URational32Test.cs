@@ -16,7 +16,7 @@
             Array.Copy(BitConverter.GetBytes((uint)666), 0, data, 4, 4);
             int startIndex = 0;
             URational32 target = new URational32(data, startIndex);
-            Assert.AreEqual(test, target);
+            Assert.Equal(test, target);
         }
 
         [Fact]
@@ -25,26 +25,24 @@
             uint numerator = 0;
             uint denominator = 0;
             URational32 target = new URational32(numerator, denominator);
-            Assert.AreEqual(numerator, target.Numerator);
-            Assert.AreEqual(denominator, target.Denominator);
+            Assert.Equal(numerator, target.Numerator);
+            Assert.Equal(denominator, target.Denominator);
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void URational32ConstructorTest2()
         {
             byte[] data = null;
             int startIndex = 0;
-            URational32 target = new URational32(data, startIndex);
+            Assert.Throws<ArgumentNullException>(() => new URational32(data, startIndex));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void URational32ConstructorTest3()
         {
             byte[] data = new byte[8];
             int startIndex = 7;
-            URational32 target = new URational32(data, startIndex);
+            Assert.Throws<ArgumentNullException>(() => new URational32(data, startIndex));
         }
 
         [Fact]
@@ -55,7 +53,7 @@
             bool expected = false;
             bool actual;
             actual = target.Equals(obj);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -68,7 +66,7 @@
             Array.Copy(BitConverter.GetBytes((uint)666), 0, data, 4, 4);
             int startIndex = 0;
             URational32 target = new URational32(data, startIndex);
-            CollectionAssert.AreEqual(data, target.GetBytes());
+            Assert.Equal(data, target.GetBytes());
         }
 
         [Fact]
@@ -76,7 +74,7 @@
         {
             URational32 a = new URational32(42, 666);
             URational32 b = new URational32(42, 666);
-            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+            Assert.Equal(a.GetHashCode(), b.GetHashCode());
         }
 
         [Fact]
@@ -85,7 +83,7 @@
             URational32 target = new URational32(42, 666);
             string expected = "42/666";
             string actual = target.ToString();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -96,7 +94,7 @@
             bool expected = true;
             bool actual;
             actual = (value1 == value2);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -107,7 +105,7 @@
             bool expected = true;
             bool actual;
             actual = (value1 != value2);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -118,7 +116,7 @@
             uint actual;
             target.Denominator = expected;
             actual = target.Denominator;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -129,7 +127,7 @@
             uint actual;
             target.Numerator = expected;
             actual = target.Numerator;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -139,7 +137,7 @@
             URational32 expected = new URational32(16777216, 1207959552);
             URational32 actual;
             actual = target.Inverse();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -149,7 +147,7 @@
             URational32 expected = new URational32(72, 1);
             URational32 actual;
             actual = target.Reduce();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -159,7 +157,7 @@
             URational32 expected = new URational32(9, 25);
             URational32 actual;
             actual = target.Reduce();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

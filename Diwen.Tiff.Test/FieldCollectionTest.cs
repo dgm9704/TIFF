@@ -54,7 +54,7 @@
         //    Tag expected = Tag.AntiAliasStrength;
         //    Tag actual;
         //    actual = target.GetKeyForItem(item);
-        //    Assert.AreEqual(expected, actual);
+        //    Assert.Equal(expected, actual);
         //}
 
         //[Fact]

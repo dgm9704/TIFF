@@ -16,7 +16,7 @@
             Array.Copy(BitConverter.GetBytes((int)666), 0, data, 4, 4);
             int startIndex = 0;
             Rational32 target = new Rational32(data, startIndex);
-            Assert.AreEqual(test, target);
+            Assert.Equal(test, target);
         }
 
         [Fact]
@@ -25,26 +25,24 @@
             int numerator = 0;
             int denominator = 0;
             Rational32 target = new Rational32(numerator, denominator);
-            Assert.AreEqual(numerator, target.Numerator);
-            Assert.AreEqual(denominator, target.Denominator);
+            Assert.Equal(numerator, target.Numerator);
+            Assert.Equal(denominator, target.Denominator);
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Rational32ConstructorTest2()
+                public void Rational32ConstructorTest2()
         {
             byte[] data = null;
             int startIndex = 0;
-            Rational32 target = new Rational32(data, startIndex);
+            Assert.Throws<ArgumentNullException>(() => new Rational32(data, startIndex));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Rational32ConstructorTest3()
         {
             byte[] data = new byte[8];
             int startIndex = 7;
-            Rational32 target = new Rational32(data, startIndex);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new Rational32(data, startIndex));
         }
 
         [Fact]
@@ -55,7 +53,7 @@
             bool expected = false;
             bool actual;
             actual = target.Equals(obj);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -68,7 +66,7 @@
             Array.Copy(BitConverter.GetBytes((int)666), 0, data, 4, 4);
             int startIndex = 0;
             Rational32 target = new Rational32(data, startIndex);
-            CollectionAssert.AreEqual(data, target.GetBytes());
+            Assert.Equal(data, target.GetBytes());
         }
 
         [Fact]
@@ -76,7 +74,7 @@
         {
             Rational32 a = new Rational32(42, 666);
             Rational32 b = new Rational32(42, 666);
-            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+            Assert.Equal(a.GetHashCode(), b.GetHashCode());
         }
 
         [Fact]
@@ -85,7 +83,7 @@
             Rational32 target = new Rational32(42, 666);
             string expected = "42/666";
             string actual = target.ToString();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -96,7 +94,7 @@
             bool expected = true;
             bool actual;
             actual = (value1 == value2);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -107,7 +105,7 @@
             bool expected = true;
             bool actual;
             actual = (value1 != value2);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -118,7 +116,7 @@
             int actual;
             target.Denominator = expected;
             actual = target.Denominator;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -129,7 +127,7 @@
             int actual;
             target.Numerator = expected;
             actual = target.Numerator;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -139,7 +137,7 @@
             Rational32 expected = new Rational32(16777216, 1207959552);
             Rational32 actual;
             actual = target.Inverse();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -149,7 +147,7 @@
             Rational32 expected = new Rational32(72, 1);
             Rational32 actual;
             actual = target.Reduce();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -159,7 +157,7 @@
             Rational32 expected = new Rational32(9, 25);
             Rational32 actual;
             actual = target.Reduce();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

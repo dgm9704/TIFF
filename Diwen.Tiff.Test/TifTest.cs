@@ -34,15 +34,12 @@
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void LoadFromStreamNull()
         {
             Tif tif;
             FileStream stream = null;
             using (stream)
-                tif = Tif.Load(stream);
-
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+                Assert.Throws<ArgumentNullException>(() => Tif.Load(stream));
         }
 
         [Fact]
@@ -84,7 +81,6 @@
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SaveToStreamNull()
         {
             Tif tif;
@@ -93,11 +89,10 @@
 
             using (stream)
             {
-                tif.Save(stream);
+                Assert.Throws<ArgumentNullException>(() => tif.Save(stream));
                 stream.Position = 0;
                 tif = Tif.Load(stream);
             }
-            Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -109,7 +104,7 @@
 
             tif = Tif.Load(buffer);
 
-            Assert.IsInstanceOfType(typeof(Tif), tif);
+            Assert.IsType(typeof(Tif), tif);
         }
 
         [Fact]
@@ -119,7 +114,7 @@
             int numPages = tif.Count;
             tif.Add(tif[0]);
 
-            Assert.AreEqual(numPages + 1, tif.Count);
+            Assert.Equal(numPages + 1, tif.Count);
         }
 
         [Fact]
@@ -129,7 +124,7 @@
             int numPages = tif.Count;
             tif.RemoveAt(0);
 
-            Assert.AreEqual(numPages - 1, tif.Count);
+            Assert.Equal(numPages - 1, tif.Count);
         }
 
         [Fact]
@@ -142,7 +137,7 @@
             newTif.Add(tif1[0]);
             newTif.Add(tif2[0]);
 
-            Assert.AreEqual(2, newTif.Count);
+            Assert.Equal(2, newTif.Count);
 
             using (var stream = new MemoryStream())
             {
@@ -150,7 +145,7 @@
                 stream.Position = 0;
                 newTif = Tif.Load(stream);
             }
-            Assert.AreEqual(2, newTif.Count);
+            Assert.Equal(2, newTif.Count);
         }
 
         [Fact]
@@ -174,16 +169,16 @@
 
             newTif = Tif.Load(newName);
 
-            Assert.AreEqual(2, newTif.Count);
+            Assert.Equal(2, newTif.Count);
             ushort[] pageNumber;
 
             pageNumber = (ushort[])newTif[0][Tag.PageNumber].Values;
-            Assert.AreEqual(0, pageNumber[0]);
-            Assert.AreEqual(2, pageNumber[1]);
+            Assert.Equal(0, pageNumber[0]);
+            Assert.Equal(2, pageNumber[1]);
 
             pageNumber = (ushort[])newTif[1][Tag.PageNumber].Values;
-            Assert.AreEqual(1, pageNumber[0]);
-            Assert.AreEqual(2, pageNumber[1]);
+            Assert.Equal(1, pageNumber[0]);
+            Assert.Equal(2, pageNumber[1]);
 
         }
 
@@ -236,7 +231,7 @@
         {
             Tif original = Tif.Load(testFilePath);
             Tif copy = original.Copy();
-            Assert.AreNotSame(original, copy);
+            Assert.NotSame(original, copy);
         }
 
 

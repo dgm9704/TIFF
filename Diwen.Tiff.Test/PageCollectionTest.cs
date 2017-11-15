@@ -36,7 +36,7 @@
             string expected = string.Empty;
             string actual;
             actual = target.ToString();
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -61,7 +61,7 @@
             PageCollection target = new PageCollection { new Page { new Field(Tag.Software, FieldType.Ascii, new string[] { "Diwen.Tiff" }) } };
             string actual;
             actual = target.ToString();
-            Assert.AreEqual(false, string.IsNullOrEmpty(actual));
+            Assert.Equal(false, string.IsNullOrEmpty(actual));
         }
     }
 }
