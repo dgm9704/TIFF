@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Text;
-using Diwen.Tiff.Extensions;
-using Diwen.Tiff.TagValues;
-using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
-
-namespace Diwen.Tiff
+﻿namespace Diwen.Tiff
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Text;
+    using Diwen.Tiff.Extensions;
+    using Diwen.Tiff.TagValues;
+    using System.Net;
+    using System.Runtime.Serialization.Formatters.Binary;
     public class TiffFile : Collection<TiffPage>
     {
         internal static ASCIIEncoding Ascii = new ASCIIEncoding();
-        internal static Dictionary<TiffDataType, int> ValueLength = new Dictionary<TiffDataType, int> { 
-            { TiffDataType.Ascii, 1 }, 
-            { TiffDataType.Byte, 1 }, 
-            { TiffDataType.Long, 4 }, 
-            { TiffDataType.Short, 2 }, 
+        internal static Dictionary<TiffDataType, int> ValueLength = new Dictionary<TiffDataType, int> {
+            { TiffDataType.Ascii, 1 },
+            { TiffDataType.Byte, 1 },
+            { TiffDataType.Long, 4 },
+            { TiffDataType.Short, 2 },
             { TiffDataType.Rational, 8 }, };
 
         public TiffFile()

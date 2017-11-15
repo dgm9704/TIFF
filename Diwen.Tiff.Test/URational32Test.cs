@@ -2,20 +2,12 @@
 {
     using Diwen.Tiff;
     using System;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for URational32Test and is intended
-    ///to contain all URational32Test Unit Tests
-    ///</summary>
-    [TestFixture]
     public class URational32Test
     {
 
-        /// <summary>
-        ///A test for URational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void URational32ConstructorTest()
         {
             URational32 test = new URational32(42, 666);
@@ -27,10 +19,7 @@
             Assert.AreEqual(test, target);
         }
 
-        /// <summary>
-        ///A test for URational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void URational32ConstructorTest1()
         {
             uint numerator = 0;
@@ -40,10 +29,7 @@
             Assert.AreEqual(denominator, target.Denominator);
         }
 
-        /// <summary>
-        ///A test for URational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void URational32ConstructorTest2()
         {
@@ -52,10 +38,7 @@
             URational32 target = new URational32(data, startIndex);
         }
 
-        /// <summary>
-        ///A test for URational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void URational32ConstructorTest3()
         {
@@ -64,10 +47,7 @@
             URational32 target = new URational32(data, startIndex);
         }
 
-        /// <summary>
-        ///A test for Equals
-        ///</summary>
-        [Test]
+        [Fact]
         public void EqualsTest()
         {
             URational32 target = new URational32();
@@ -79,10 +59,7 @@
 
         }
 
-        /// <summary>
-        ///A test for GetBytes
-        ///</summary>
-        [Test]
+        [Fact]
         public void GetBytesTest()
         {
             URational32 test = new URational32(42, 666);
@@ -94,10 +71,7 @@
             CollectionAssert.AreEqual(data, target.GetBytes());
         }
 
-        /// <summary>
-        ///A test for GetHashCode
-        ///</summary>
-        [Test]
+        [Fact]
         public void GetHashCodeTest()
         {
             URational32 a = new URational32(42, 666);
@@ -105,10 +79,7 @@
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest()
         {
             URational32 target = new URational32(42, 666);
@@ -117,10 +88,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for op_Equality
-        ///</summary>
-        [Test]
+        [Fact]
         public void op_EqualityTest()
         {
             URational32 value1 = new URational32();
@@ -131,10 +99,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for op_Inequality
-        ///</summary>
-        [Test]
+        [Fact]
         public void op_InequalityTest()
         {
             URational32 value1 = new URational32(1, 2);
@@ -145,10 +110,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Denominator
-        ///</summary>
-        [Test]
+        [Fact]
         public void DenominatorTest()
         {
             URational32 target = new URational32(42, 666);
@@ -159,10 +121,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Numerator
-        ///</summary>
-        [Test]
+        [Fact]
         public void NumeratorTest()
         {
             URational32 target = new URational32(42, 666);
@@ -173,10 +132,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Inverse
-        ///</summary>
-        [Test]
+        [Fact]
         public void InverseTest()
         {
             URational32 target = new URational32(1207959552, 16777216);
@@ -186,10 +142,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Reduce
-        ///</summary>
-        [Test]
+        [Fact]
         public void ReduceTest()
         {
             URational32 target = new URational32(1207959552, 16777216);
@@ -199,10 +152,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Reduce
-        ///</summary>
-        [Test]
+        [Fact]
         public void ReduceTest2()
         {
             URational32 target = new URational32(9, 25);

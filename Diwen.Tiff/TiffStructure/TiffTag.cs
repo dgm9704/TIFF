@@ -8,9 +8,9 @@ using Diwen.Tiff.TagValues;
 namespace Diwen.Tiff
 {
     [Serializable()]
-    public sealed class TiffTag : IComparable<TiffTag>
+    public class TiffTag : IComparable<TiffTag>
     {
-        public Array Values { get; private set; }
+        public Array Values { get; internal set; }
         public TagType TagType { get; set; }
         public TiffDataType DataType { get; set; }
 

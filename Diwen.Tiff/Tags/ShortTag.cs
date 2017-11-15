@@ -3,7 +3,7 @@
 namespace Diwen.Tiff.Tags
 {
     [Serializable()]
-    public class ShortTag : Tag
+    public class ShortTag : TiffTag
     {
         public ShortTag()
         {

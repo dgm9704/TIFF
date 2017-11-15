@@ -2,32 +2,24 @@
 {
     using Diwen.Tiff;
     using System;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for FieldTest and is intended
-    ///to contain all FieldTest Unit Tests
-    ///</summary>
-    [TestFixture]
     public class FieldTest
     {
-        /// <summary>
-        ///A test for Field Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FieldConstructorTest()
         {
-            Tag tag = new Tag(); 
-            FieldType type = new FieldType(); 
-            Array values = null; 
+            Tag tag = new Tag();
+            FieldType type = new FieldType();
+            Array values = null;
             Field target = new Field(tag, type, values);
         }
 
         /// <summary>
         ///A test for Copy
         ///</summary>
-        [Test]
+        [Fact]
         public void CopyTest()
         {
             Field original = new Field { Tag = Tag.Artist, FieldType = FieldType.Ascii, Value = "Diwen.Tiff" };
@@ -37,10 +29,7 @@
             Assert.AreEqual(original.Value, copy.Value);
         }
 
-        ///// <summary>
-        /////A test for Create
-        /////</summary>
-        //[Test]
+        //[Fact]
         //[ExpectedException(typeof(ArgumentNullException))]
         //public void CreateTest()
         //{
@@ -48,7 +37,7 @@
         //    var field =  Field_Accessor.Create(Tag.Artist, FieldType.Byte, 3, values);
         //}
 
-        [Test]
+        [Fact]
         public void EnumeratedFieldValueTest()
         {
             var fld = new Field(Tag.Compression, FieldType.Short, new ushort[] { 2 });

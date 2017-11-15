@@ -3,12 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using Diwen.Tiff.TagValues;
 
     /// <summary>
     /// Represents a collection of tags
     /// </summary>
     [Serializable()]
-    public class TagCollection : KeyedCollection<TagType, Tag>
+    public class TagCollection : KeyedCollection<TagType, TiffTag>
     {
         internal TagCollection() : base(null, 0) 
         { 
@@ -31,7 +32,7 @@
         /// Adds a new tag to the collection
         /// </summary>
         /// <param name="item"></param>
-        public new void Add(Tag item)
+        public new void Add(TiffTag item)
         {
             if (item == null)
             {
@@ -46,7 +47,7 @@
         /// Adds a range of tags to collection
         /// </summary>
         /// <param name="items"></param>
-        public void AddRange(IEnumerable<Tag> items)
+        public void AddRange(IEnumerable<TiffTag> items)
         {
             if (items == null)
             {
@@ -64,7 +65,7 @@
         /// </summary>
         public void Sort()
         {
-            ((List<Tag>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
+            ((List<TiffTag>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
         }
 
         /// <summary>
@@ -72,7 +73,7 @@
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected override TagType GetKeyForItem(Tag item)
+        protected override TagType GetKeyForItem(TiffTag item)
         {
             if (item == null)
             {

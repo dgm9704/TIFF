@@ -6,22 +6,13 @@
     using System.IO;
     using Diwen.Tiff;
     using Diwen.Tiff.FieldValues;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for PageTest and is intended
-    ///to contain all PageTest Unit Tests
-    ///</summary>
-    [TestFixture]
     public class PageTest
     {
         private static string testFilePath = Path.Combine("testfiles", "TIFF_file_format_test.tif");
 
-
-        /// <summary>
-        ///A test for HasTag
-        ///</summary>
-        [Test]
+        [Fact]
         public void HasFieldTestTrue()
         {
             var tif = Tif.Load(testFilePath);
@@ -29,10 +20,7 @@
             Assert.AreEqual(true, page.Contains(Tag.NewSubfileType));
         }
 
-        /// <summary>
-        ///A test for HasTag
-        ///</summary>
-        [Test]
+        [Fact]
         public void HasFieldTestFalse()
         {
             var tif = Tif.Load(testFilePath);
@@ -40,7 +28,7 @@
             Assert.AreEqual(false, page.Contains(Tag.TargetPrinter));
         }
 
-        [Test]
+        [Fact]
         public void ReadExistingField()
         {
             var tif = Tif.Load(testFilePath);
@@ -53,7 +41,7 @@
             Assert.AreEqual(288, values[0]);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(System.Collections.Generic.KeyNotFoundException))]
         public void ReadNonExistingField()
         {
@@ -62,8 +50,7 @@
             var tag = page[Tag.AliasLayerMetadata];
         }
 
-
-        [Test]
+        [Fact]
         public void AddAsciiField()
         {
             var tif = Tif.Load(testFilePath);
@@ -77,8 +64,7 @@
             Assert.AreEqual(name, value);
         }
 
-
-        [Test]
+        [Fact]
         public void Artist()
         {
             var tif = Tif.Load(testFilePath);
@@ -96,7 +82,7 @@
             Assert.AreEqual(name, value);
         }
 
-        [Test]
+        [Fact]
         public void PageNumber()
         {
             var tif = Tif.Load(testFilePath);
@@ -112,7 +98,7 @@
             Assert.AreEqual(total, values[1]);
         }
 
-        [Test]
+        [Fact]
         public void BitsPerSample()
         {
             var tif = Tif.Load(testFilePath);
@@ -127,7 +113,7 @@
             Assert.AreEqual(bitsper, values[0]);
         }
 
-        [Test]
+        [Fact]
         public void BaselineAsciiFields()
         {
             var tif = Tif.Load(testFilePath);
@@ -136,10 +122,7 @@
             Assert.AreEqual("2009:04:07 18:33:11", page.DateTime);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -149,19 +132,13 @@
             page.Add(Tag.NewSubfileType, NewSubfileType.Page | NewSubfileType.ReducedResolutionVersion | NewSubfileType.TransparencyMask);
         }
 
-        /// <summary>
-        ///A test for Page Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageConstructorTest()
         {
             Page target = new Page();
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest2()
         {
             Page target = new Page();
@@ -170,10 +147,7 @@
             target.Add(tagType, value);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest3()
         {
             Page target = new Page();
@@ -183,10 +157,7 @@
             target.Add(tagType, type, value);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest3withnull()
         {
             Page target = new Page();
@@ -196,10 +167,7 @@
             target.Add(tagType, type, value);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest4()
         {
             Page target = new Page();
@@ -208,10 +176,7 @@
             target.Add(tagType, value);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest5()
         {
             Page target = new Page();
@@ -220,10 +185,7 @@
             target.Add(tagType, value);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest6()
         {
             Page target = new Page();
@@ -232,10 +194,7 @@
             target.Add(tagType, value);
         }
 
-        /// <summary>
-        ///A test for Copy
-        ///</summary>
-        [Test]
+        [Fact]
         public void CopyTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -249,10 +208,7 @@
 
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest()
         {
             Page target = new Page();
@@ -262,10 +218,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Artist
-        ///</summary>
-        [Test]
+        [Fact]
         public void ArtistTest()
         {
             Page target = new Page();
@@ -276,10 +229,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for BitsPerSample
-        ///</summary>
-        [Test]
+        [Fact]
         public void BitsPerSampleTest()
         {
             Page target = new Page();
@@ -290,10 +240,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for CellLength
-        ///</summary>
-        [Test]
+        [Fact]
         public void CellLengthTest()
         {
             Page target = new Page();
@@ -304,10 +251,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for CellWidth
-        ///</summary>
-        [Test]
+        [Fact]
         public void CellWidthTest()
         {
             Page target = new Page();
@@ -318,10 +262,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ColorMap
-        ///</summary>
-        [Test]
+        [Fact]
         public void ColorMapTest()
         {
             Page target = new Page();
@@ -332,10 +273,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Compression
-        ///</summary>
-        [Test]
+        [Fact]
         public void CompressionTest()
         {
             Page target = new Page();
@@ -346,10 +284,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Copyright
-        ///</summary>
-        [Test]
+        [Fact]
         public void CopyrightTest()
         {
             Page target = new Page();
@@ -360,10 +295,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for DateTime
-        ///</summary>
-        [Test]
+        [Fact]
         public void DateTimeTest()
         {
             Page target = new Page();
@@ -374,10 +306,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ExtraSamples
-        ///</summary>
-        [Test]
+        [Fact]
         public void ExtraSamplesTest()
         {
             Page target = new Page();
@@ -388,10 +317,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FillOrder
-        ///</summary>
-        [Test]
+        [Fact]
         public void FillOrderTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -403,10 +329,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FreeByteCounts
-        ///</summary>
-        [Test]
+        [Fact]
         public void FreeByteCountsTest()
         {
             Page target = new Page();
@@ -417,10 +340,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FreeOffsets
-        ///</summary>
-        [Test]
+        [Fact]
         public void FreeOffsetsTest()
         {
             Page target = new Page();
@@ -431,10 +351,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for GrayResponseCurve
-        ///</summary>
-        [Test]
+        [Fact]
         public void GrayResponseCurveTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -446,10 +363,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for GrayResponseUnit
-        ///</summary>
-        [Test]
+        [Fact]
         public void GrayResponseUnitTest()
         {
             Page target = new Page();
@@ -460,10 +374,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for HostComputer
-        ///</summary>
-        [Test]
+        [Fact]
         public void HostComputerTest()
         {
             Page target = new Page();
@@ -474,10 +385,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageData
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageDataTest()
         {
             Page target = new Page();
@@ -488,10 +396,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageDescription
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageDescriptionTest()
         {
             Page target = new Page();
@@ -502,10 +407,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageLength
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageLengthTest()
         {
             Page target = new Page();
@@ -516,10 +418,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageWidth
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageWidthTest()
         {
             Page target = new Page();
@@ -530,10 +429,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Make
-        ///</summary>
-        [Test]
+        [Fact]
         public void MakeTest()
         {
             Page target = new Page();
@@ -544,10 +440,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for MaxSampleValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void MaxSampleValueTest()
         {
             Page target = new Page();
@@ -558,10 +451,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for MinSampleValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void MinSampleValueTest()
         {
             Page target = new Page();
@@ -572,10 +462,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Model
-        ///</summary>
-        [Test]
+        [Fact]
         public void ModelTest()
         {
             Page target = new Page();
@@ -586,10 +473,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for NewSubfileType
-        ///</summary>
-        [Test]
+        [Fact]
         public void NewSubfileTypeTest()
         {
             Page target = new Page();
@@ -600,10 +484,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for NextIfdAddress
-        ///</summary>
-        [Test]
+        [Fact]
         public void NextPageAddressTest()
         {
             Page target = new Page();
@@ -614,10 +495,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Orientation
-        ///</summary>
-        [Test]
+        [Fact]
         public void OrientationTest()
         {
             Page target = new Page();
@@ -628,10 +506,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageNumber
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageNumberTest()
         {
             Page target = new Page();
@@ -642,10 +517,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageTotal
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageTotalTest()
         {
             Page target = new Page();
@@ -656,10 +528,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PhotometricInterpretation
-        ///</summary>
-        [Test]
+        [Fact]
         public void PhotometricInterpretationTest()
         {
             Page target = new Page();
@@ -670,10 +539,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PlanarConfiguration
-        ///</summary>
-        [Test]
+        [Fact]
         public void PlanarConfigurationTest()
         {
             Page target = new Page();
@@ -684,10 +550,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ResolutionUnit
-        ///</summary>
-        [Test]
+        [Fact]
         public void ResolutionUnitTest()
         {
             Page target = new Page();
@@ -698,10 +561,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for RowsPerStrip
-        ///</summary>
-        [Test]
+        [Fact]
         public void RowsPerStripTest()
         {
             Page target = new Page();
@@ -712,10 +572,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for SamplesPerPixel
-        ///</summary>
-        [Test]
+        [Fact]
         public void SamplesPerPixelTest()
         {
             Page target = new Page();
@@ -726,10 +583,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Software
-        ///</summary>
-        [Test]
+        [Fact]
         public void SoftwareTest()
         {
             Page target = new Page();
@@ -740,10 +594,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripByteCounts
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripByteCountsTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -755,10 +606,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripOffsets
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripOffsetsTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -770,10 +618,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripsPerImage
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripsPerImageTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -783,10 +628,7 @@
             Assert.AreEqual((uint)1, actual);
         }
 
-        /// <summary>
-        ///A test for Threshholding
-        ///</summary>
-        [Test]
+        [Fact]
         public void ThreshholdingTest()
         {
             Page target = new Page();
@@ -797,10 +639,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for XResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void XResolutionTest()
         {
             Page target = new Page();
@@ -811,10 +650,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for YResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void YResolutionTest()
         {
             Page target = new Page();
@@ -825,10 +661,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for GetAsciiFieldValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void GetAsciiFieldValueTest()
         {
             var tif = Tif.Load(testFilePath);
@@ -839,10 +672,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for SetAsciiFieldValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void SetAsciiFieldValueNullTest()
         {
             Page target = new Page();
@@ -852,10 +682,7 @@
             Assert.AreEqual(string.Empty, target.GetAsciiFieldValue(tag));
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest1()
         {
             var tif = Tif.Load(testFilePath);
@@ -863,10 +690,7 @@
             Assert.AreEqual(false, string.IsNullOrEmpty(foo));
         }
 
-        /// <summary>
-        ///A test for BitsPerSample
-        ///</summary>
-        [Test]
+        [Fact]
         public void BitsPerSampleTest1()
         {
             Page target = new Page();
@@ -876,10 +700,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for CellLength
-        ///</summary>
-        [Test]
+        [Fact]
         public void CellLengthTest1()
         {
             Page target = new Page();
@@ -889,10 +710,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for CellWidth
-        ///</summary>
-        [Test]
+        [Fact]
         public void CellWidthTest1()
         {
             Page target = new Page();
@@ -902,10 +720,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ColorMap
-        ///</summary>
-        [Test]
+        [Fact]
         public void ColorMapTest1()
         {
             Page target = new Page();
@@ -915,10 +730,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Compression
-        ///</summary>
-        [Test]
+        [Fact]
         public void CompressionTest1()
         {
             Page target = new Page();
@@ -928,10 +740,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ExtraSamples
-        ///</summary>
-        [Test]
+        [Fact]
         public void ExtraSamplesTest1()
         {
             Page target = new Page();
@@ -941,10 +750,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FillOrder
-        ///</summary>
-        [Test]
+        [Fact]
         public void FillOrderTest1()
         {
             Page target = new Page();
@@ -954,10 +760,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FreeByteCounts
-        ///</summary>
-        [Test]
+        [Fact]
         public void FreeByteCountsTest1()
         {
             Page target = new Page();
@@ -967,10 +770,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for FreeOffsets
-        ///</summary>
-        [Test]
+        [Fact]
         public void FreeOffsetsTest1()
         {
             Page target = new Page();
@@ -980,10 +780,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for GrayResponseCurve
-        ///</summary>
-        [Test]
+        [Fact]
         public void GrayResponseCurveTest1()
         {
             Page target = new Page();
@@ -993,10 +790,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for GrayResponseUnit
-        ///</summary>
-        [Test]
+        [Fact]
         public void GrayResponseUnitTest1()
         {
             Page target = new Page();
@@ -1006,10 +800,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageLength
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageLengthTest1()
         {
             Page target = new Page();
@@ -1019,10 +810,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ImageWidth
-        ///</summary>
-        [Test]
+        [Fact]
         public void ImageWidthTest1()
         {
             Page target = new Page();
@@ -1032,10 +820,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for MaxSampleValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void MaxSampleValueTest1()
         {
             Page target = new Page();
@@ -1045,10 +830,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for MinSampleValue
-        ///</summary>
-        [Test]
+        [Fact]
         public void MinSampleValueTest1()
         {
             Page target = new Page();
@@ -1058,10 +840,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for NewSubfileType
-        ///</summary>
-        [Test]
+        [Fact]
         public void NewSubfileTypeTest1()
         {
             Page target = new Page();
@@ -1071,10 +850,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Orientation
-        ///</summary>
-        [Test]
+        [Fact]
         public void OrientationTest1()
         {
             Page target = new Page();
@@ -1084,10 +860,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageNumber
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageNumberTest1()
         {
             Page target = new Page();
@@ -1097,10 +870,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageTotal
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageTotalTest1()
         {
             Page target = new Page();
@@ -1110,10 +880,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PhotometricInterpretation
-        ///</summary>
-        [Test]
+        [Fact]
         public void PhotometricInterpretationTest1()
         {
             Page target = new Page();
@@ -1123,10 +890,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PlanarConfiguration
-        ///</summary>
-        [Test]
+        [Fact]
         public void PlanarConfigurationTest1()
         {
             Page target = new Page();
@@ -1136,10 +900,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ResolutionUnit
-        ///</summary>
-        [Test]
+        [Fact]
         public void ResolutionUnitTest1()
         {
             Page target = new Page();
@@ -1149,10 +910,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for RowsPerStrip
-        ///</summary>
-        [Test]
+        [Fact]
         public void RowsPerStripTest1()
         {
             Page target = new Page(); 
@@ -1162,10 +920,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for SamplesPerPixel
-        ///</summary>
-        [Test]
+        [Fact]
         public void SamplesPerPixelTest1()
         {
             Page target = new Page(); 
@@ -1175,10 +930,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripByteCounts
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripByteCountsTest1()
         {
             Page target = new Page(); 
@@ -1188,10 +940,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripOffsets
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripOffsetsTest1()
         {
             Page target = new Page(); 
@@ -1201,10 +950,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Threshholding
-        ///</summary>
-        [Test]
+        [Fact]
         public void ThreshholdingTest1()
         {
             Page target = new Page();
@@ -1214,10 +960,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for XResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void XResolutionTest1()
         {
             Page target = new Page(); 
@@ -1227,10 +970,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for YResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void YResolutionTest1()
         {
             Page target = new Page(); 
@@ -1240,10 +980,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageNumber
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageNumberTest2()
         {
             Page target = new Page();
@@ -1261,10 +998,7 @@
             Assert.AreEqual(target.PageTotal, 8);
         }
 
-        /// <summary>
-        ///A test for StripByteCounts
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripByteCountsTest2()
         {
             Page target = new Page(); 
@@ -1275,10 +1009,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for StripOffsets
-        ///</summary>
-        [Test]
+        [Fact]
         public void StripOffsetsTest2()
         {
             Page target = new Page();
@@ -1289,10 +1020,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for XResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void XResolutionTest2()
         {
             Page target = new Page(); 
@@ -1302,10 +1030,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for YResolution
-        ///</summary>
-        [Test]
+        [Fact]
         public void YResolutionTest2()
         {
             Page target = new Page(); 
@@ -1316,10 +1041,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for ExtraSamples
-        ///</summary>
-        [Test]
+        [Fact]
         public void ExtraSamplesTest2()
         {
             Page target = new Page(); 
@@ -1330,10 +1052,7 @@
             CollectionAssert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for PageNumber
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageNumberTest3()
         {
             Page target = new Page(); 

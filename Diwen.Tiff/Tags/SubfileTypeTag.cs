@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace Diwen.Tiff.Tags
+﻿namespace Diwen.Tiff.Tags
 {
+    using System;
+    using Diwen.Tiff.TagValues;
+
     [Serializable()]
     [Obsolete("NewSubfileTypeTag should be used instead.")]
     public class SubfileTypeTag : ShortTag

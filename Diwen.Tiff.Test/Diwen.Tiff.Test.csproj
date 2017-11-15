@@ -1,81 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5D07A7F6-54FF-4D7B-8005-5FC40E8C70C5}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Diwen.Tiff.Test</RootNamespace>
-    <AssemblyName>Diwen.Tiff.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="nunit.framework, Version=2.6.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <Package>nunit</Package>
-    </Reference>
-    <Reference Include="System.Drawing" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="FieldCollectionTest.cs" />
-    <Compile Include="FieldTest.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="PageCollectionTest.cs" />
-    <Compile Include="PageTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rational32Test.cs" />
-    <Compile Include="TifTest.cs" />
-    <Compile Include="URational32Test.cs" />
+    <ProjectReference Include="..\Diwen.Tiff\Diwen.Tiff.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Diwen.Tiff\Diwen.Tiff.csproj">
-      <Project>{05A3F0CE-7CD5-4D7B-B208-33909E97D649}</Project>
-      <Name>Diwen.Tiff</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="testfiles\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="testfiles\4.2.04.tiff" />
-    <None Include="testfiles\Untitled.tif" />
-    <None Include="testfiles\base-2.tif" />
-    <None Include="testfiles\color.tif" />
-    <None Include="testfiles\combined.tif" />
-    <None Include="testfiles\foo.tif" />
-    <None Include="testfiles\lenaII.tif" />
-    <None Include="testfiles\lenaMM.tif" />
-    <None Include="testfiles\mod.tif" />
-    <None Include="testfiles\original.tif" />
-    <None Include="testfiles\reversed.tif" />
-    <None Include="testfiles\scanned.tif" />
-    <None Include="testfiles\tiled.tif" />
-    <None Include="testfiles\wide.tif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="testfiles\TIFF_file_format_test.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
 </Project>

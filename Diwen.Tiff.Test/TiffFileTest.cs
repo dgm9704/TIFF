@@ -1,76 +1,18 @@
-﻿using System.Drawing;
-using System.IO;
-using System.Reflection;
-using Diwen.Tiff.Tags;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using Diwen.Tiff.TagValues;
-
-
-namespace Diwen.Tiff.Test
+﻿namespace Diwen.Tiff.Test
 {
+    using System.Drawing;
+    using System.IO;
+    using System.Reflection;
+    using Diwen.Tiff.Tags;
+    using System.Linq;
+    using System;
+    using Diwen.Tiff.TagValues;
+    using Xunit;
 
-
-    /// <summary>
-    ///This is a test class for TiffFileTest and is intended
-    ///to contain all TiffFileTest Unit Tests
-    ///</summary>
-    [TestClass()]
     public class TiffFileTest
     {
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        [TestMethod()]
+        [Fact]
         public void CopyAndModifyPages()
         {
             var newTif = new Tif();
@@ -81,20 +23,20 @@ namespace Diwen.Tiff.Test
             var values = new ushort[] { 0, 2 };
             var tag = new Tag(TagType.PageNumber, DataType.Short, values);
             newTif.Pages[0].Tags.Add(tag);
-            tag = new Tag(TagType.PageNumber, DataType.Short, new ushort[] { 1, 2 });
+            tag = new TiffTag(TagType.PageNumber, DataType.Short, new ushort[] { 1, 2 });
             newTif.Pages[1].Tags.Add(tag);
 
             newTif.Save(@"c:\copiedpages_2.tif");
         }
 
 
-        [TestMethod()]
+        [Fact]
         public void CombinePagesAndModifyTags()
         {
             var newFile = new Tif();
             var files = Directory.GetFiles(@"c:\img");
 
-            Tag swTag = new SoftwareTag("Diwen.Tiff");
+            TiffTag swTag = new SoftwareTag("Diwen.Tiff");
 
             var comp = new CompressionTag(Compression.CCITT4);
 
@@ -114,7 +56,7 @@ namespace Diwen.Tiff.Test
             newFile.Save(@"c:\combined_and_modified.tif");
         }
 
-        [TestMethod()]
+        [Fact]
         public void Tagging()
         {
             var files = Directory.GetFiles(@"c:\img");

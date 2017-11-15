@@ -1,9 +1,10 @@
-﻿using System;
-
-namespace Diwen.Tiff.Tags
+﻿namespace Diwen.Tiff.Tags
 {
+    using System;
+    using Diwen.Tiff.TagValues;
+
     [Serializable()]
-    public class AsciiTag : Tag
+    public class AsciiTag : TiffTag
     {
         public AsciiTag(TagType type)
         {

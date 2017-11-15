@@ -7,18 +7,13 @@
     using System;
     using Diwen.Tiff;
     using System.Diagnostics;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for TiffFileTest and is intended
-    ///to contain all TiffFileTest Unit Tests
-    ///</summary>
-    [TestFixture]
     public class TifTest
     {
         private static string testFilePath = Path.Combine("testfiles", "TIFF_file_format_test.tif");
 
-        [Test]
+        [Fact]
         public void LoadFromFile()
         {
             Tif tif;
@@ -27,7 +22,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void LoadFromStream()
         {
             Tif tif;
@@ -38,7 +33,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void LoadFromStreamNull()
         {
@@ -50,7 +45,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void LoadFromBytes()
         {
             Tif tif;
@@ -61,7 +56,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void SaveToFile()
         {
             Tif tif;
@@ -73,7 +68,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void SaveToStream()
         {
             Tif tif;
@@ -88,7 +83,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SaveToStreamNull()
         {
@@ -105,7 +100,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void GetData()
         {
             Tif tif;
@@ -117,7 +112,7 @@
             Assert.IsInstanceOfType(typeof(Tif), tif);
         }
 
-        [Test]
+        [Fact]
         public void DuplicatePage()
         {
             var tif = Tif.Load(testFilePath);
@@ -127,7 +122,7 @@
             Assert.AreEqual(numPages + 1, tif.Count);
         }
 
-        [Test]
+        [Fact]
         public void RemovePage()
         {
             var tif = Tif.Load(testFilePath);
@@ -137,7 +132,7 @@
             Assert.AreEqual(numPages - 1, tif.Count);
         }
 
-        [Test]
+        [Fact]
         public void AddPages()
         {
             var tif1 = Tif.Load(testFilePath);
@@ -158,7 +153,7 @@
             Assert.AreEqual(2, newTif.Count);
         }
 
-        [Test]
+        [Fact]
         public void CopyAndModifyPages()
         {
             string originalName = @"C:\lena_kodak.tif";
@@ -193,7 +188,7 @@
         }
 
 
-        //[Test]
+        //[Fact]
         //public void CombinePagesAndModifyTags()
         //{
         //    var newFile = new Tif();
@@ -217,7 +212,7 @@
         //    newFile.Save(@"c:\combined_and_modified.tif");
         //}
 
-        [Test]
+        [Fact]
         public void TiledTiffTest()
         {
             var tif = Tif.Load("tiled.tif");
@@ -225,7 +220,7 @@
 
         }
 
-        [Test]
+        [Fact]
         public void SetPagenumbersTest()
         {
             var tif = Tif.Load(@"c:\pruned.tif");
@@ -236,7 +231,7 @@
         /// <summary>
         ///A test for Copy
         ///</summary>
-        [Test]
+        [Fact]
         public void CopyTest()
         {
             Tif original = Tif.Load(testFilePath);
@@ -245,7 +240,7 @@
         }
 
 
-        //[Test]
+        //[Fact]
         //public void LibTiffPicTest()
         //{
         //    string folder = @"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic";
@@ -255,13 +250,13 @@
         //    }
         //}
 
-        //[Test]
+        //[Fact]
         //public void LibTiffPicTest1()
         //{
         //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\cramps-tile.tif"));
         //}
 
-        //[Test]
+        //[Fact]
         //public void LibTiffPicTest2()
         //{
         //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif"));
@@ -269,13 +264,13 @@
 
         ////C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif
 
-        //[Test]
+        //[Fact]
         //public void MMTest1()
         //{
         //    Console.WriteLine(Tif.Load(@"c:\lena.tif"));
         //}
 
-        [Test]
+        [Fact]
         public void TiffTestSuiteComplete()
         {
             string folder = @"D:\tiff_test_images";

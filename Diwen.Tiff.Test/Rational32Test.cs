@@ -2,20 +2,12 @@
 {
     using Diwen.Tiff;
     using System;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for Rational32Test and is intended
-    ///to contain all Rational32Test Unit Tests
-    ///</summary>
-    [TestFixture]
     public class Rational32Test
     {
     
-        /// <summary>
-        ///A test for Rational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void Rational32ConstructorTest()
         {
             Rational32 test = new Rational32(42, 666);
@@ -27,10 +19,7 @@
             Assert.AreEqual(test, target);
         }
 
-        /// <summary>
-        ///A test for Rational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void Rational32ConstructorTest1()
         {
             int numerator = 0;
@@ -40,10 +29,7 @@
             Assert.AreEqual(denominator, target.Denominator);
         }
 
-        /// <summary>
-        ///A test for Rational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Rational32ConstructorTest2()
         {
@@ -52,10 +38,7 @@
             Rational32 target = new Rational32(data, startIndex);
         }
 
-        /// <summary>
-        ///A test for Rational32 Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Rational32ConstructorTest3()
         {
@@ -64,10 +47,7 @@
             Rational32 target = new Rational32(data, startIndex);
         }
 
-        /// <summary>
-        ///A test for Equals
-        ///</summary>
-        [Test]
+        [Fact]
         public void EqualsTest()
         {
             Rational32 target = new Rational32();
@@ -79,10 +59,7 @@
 
         }
 
-        /// <summary>
-        ///A test for GetBytes
-        ///</summary>
-        [Test]
+        [Fact]
         public void GetBytesTest()
         {
             Rational32 test = new Rational32(42, 666);
@@ -94,10 +71,7 @@
             CollectionAssert.AreEqual(data, target.GetBytes());
         }
 
-        /// <summary>
-        ///A test for GetHashCode
-        ///</summary>
-        [Test]
+        [Fact]
         public void GetHashCodeTest()
         {
             Rational32 a = new Rational32(42, 666);
@@ -105,10 +79,7 @@
             Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest()
         {
             Rational32 target = new Rational32(42, 666);
@@ -117,10 +88,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for op_Equality
-        ///</summary>
-        [Test]
+        [Fact]
         public void op_EqualityTest()
         {
             Rational32 value1 = new Rational32();
@@ -131,10 +99,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for op_Inequality
-        ///</summary>
-        [Test]
+        [Fact]
         public void op_InequalityTest()
         {
             Rational32 value1 = new Rational32(1, 2);
@@ -145,10 +110,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Denominator
-        ///</summary>
-        [Test]
+        [Fact]
         public void DenominatorTest()
         {
             Rational32 target = new Rational32(42, 666);
@@ -159,10 +121,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Numerator
-        ///</summary>
-        [Test]
+        [Fact]
         public void NumeratorTest()
         {
             Rational32 target = new Rational32(42, 666);
@@ -173,10 +132,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Inverse
-        ///</summary>
-        [Test]
+        [Fact]
         public void InverseTest()
         {
             Rational32 target = new Rational32(1207959552, 16777216);
@@ -186,10 +142,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Reduce
-        ///</summary>
-        [Test]
+        [Fact]
         public void ReduceTest()
         {
             Rational32 target = new Rational32(1207959552, 16777216);
@@ -199,10 +152,7 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Reduce
-        ///</summary>
-        [Test]
+        [Fact]
         public void ReduceTest2()
         {
             Rational32 target = new Rational32(9, 25);

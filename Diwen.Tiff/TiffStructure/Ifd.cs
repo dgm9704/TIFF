@@ -12,7 +12,7 @@
     {
         public List<Ifd> SubIfds { get; set; }
 
-        internal Ifd()
+        public Ifd()
             : base(null, 0)
         {
         }

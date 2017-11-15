@@ -1,8 +1,9 @@
-﻿using System;
-using System.Globalization;
-
-namespace Diwen.Tiff.Tags
+﻿namespace Diwen.Tiff.Tags
 {
+    using System;
+    using System.Globalization;
+    using Diwen.Tiff.TagValues;
+
     [Serializable()]
     public class DateTimeTag : AsciiTag
     {
@@ -12,7 +13,7 @@ namespace Diwen.Tiff.Tags
         }
 
         public DateTimeTag(DateTime value)
-            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss",CultureInfo.InvariantCulture))
+            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss", CultureInfo.InvariantCulture))
         {
         }
 

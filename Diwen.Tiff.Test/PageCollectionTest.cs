@@ -3,29 +3,17 @@
     using Diwen.Tiff;
     using System;
     using System.Collections.Generic;
-    using NUnit.Framework;
+    using Xunit;
 
-    /// <summary>
-    ///This is a test class for PageCollectionTest and is intended
-    ///to contain all PageCollectionTest Unit Tests
-    ///</summary>
-    [TestFixture]
     public class PageCollectionTest
     {
-
-        /// <summary>
-        ///A test for PageCollection Constructor
-        ///</summary>
-        [Test]
+        [Fact]
         public void PageCollectionConstructorTest()
         {
             PageCollection target = new PageCollection();
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddTest()
         {
             PageCollection target = new PageCollection();
@@ -33,10 +21,7 @@
             target.Add(page);
         }
 
-        /// <summary>
-        ///A test for AddRange
-        ///</summary>
-        [Test]
+        [Fact]
         public void AddRangeTest()
         {
             PageCollection target = new PageCollection();
@@ -44,10 +29,7 @@
             target.AddRange(pages);
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest()
         {
             PageCollection target = new PageCollection();
@@ -57,34 +39,23 @@
             Assert.AreEqual(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Add
-        ///</summary>
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void AddTest1()
         {
             PageCollection target = new PageCollection();
             Page page = null;
-            target.Add(page);
+            Assert.Throws<ArgumentNullException>(() => target.Add(page));
         }
 
-        /// <summary>
-        ///A test for AddRange
-        ///</summary>
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void AddRangeTest1()
         {
             PageCollection target = new PageCollection();
             IEnumerable<Page> pages = null;
-            target.AddRange(pages);
+            Assert.Throws<ArgumentNullException>(() => target.AddRange(pages));
         }
 
-        /// <summary>
-        ///A test for ToString
-        ///</summary>
-        [Test]
+        [Fact]
         public void ToStringTest1()
         {
             PageCollection target = new PageCollection { new Page { new Field(Tag.Software, FieldType.Ascii, new string[] { "Diwen.Tiff" }) } };
