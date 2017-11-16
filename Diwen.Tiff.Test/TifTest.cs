@@ -267,7 +267,7 @@
         [Fact]
         public void TiffTestSuiteComplete()
         {
-            string folder = "tiff_test_images";
+            string folder = "libtiffpic";
             foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
             {
                 Console.WriteLine(Tif.Load(file));
