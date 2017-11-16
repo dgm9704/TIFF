@@ -45,17 +45,7 @@
 
         public ushort PageNumber
         {
-            get
-            {
-                if (this.Contains(TagType.PageNumber))
-                {
-                    return (ushort)this[TagType.PageNumber].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.PageNumber, 0);
             set
             {
                 if (this.Contains(TagType.PageNumber))
