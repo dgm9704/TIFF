@@ -35,5 +35,15 @@
                 this.Add(page);
             }
         }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach(var page in this)
+            {
+                sb.AppendLine(page.ToString());
+            }
+            return sb.ToString();
+        }
     }
 }

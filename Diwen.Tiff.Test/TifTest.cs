@@ -58,7 +58,7 @@
             Tif tif;
             tif = Tif.Load(testFilePath);
 
-            string path = Path.Combine("output","TIFF_file_format_test.new");
+            string path = Path.Combine("output", "TIFF_file_format_test.new");
             tif.Save(path);
             tif = Tif.Load(path);
             Assert.IsType<Tif>(tif);
@@ -82,16 +82,9 @@
         [Fact]
         public void SaveToStreamNull()
         {
-            Tif tif;
-            tif = Tif.Load(testFilePath);
+            var tif = Tif.Load(testFilePath);
             MemoryStream stream = null;
-
-            using (stream)
-            {
-                Assert.Throws<ArgumentNullException>(() => tif.Save(stream));
-                stream.Position = 0;
-                tif = Tif.Load(stream);
-            }
+            Assert.Throws<ArgumentNullException>(() => tif.Save(stream));
         }
 
         [Fact]
@@ -150,8 +143,8 @@
         [Fact]
         public void CopyAndModifyPages()
         {
-            string originalName = Path.Combine("testfiles","4.2.04.tiff");
-            string newName = Path.Combine("output","copiedpages_2.tif");
+            string originalName = Path.Combine("testfiles", "4.2.04.tiff");
+            string newName = Path.Combine("output", "copiedpages_2.tif");
 
             var newTif = new Tif();
             var tif = Tif.Load(originalName);
@@ -209,7 +202,7 @@
         [Fact]
         public void TiledTiffTest()
         {
-            var tif = Tif.Load(Path.Combine("testfiles","tiled.tif"));
+            var tif = Tif.Load(Path.Combine("testfiles", "tiled.tif"));
             var page = tif[0];
 
         }
@@ -217,9 +210,9 @@
         [Fact]
         public void SetPagenumbersTest()
         {
-            var tif = Tif.Load(Path.Combine("testfiles","pruned.tif"));
+            var tif = Tif.Load(Path.Combine("testfiles", "pruned.tif"));
             tif.SetPageNumbers();
-            tif.Save(Path.Combine("output","paged.tif"));
+            tif.Save(Path.Combine("output", "paged.tif"));
         }
 
         [Fact]

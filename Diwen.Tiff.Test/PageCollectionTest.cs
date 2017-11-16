@@ -34,8 +34,7 @@
         {
             PageCollection target = new PageCollection();
             string expected = string.Empty;
-            string actual;
-            actual = target.ToString();
+            string actual = target.ToString();
             Assert.Equal(expected, actual);
         }
 

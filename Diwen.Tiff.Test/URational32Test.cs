@@ -42,7 +42,7 @@
         {
             byte[] data = new byte[8];
             int startIndex = 7;
-            Assert.Throws<ArgumentNullException>(() => new URational32(data, startIndex));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new URational32(data, startIndex));
         }
 
         [Fact]
