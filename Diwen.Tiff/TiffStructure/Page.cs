@@ -530,169 +530,49 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag NewSubfileType
-        /// </summary>
         public NewSubfileType NewSubfileType
         {
-            get
-            {
-                if (this.Contains(TagType.NewSubfileType))
-                {
-                    return (NewSubfileType)this[TagType.NewSubfileType].Value;
-                }
-                else
-                {
-                    return NewSubfileType.None;
-                }
-            }
-            set
-            {
-                this.Add(TagType.NewSubfileType, value);
-            }
+            get => this.TagValueOrDefault<NewSubfileType>(TagType.NewSubfileType, NewSubfileType.None);
+            set => this.Add(TagType.NewSubfileType, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Orientation
-        /// </summary>
         public Orientation Orientation
         {
-            get
-            {
-                if (this.Contains(TagType.Orientation))
-                {
-                    return (Orientation)this[TagType.Orientation].Value;
-                }
-                else
-                {
-                    return Orientation.TopLeft;
-                }
-            }
-            set
-            {
-                this.Add(TagType.Orientation, value);
-            }
+            get => this.TagValueOrDefault<Orientation>(TagType.Orientation, Orientation.TopLeft);
+            set => this.Add(TagType.Orientation, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag PhotometricInterpretation
-        /// </summary>
         public PhotometricInterpretation PhotometricInterpretation
         {
-            get
-            {
-                if (this.Contains(TagType.PhotometricInterpretation))
-                {
-                    return (PhotometricInterpretation)this[TagType.PhotometricInterpretation].Value;
-                }
-                else
-                {
-                    return PhotometricInterpretation.WhiteIsZero;
-                }
-            }
-            set
-            {
-                this.Add(TagType.PhotometricInterpretation, value);
-            }
+            get => this.TagValueOrDefault<PhotometricInterpretation>(TagType.PhotometricInterpretation, PhotometricInterpretation.WhiteIsZero);
+            set => this.Add(TagType.PhotometricInterpretation, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag PlanarConfiguration
-        /// </summary>
         public PlanarConfiguration PlanarConfiguration
         {
-            get
-            {
-                if (this.Contains(TagType.PlanarConfiguration))
-                {
-                    return (PlanarConfiguration)this[TagType.PlanarConfiguration].Value;
-                }
-                else
-                {
-                    return PlanarConfiguration.Chunky;
-                }
-            }
-            set
-            {
-                this.Add(TagType.PlanarConfiguration, value);
-            }
+            get => this.TagValueOrDefault<PlanarConfiguration>(TagType.PlanarConfiguration, PlanarConfiguration.Chunky);
+            set => this.Add(TagType.PlanarConfiguration, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag ResolutionUnit
-        /// </summary>
         public ResolutionUnit ResolutionUnit
         {
-            get
-            {
-                if (this.Contains(TagType.ResolutionUnit))
-                {
-                    return (ResolutionUnit)this[TagType.ResolutionUnit].Value;
-                }
-                else
-                {
-                    return ResolutionUnit.Inch;
-                }
-            }
-            set
-            {
-                this.Add(TagType.ResolutionUnit, value);
-            }
+            get => this.TagValueOrDefault<ResolutionUnit>(TagType.ResolutionUnit, ResolutionUnit.Inch);
+            set => this.Add(TagType.ResolutionUnit, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag RowsPerStrip
-        /// </summary>
         public uint RowsPerStrip
         {
-            get
-            {
-                if (this.Contains(TagType.RowsPerStrip))
-                {
-                    return Convert.ToUInt32(this[TagType.RowsPerStrip].Value);
-                }
-                else
-                {
-                    return uint.MaxValue;
-                }
-            }
-            set
-            {
-                this.Add(TagType.RowsPerStrip, value);
-            }
+            get => this.TagValueOrDefault<uint>(TagType.RowsPerStrip, uint.MaxValue);
+            set => this.Add(TagType.RowsPerStrip, value);
         }
 
-        /// <summary>
-        /// Gets the number of strips per image calculated from ImageLength and RowsPerStrip
-        /// </summary>
         public uint StripsPerImage
-        {
-            get
-            {
-                return (this.ImageLength + this.RowsPerStrip - 1) / RowsPerStrip;
-            }
-        }
+        => (this.ImageLength + this.RowsPerStrip - 1) / RowsPerStrip;
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag SamplesPerPixel
-        /// </summary>
         public ushort SamplesPerPixel
         {
-            get
-            {
-                if (this.Contains(TagType.SamplesPerPixel))
-                {
-                    return (ushort)this[TagType.SamplesPerPixel].Value;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            set
-            {
-                this.Add(TagType.SamplesPerPixel, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.SamplesPerPixel);
+            set => this.Add(TagType.SamplesPerPixel, value);
         }
 
         public string Software
@@ -719,25 +599,19 @@
 
         public Threshholding Threshholding
         {
-            get => this.Contains(TagType.Threshholding)
-                ? (Threshholding)this[TagType.Threshholding].Value
-                : Threshholding.None;
+            get => this.TagValueOrDefault<Threshholding>(TagType.Threshholding, Threshholding.None);
             set => this.Add(TagType.Threshholding, value);
         }
 
         public URational32 XResolution
         {
-            get => this.Contains(TagType.XResolution)
-                ? (URational32)this[TagType.XResolution].Value
-                : default(URational32);
+            get => this.TagValueOrDefault<URational32>(TagType.XResolution);
             set => this.Add(TagType.XResolution, value);
         }
 
         public URational32 YResolution
         {
-            get => this.Contains(TagType.YResolution)
-                ? (URational32)this[TagType.YResolution].Value
-                : default(URational32);
+            get => this.TagValueOrDefault<URational32>(TagType.YResolution);
             set => this.Add(TagType.YResolution, value);
         }
     }

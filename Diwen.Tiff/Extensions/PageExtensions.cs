@@ -63,5 +63,15 @@
                 return (Page)formatter.Deserialize(stream);
             }
         }
+
+        public static T TagValueOrDefault<T>(this Page page, TagType tagType, T defaultValue)
+        => page.Contains(tagType)
+            ? (T)page[tagType].Value
+            : defaultValue;
+        public static T TagValueOrDefault<T>(this Page page, TagType tagType)
+        => page.Contains(tagType)
+            ? (T)page[tagType].Value
+            : default(T);
+
     }
 }
