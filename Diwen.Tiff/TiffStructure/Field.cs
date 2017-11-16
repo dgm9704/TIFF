@@ -14,7 +14,7 @@
 
         private static Dictionary<FieldType, FieldValueReader> fieldValueReaders =
             new Dictionary<FieldType, FieldValueReader>
-            { 
+            {
                 { FieldType.SByte, ReadSByteValues },
                 { FieldType.Ascii, ReadAsciiValues },
                 { FieldType.Short, ReadShortValues },
@@ -29,19 +29,8 @@
 
         #endregion
 
-        /// <summary>
-        /// Initializes a new instance of the field class
-        /// </summary>
-        public Field()
-        {
-        }
+        public Field() { }
 
-        /// <summary>
-        /// Initializes a new instance of the field class with the given properties
-        /// </summary>
-        /// <param name="tag">tag type</param>
-        /// <param name="type">data type</param>
-        /// <param name="values">values</param>
         public Field(TagType tag, FieldType type, Array values)
         {
             if (values == null)
@@ -55,11 +44,8 @@
             this.Count = (uint)values.Length;
         }
 
-        private delegate Array FieldValueReader(int count,byte[] data,bool flip);
+        private delegate Array FieldValueReader(int count, byte[] data, bool flip);
 
-        /// <summary>
-        /// Returns the values of the field object
-        /// </summary>
         public Array Values { get; private set; }
 
         /// <summary>
@@ -180,8 +166,8 @@
 
         internal static Enum EnumeratedFieldValue(Type enumType, string value)
             => enumType != null
-                ?  (Enum)Enum.Parse(enumType, value)
-                :  null;
+                ? (Enum)Enum.Parse(enumType, value)
+                : null;
 
         private static byte[] GetValueBytes(byte[] data, uint valueCount, FieldType type, uint offset, bool flip)
         {

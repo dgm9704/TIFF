@@ -1,6 +1,7 @@
 ﻿namespace Diwen.Tiff
 {
     using System;
+    using System.Collections;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
 
@@ -63,6 +64,11 @@
                 return (Page)formatter.Deserialize(stream);
             }
         }
+
+        public static T[] TagValuesOrDefault<T>(this Page page, TagType tagType, T[] defaultValue)
+        => page.Contains(tagType)
+            ? (T[])page[tagType].Values
+            : defaultValue;
 
         public static T TagValueOrDefault<T>(this Page page, TagType tagType, T defaultValue)
         => page.Contains(tagType)

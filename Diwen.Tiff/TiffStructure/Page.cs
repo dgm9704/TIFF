@@ -2,19 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
     using Diwen.Tiff.FieldValues;
-    using System.Net;
 
     [Serializable]
     public class Page : Ifd
     {
-        public Page()
-            : base()
-        {
-        }
+        public Page() : base() { }
 
         public List<byte[]> ImageData { get; set; }
 
@@ -30,31 +24,18 @@
         }
 
         public void SetAsciiFieldValue(TagType tag, string value)
-        {
-            this.Add(tag, value ?? string.Empty);
-        }
+        => this.Add(tag, value ?? string.Empty);
 
         public string GetAsciiFieldValue(TagType tag)
-        {
-            if (this.Contains(tag))
-            {
-                return string.Join("\n", new string((char[])this[tag].Values).Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
+        => this.Contains(tag)
+            ? string.Join("\n", new string((char[])this[tag].Values).Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries))
+            : string.Empty;
 
         public void Add(TagType tag, FieldType type, Array values)
-        {
-            this.Add(new Field(tag, type, values));
-        }
+        => this.Add(new Field(tag, type, values));
 
         public void Add(Tag tag)
-        {
-            this.Add(new Field(tag.TagType, (FieldType)tag.FieldType, tag.Values));
-        }
+        => this.Add(new Field(tag.TagType, (FieldType)tag.FieldType, tag.Values));
 
         public string Artist
         {
@@ -116,160 +97,50 @@
 
         public ushort BitsPerSample
         {
-            get
-            {
-                if (this.Contains(TagType.BitsPerSample))
-                {
-                    return (ushort)this[TagType.BitsPerSample].Value;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            set
-            {
-                this.Add(TagType.BitsPerSample, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.BitsPerSample, 1);
+            set => this.Add(TagType.BitsPerSample, value);
         }
 
         public ushort CellLength
         {
-            get
-            {
-                if (this.Contains(TagType.CellLength))
-                {
-                    return (ushort)this[TagType.CellLength].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.CellLength, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.CellLength, 0);
+            set => this.Add(TagType.CellLength, value);
         }
 
         public ushort CellWidth
         {
-            get
-            {
-                if (this.Contains(TagType.CellWidth))
-                {
-                    return (ushort)this[TagType.CellWidth].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.CellWidth, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.CellWidth, 0);
+            set => this.Add(TagType.CellWidth, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag ColorMap
-        /// </summary>
         public ushort[] ColorMap
         {
-            get
-            {
-                if (this.Contains(TagType.ColorMap))
-                {
-                    return (ushort[])this[TagType.ColorMap].Values;
-                }
-                else
-                {
-                    return new ushort[] { };
-                }
-            }
-            set
-            {
-                this.Add(TagType.ColorMap, FieldType.Short, value);
-            }
+            get => this.TagValuesOrDefault<ushort>(TagType.ColorMap, new ushort[0]);
+            set => this.Add(TagType.ColorMap, FieldType.Short, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Compression
-        /// </summary>
         public Compression Compression
         {
-            get
-            {
-                if (this.Contains(TagType.Compression))
-                {
-                    return (Compression)this[TagType.Compression].Value;
-                }
-                else
-                {
-                    return Compression.NoCompression;
-                }
-            }
-            set
-            {
-                this.Add(TagType.Compression, value);
-            }
+            get => this.TagValueOrDefault<Compression>(TagType.Compression, Compression.NoCompression);
+            set => this.Add(TagType.Compression, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Copyright
-        /// </summary>
         public string Copyright
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.Copyright);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.Copyright, value);
-            }
+            get => GetAsciiFieldValue(TagType.Copyright);
+            set => SetAsciiFieldValue(TagType.Copyright, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag DateTime
-        /// </summary>
         public string DateTime
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.DateTime);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.DateTime, value);
-            }
+            get => GetAsciiFieldValue(TagType.DateTime);
+            set => SetAsciiFieldValue(TagType.DateTime, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag ExtraSamples
-        /// </summary>
         public ExtraSampleType[] ExtraSamples
         {
-            get
-            {
-                if (this.Contains(TagType.ExtraSamples))
-                {
-                    return (ExtraSampleType[])this[TagType.ExtraSamples].Values;
-                }
-                else
-                {
-                    return new ExtraSampleType[] { };
-                }
-            }
-            set
-            {
-                if (value == null)
-                {
-                    value = new ExtraSampleType[] { };
-                }
-
-                this.Add(TagType.ExtraSamples, FieldType.Short, value);
-            }
+            get => this.TagValuesOrDefault<ExtraSampleType>(TagType.ExtraSamples, new ExtraSampleType[0]);
+            set => this.Add(TagType.ExtraSamples, FieldType.Short, value ?? new ExtraSampleType[0]);
         }
 
         public FillOrder FillOrder
@@ -292,17 +163,7 @@
 
         public ushort[] GrayResponseCurve
         {
-            get
-            {
-                if (this.Contains(TagType.GrayResponseCurve))
-                {
-                    return (ushort[])this[TagType.GrayResponseCurve].Values;
-                }
-                else
-                {
-                    return new ushort[] { };
-                }
-            }
+            get => this.TagValuesOrDefault<ushort>(TagType.GrayResponseCurve, new ushort[0]);
             set => this.Add(TagType.GrayResponseCurve, FieldType.Short, value);
         }
 
@@ -326,7 +187,7 @@
 
         public uint ImageLength
         {
-            get => this.TagValueOrDefault<ushort>(TagType.ImageLength, 0);
+            get => this.TagValueOrDefault<uint>(TagType.ImageLength, 0);
             set => this.Add(TagType.ImageLength, value);
         }
 
@@ -418,17 +279,13 @@
 
         public uint[] StripByteCounts
         {
-            get => this.Contains(TagType.StripByteCounts)
-                ? (uint[])this[TagType.StripByteCounts].Values
-                : new uint[0];
+            get => this.TagValuesOrDefault<uint>(TagType.StripByteCounts, new uint[0]);
             set => this.Add(TagType.StripByteCounts, FieldType.Long, value ?? new uint[0]);
         }
 
         public uint[] StripOffsets
         {
-            get => this.Contains(TagType.StripOffsets)
-                ? (uint[])this[TagType.StripOffsets].Values
-                : new uint[0];
+            get => this.TagValuesOrDefault<uint>(TagType.StripOffsets, new uint[0]);
             set => this.Add(TagType.StripOffsets, FieldType.Long, value ?? new uint[0]);
         }
 
