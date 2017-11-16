@@ -177,7 +177,9 @@
 
         public uint ImageLength
         {
-            get => this.TagValueOrDefault<uint>(TagType.ImageLength, 0);
+            get => this.Contains(TagType.ImageLength)
+                ? Convert.ToUInt32(this[TagType.ImageLength].Value) // TODO: check special case for this tag
+                : 0;
             set => this.Add(TagType.ImageLength, value);
         }
 
