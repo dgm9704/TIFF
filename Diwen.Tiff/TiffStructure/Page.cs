@@ -272,75 +272,24 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag FillOrder
-        /// </summary>
         public FillOrder FillOrder
         {
-            get
-            {
-                if (this.Contains(TagType.FillOrder))
-                {
-                    return (FillOrder)this[TagType.FillOrder].Value;
-                }
-                else
-                {
-                    return FillOrder.LowBitsFirst;
-                }
-            }
-            set
-            {
-                this.Add(TagType.FillOrder, value);
-            }
+            get => this.TagValueOrDefault<FillOrder>(TagType.FillOrder, FillOrder.LowBitsFirst);
+            set => this.Add(TagType.FillOrder, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag FreeByteCounts
-        /// </summary>
         public uint FreeByteCounts
         {
-            get
-            {
-                if (this.Contains(TagType.FreeByteCounts))
-                {
-                    return (uint)this[TagType.FreeByteCounts].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.FreeByteCounts, value);
-            }
+            get => this.TagValueOrDefault<uint>(TagType.FreeByteCounts, 0);
+            set => this.Add(TagType.FreeByteCounts, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag FreeOffsets
-        /// </summary>
         public uint FreeOffsets
         {
-            get
-            {
-                if (this.Contains(TagType.FreeOffsets))
-                {
-                    return (uint)this[TagType.FreeOffsets].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.FreeOffsets, value);
-            }
+            get => this.TagValueOrDefault<uint>(TagType.FreeOffsets, 0);
+            set => this.Add(TagType.FreeOffsets, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag GrayResponseCurve
-        /// </summary>
         public ushort[] GrayResponseCurve
         {
             get
@@ -354,143 +303,52 @@
                     return new ushort[] { };
                 }
             }
-            set
-            {
-                this.Add(TagType.GrayResponseCurve, FieldType.Short, value);
-            }
+            set => this.Add(TagType.GrayResponseCurve, FieldType.Short, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag GrayResponseUnit
-        /// </summary>
         public GrayResponseUnit GrayResponseUnit
         {
-            get
-            {
-                if (this.Contains(TagType.GrayResponseUnit))
-                {
-                    return (GrayResponseUnit)this[TagType.GrayResponseUnit].Value;
-                }
-                else
-                {
-                    return GrayResponseUnit.Hundredths;
-                }
-            }
-            set
-            {
-                this.Add(TagType.GrayResponseUnit, value);
-            }
+            get => this.TagValueOrDefault<GrayResponseUnit>(TagType.GrayResponseUnit, GrayResponseUnit.Hundredths);
+            set => this.Add(TagType.GrayResponseUnit, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag HostComputer
-        /// </summary>
         public string HostComputer
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.HostComputer);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.HostComputer, value);
-            }
+            get => GetAsciiFieldValue(TagType.HostComputer);
+            set => SetAsciiFieldValue(TagType.HostComputer, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag ImageDescription
-        /// </summary>
         public string ImageDescription
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.ImageDescription);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.ImageDescription, value);
-            }
+            get => GetAsciiFieldValue(TagType.ImageDescription);
+            set => SetAsciiFieldValue(TagType.ImageDescription, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag ImageLebgth
-        /// </summary>
         public uint ImageLength
         {
-            get
-            {
-                if (this.Contains(TagType.ImageLength))
-                {
-                    return Convert.ToUInt32(this[TagType.ImageLength].Value);
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.ImageLength, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.ImageLength, 0);
+            set => this.Add(TagType.ImageLength, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag ImageWidth
-        /// </summary>
         public uint ImageWidth
         {
-            get
-            {
-                if (this.Contains(TagType.ImageWidth))
-                {
-                    return (uint)this[TagType.ImageWidth].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.ImageWidth, value);
-            }
+            get => this.TagValueOrDefault<uint>(TagType.ImageWidth, 0);
+            set => this.Add(TagType.ImageWidth, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Make
-        /// </summary>
         public string Make
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.Make);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.Make, value);
-            }
+            get => GetAsciiFieldValue(TagType.Make);
+            set => SetAsciiFieldValue(TagType.Make, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag MaxSampleValue
-        /// </summary>
+        private ushort DefaultMaxSampleValue()
+        => (ushort)(Math.Pow(2, this.BitsPerSample) - 1);
+
         public ushort MaxSampleValue
         {
-            get
-            {
-                if (this.Contains(TagType.MaxSampleValue))
-                {
-                    return (ushort)this[TagType.MaxSampleValue].Value;
-                }
-                else
-                {
-                    return (ushort)(Math.Pow(2, this.BitsPerSample) - 1);
-                }
-            }
-            set
-            {
-                this.Add(TagType.MaxSampleValue, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.MaxSampleValue, this.DefaultMaxSampleValue());
+            set => this.Add(TagType.MaxSampleValue, value);
         }
 
         public ushort MinSampleValue
