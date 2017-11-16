@@ -154,21 +154,11 @@
         }
 
         public void Sort()
-        {
-            ((List<Field>)Items).Sort((t1, t2) =>
-                {
-                    return t1.TagType.CompareTo(t2.TagType);
-                });
-        }
+        => ((List<Field>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
 
         protected override TagType GetKeyForItem(Field item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException("item");
-            }
-
-            return item.TagType;
-        }
+        => item != null
+            ? item.TagType
+            : throw new ArgumentException(nameof(item));
     }
 }

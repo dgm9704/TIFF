@@ -3,10 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
-    using Diwen.Tiff.Extensions;
     using Diwen.Tiff.TiffStructure;
 
     [Serializable]
@@ -21,43 +19,39 @@
         private static Dictionary<FieldType, ValueBytesMethod> valueByteMethods =
             new Dictionary<FieldType, ValueBytesMethod>
             {
-                { FieldType.Byte, GetBytes },
-                { FieldType.SByte, GetBytes },
-                { FieldType.Undefined, GetBytes },
-                { FieldType.Ascii, GetAsciiBytes },
-                { FieldType.Short, GetShortBytes },
-                { FieldType.SShort, GetSShortBytes },
-                { FieldType.Long, GetLongBytes },
-                { FieldType.SLong, GetSLongBytes },
-                { FieldType.Rational, GetRationalBytes },
-                { FieldType.SRational, GetSRationalBytes },
-                { FieldType.Float, GetFloatBytes },
-                { FieldType.Double, GetDoubleBytes },
+                [FieldType.Byte] = GetBytes,
+                [FieldType.SByte] = GetBytes,
+                [FieldType.Undefined] = GetBytes,
+                [FieldType.Ascii] = GetAsciiBytes,
+                [FieldType.Short] = GetShortBytes,
+                [FieldType.SShort] = GetSShortBytes,
+                [FieldType.Long] = GetLongBytes,
+                [FieldType.SLong] = GetSLongBytes,
+                [FieldType.Rational] = GetRationalBytes,
+                [FieldType.SRational] = GetSRationalBytes,
+                [FieldType.Float] = GetFloatBytes,
+                [FieldType.Double] = GetDoubleBytes,
             };
 
         private static ASCIIEncoding ascii = new ASCIIEncoding();
 
         internal static Dictionary<FieldType, int> ValueLength = new Dictionary<FieldType, int>
         {
-            { FieldType.Ascii, 1 },
-            { FieldType.Byte, 1 },
-            { FieldType.SByte, 1 },
-            { FieldType.Undefined, 1 },
-            { FieldType.Short, 2 },
-            { FieldType.SShort, 2 },
-            { FieldType.Long, 4 },
-            { FieldType.SLong, 4 },
-            { FieldType.Float, 4 },
-            { FieldType.Rational, 8 },
-            { FieldType.SRational, 8 },
-            { FieldType.Double,8 },
+            [FieldType.Ascii] = 1,
+            [FieldType.Byte] = 1,
+            [FieldType.SByte] = 1,
+            [FieldType.Undefined] = 1,
+            [FieldType.Short] = 2,
+            [FieldType.SShort] = 2,
+            [FieldType.Long] = 4,
+            [FieldType.SLong] = 4,
+            [FieldType.Float] = 4,
+            [FieldType.Rational] = 8,
+            [FieldType.SRational] = 8,
+            [FieldType.Double] = 8,
         };
 
-        public Tif()
-            : base()
-        {
-
-        }
+        public Tif() : base() { }
 
         private delegate byte[] ValueBytesMethod(Array values);
 
@@ -120,9 +114,7 @@
         }
 
         public void Save(string path)
-        {
-            File.WriteAllBytes(path, this.GetData());
-        }
+        => File.WriteAllBytes(path, this.GetData());
 
         public byte[] GetData()
         {
@@ -136,7 +128,7 @@
             }
 
             WriteHeader(pageDatas, fileData);
-            this.WritePageDatas(pageDatas, fileData);
+            WritePageDatas(pageDatas, fileData);
             return fileData.ToArray();
         }
 
@@ -163,11 +155,7 @@
         }
 
         internal static int GetValueLength(FieldType type)
-        {
-            int len = 0;
-            ValueLength.TryGetValue(type, out len);
-            return len;
-        }
+        => ValueLength.ValueOrDefault(type, 0);
 
         private static int GenerateTagData(int filelen, List<byte> pageData, Page page)
         {
@@ -273,27 +261,18 @@
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Source: " + this.Source);
-            sb.AppendLine("ByteOrder: " + this.ByteOrder.ToString());
+            sb.AppendLine($"Source: {Source}");
+            sb.AppendLine($"ByteOrder: {ByteOrder.ToString()}");
             for (int i = 0; i < this.Count; i++)
             {
-                sb.AppendLine("IFD " + i);
+                sb.AppendLine($"IFD {i}");
                 sb.AppendLine(this[i].ToString());
             }
             return sb.ToString();
         }
 
         private static byte[] ValueBytes(Array values, FieldType type)
-        {
-            if (valueByteMethods.ContainsKey(type))
-            {
-                return valueByteMethods[type](values);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        => valueByteMethods.ValueOrDefault(type, (v) => null)(values);
 
         private static byte[] GetDoubleBytes(Array values)
         {
@@ -362,16 +341,10 @@
         }
 
         private static byte[] GetAsciiBytes(Array values)
-        {
-            var bytes = ascii.GetBytes((char[])values);
-            return bytes;
-        }
+        => ascii.GetBytes((char[])values);
 
         private static byte[] GetBytes(Array values)
-        {
-            var bytes = values as byte[];
-            return bytes;
-        }
+        => values as byte[];
 
         private int GeneratePageData(List<List<byte>> pageDatas, int filelen, int i)
         {
@@ -406,14 +379,11 @@
                 fileData.AddRange(pd);
                 WriteIfd(fileData, this[i]);
 
-                if (i < this.Count - 1)
-                {
-                    fileData.AddRange(BitConverter.GetBytes((uint)(fileData.Count + pageDatas[i + 1].Count + 4)));
-                }
-                else
-                {
-                    fileData.AddRange(new byte[] { 0, 0, 0, 0 });
-                }
+                var data = i < this.Count - 1
+                    ? BitConverter.GetBytes((uint)(fileData.Count + pageDatas[i + 1].Count + 4))
+                    : new byte[] { 0, 0, 0, 0 };
+
+                fileData.AddRange(data);
             }
         }
 
@@ -435,111 +405,127 @@
         internal static byte[] GetBytes(byte[] source, int start, int count, bool flip)
         {
             if (source == null || source.Length < (start + count) || count == 0 || start < 0)
-            {
                 return new byte[] { };
-            }
 
             var bytes = new byte[count];
             Buffer.BlockCopy(source, start, bytes, 0, count);
-            if (flip)
-            {
-                bytes = ReverseBytes(bytes);
-            }
 
-            return bytes;
+            return flip
+                ? ReverseBytes(bytes)
+                : bytes;
         }
 
         public static short SwapInt16(short v)
-        {
-            return (short)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
-        }
+        => (short)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
 
         public static ushort SwapUInt16(ushort v)
-        {
-            return (ushort)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
-        }
+        => (ushort)(((v & 0xff) << 8) | ((v >> 8) & 0xff));
 
         public static int SwapInt32(int v)
-        {
-            return (int)(((SwapInt16((short)v) & 0xffff) << 0x10) |
+        => (int)(((SwapInt16((short)v) & 0xffff) << 0x10) |
             (SwapInt16((short)(v >> 0x10)) & 0xffff));
-        }
 
         public static uint SwapUInt32(uint v)
-        {
-            return (uint)(((SwapUInt16((ushort)v) & 0xffff) << 0x10) |
+        => (uint)(((SwapUInt16((ushort)v) & 0xffff) << 0x10) |
             (SwapUInt16((ushort)(v >> 0x10)) & 0xffff));
-        }
 
         public static long SwapInt64(long v)
-        {
-            return (long)(((SwapInt32((int)v) & 0xffffffffL) << 0x20) |
+        => (long)(((SwapInt32((int)v) & 0xffffffffL) << 0x20) |
             (SwapInt32((int)(v >> 0x20)) & 0xffffffffL));
-        }
 
         public static ulong SwapUInt64(ulong v)
-        {
-            return (ulong)(((SwapUInt32((uint)v) & 0xffffffffL) << 0x20) |
+        => (ulong)(((SwapUInt32((uint)v) & 0xffffffffL) << 0x20) |
             (SwapUInt32((uint)(v >> 0x20)) & 0xffffffffL));
+
+        private static byte[] ReadBytes(byte[] data, int count) => data;
+
+        private static sbyte[] ReadSBytes(byte[] data, int count)
+        {
+            var values = new sbyte[data.Length];
+            Buffer.BlockCopy(data, 0, values, 0, count);
+            return values;
+        }
+
+        private static char[] ReadAscii(byte[] data, int count)
+        => Tif.Ascii.GetString(data).ToCharArray();
+
+        private static ushort[] ReadShort(byte[] data, int count)
+        {
+            var values = new ushort[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            return values;
+        }
+
+        private static short[] ReadSShort(byte[] data, int count)
+        {
+            var values = new short[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 2);
+            return values;
+        }
+
+        private static uint[] ReadLong(byte[] data, int count)
+        {
+            var values = new uint[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static int[] ReadSLong(byte[] data, int count)
+        {
+            var values = new int[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static URational32[] ReadRational(byte[] data, int count)
+        {
+            var values = new URational32[count];
+            for (int i = 0; i < count; i++)
+                values.SetValue(new URational32(data, i * 4), i);
+            return values;
+        }
+
+        private static Rational32[] ReadSRational(byte[] data, int count)
+        {
+            var values = new Rational32[count];
+            for (int i = 0; i < count; i++)
+                values.SetValue(new Rational32(data, i * 4), i);
+            return values;
+        }
+
+        private static float[] ReadFloat(byte[] data, int count)
+        {
+            var values = new float[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 4);
+            return values;
+        }
+
+        private static double[] ReadDouble(byte[] data, int count)
+        {
+            var values = new double[count];
+            Buffer.BlockCopy(data, 0, values, 0, count * 8);
+            return values;
         }
 
         internal static Array ReadValues(byte[] data, FieldType type, int count)
-        { // TODO: split into FieldType specific methods
-            Array values = null;
+            => readValueMethods.ValueOrDefault(type, (d, c) => null)(data, count);
 
-            switch (type)
-            {
-                case FieldType.Byte:
-                case FieldType.Undefined:
-                    values = data;
-                    break;
-                case FieldType.SByte:
-                    values = new sbyte[data.Length];
-                    Buffer.BlockCopy(data, 0, values, 0, count);
-                    break;
-                case FieldType.Ascii:
-                    values = Tif.Ascii.GetString(data).ToCharArray();
-                    break;
-                case FieldType.Short:
-                    values = new ushort[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
-                    break;
-                case FieldType.SShort:
-                    values = new short[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
-                    break;
-                case FieldType.Long:
-                    values = new uint[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case FieldType.SLong:
-                    values = new int[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case FieldType.Rational:
-                    values = new URational32[count];
-                    for (int i = 0; i < count; i++)
-                        values.SetValue(new URational32(data, i * 4), i);
-                    break;
-                case FieldType.SRational:
-                    values = new Rational32[count];
-                    for (int i = 0; i < count; i++)
-                        values.SetValue(new Rational32(data, i * 4), i);
-                    break;
-                case FieldType.Float:
-                    values = new float[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
-                    break;
-                case FieldType.Double:
-                    values = new double[count];
-                    Buffer.BlockCopy(data, 0, values, 0, count * 8);
-                    break;
-                default:
-                    break;
-            }
-
-            return values;
-        }
+        private static Dictionary<FieldType, Func<byte[], int, Array>> readValueMethods =
+                new Dictionary<FieldType, Func<byte[], int, Array>>
+                {
+                    [FieldType.Byte] = ReadBytes,
+                    [FieldType.Undefined] = ReadBytes,
+                    [FieldType.SByte] = ReadSBytes,
+                    [FieldType.Ascii] = ReadAscii,
+                    [FieldType.Short] = ReadShort,
+                    [FieldType.SShort] = ReadSShort,
+                    [FieldType.Long] = ReadLong,
+                    [FieldType.SLong] = ReadSLong,
+                    [FieldType.Rational] = ReadRational,
+                    [FieldType.SRational] = ReadSRational,
+                    [FieldType.Float] = ReadFloat,
+                    [FieldType.Double] = ReadDouble,
+                };
 
         internal static byte[] SwitchEndian(byte[] data, int typeLength)
         {

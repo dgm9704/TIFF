@@ -45,29 +45,6 @@
             target.AddRange(items);
         }
 
-        //[Fact]
-        //[DeploymentItem("Diwen.Tiff.dll")]
-        //public void GetKeyForItemTest()
-        //{
-        //    FieldCollection_Accessor target = new FieldCollection_Accessor();
-        //    Field item = new Field(Tag.AntiAliasStrength, FieldType.Short, new short[] { });
-        //    Tag expected = Tag.AntiAliasStrength;
-        //    Tag actual;
-        //    actual = target.GetKeyForItem(item);
-        //    Assert.Equal(expected, actual);
-        //}
-
-        //[Fact]
-        //[DeploymentItem("Diwen.Tiff.dll")]
-        //[ExpectedException(typeof(ArgumentNullException))]
-        //public void GetKeyForItemNullTest()
-        //{
-        //    FieldCollection_Accessor target = new FieldCollection_Accessor();
-        //    Field item = null;
-        //    Tag actual;
-        //    actual = target.GetKeyForItem(item);
-        //}
-
         [Fact]
         public void SortTest()
         {

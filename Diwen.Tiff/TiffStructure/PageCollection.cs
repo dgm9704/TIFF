@@ -8,10 +8,7 @@
     [Serializable]
     public class PageCollection : Collection<Page>
     {
-        public PageCollection()
-            : base(new List<Page>())
-        {
-        }
+        public PageCollection() : base(new List<Page>()) { }
 
         public new void Add(Page page)
         {
@@ -39,7 +36,7 @@
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach(var page in this)
+            foreach (var page in this)
             {
                 sb.AppendLine(page.ToString());
             }

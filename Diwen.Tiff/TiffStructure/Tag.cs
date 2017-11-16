@@ -5,7 +5,6 @@
     using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
-    using Diwen.Tiff.TagValues;
 
     [Serializable]
     public class Tag : IComparable<Tag>
@@ -13,7 +12,6 @@
         public Array Values { get; internal set; }
         public TagType TagType { get; set; }
         public FieldType FieldType { get; set; }
-
         internal uint ValueCount { get; set; }
         internal uint ValueOffset { get; set; }
 
@@ -21,9 +19,9 @@
 
         public Tag(TagType tagType, FieldType fieldType, Array values)
         {
-            this.TagType = tagType;
-            this.FieldType = fieldType;
-            this.Values = values;
+            TagType = tagType;
+            FieldType = fieldType;
+            Values = values;
         }
 
         internal static Tag Read(byte[] data, int startPosition)
@@ -42,7 +40,6 @@
             return tag;
         }
 
-
         internal static Tag ReadMM(byte[] data, int startPosition)
         {
             var tag = new Tag
@@ -52,10 +49,7 @@
                 ValueCount = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 4)),
 
             };
-            if ((int)tag.ValueCount * Tif.ValueLength[tag.FieldType] > 4)
-                tag.ValueOffset = (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 8));
-            else
-                tag.ValueOffset = (uint)BitConverter.ToInt32(data, startPosition + 8);
+            tag.ValueOffset = GetValueOffset(data, startPosition, tag.ValueCount, tag.FieldType);
 
             byte[] valuebytes = Tif.SwitchEndian(GetValueBytes(data, tag), Tif.ValueLength[tag.FieldType]);
 
@@ -63,6 +57,11 @@
 
             return tag;
         }
+
+        private static uint GetValueOffset(byte[] data, int startPosition, uint valueCount, FieldType fieldType)
+        => (int)valueCount * Tif.ValueLength[fieldType] > 4
+            ? (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(data, startPosition + 8))
+            : (uint)BitConverter.ToInt32(data, startPosition + 8);
 
         private static byte[] GetValueBytes(byte[] data, Tag tag)
         {
@@ -83,7 +82,7 @@
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0:D}({0})", this.TagType);
+            sb.Append($"{TagType:D}({TagType})");
             sb.Append("[");
 
             if (this.FieldType == FieldType.Ascii)
@@ -106,14 +105,12 @@
         }
 
         internal static Enum EnumeratedTagValue(string name, string value)
-        {
-            Type enumType = System.Type.GetType(name);
+        => EnumeratedTagValue(Type.GetType(name), value);
 
-            if (enumType != null)
-                return (Enum)Enum.Parse(enumType, value);
-            else
-                return null;
-        }
+        private static Enum EnumeratedTagValue(Type enumType, string value)
+        => enumType != null
+            ? (Enum)Enum.Parse(enumType, value)
+            : null;
 
         public Tag Copy()
         {
@@ -129,57 +126,32 @@
         #region comparison and operators
 
         public int CompareTo(Tag other)
-        {
-            if (this.TagType < other.TagType)
-                return -1;
-
-            if (this.TagType > other.TagType)
-                return 1;
-
-            return 0;
-        }
+        => TagType < other.TagType
+            ? -1
+            : TagType > other.TagType
+                ? 1
+                : 0;
 
         public override bool Equals(object obj)
-        {
-            var tag = obj as Tag;
+        => this.CompareTo(obj as Tag) == 0;
 
-            if (obj == null)
-                return false;
-            return (this.CompareTo(tag) == 0);
-        }
+        public bool Equals(Tag other)
+        => CompareTo(other) == 0;
 
         public override int GetHashCode()
-        {
-            return (int)this.TagType;
-        }
+        => (int)TagType;
 
         public static bool operator ==(Tag tag1, Tag tag2)
-        {
-            try
-            {
-                return tag1.CompareTo(tag2) == 0;
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return false;
-        }
+        => tag1.CompareTo(tag2) == 0;
 
         public static bool operator !=(Tag tag1, Tag tag2)
-        {
-            return !(tag1 == tag2);
-        }
+        => !(tag1 == tag2);
 
         public static bool operator <(Tag tag1, Tag tag2)
-        {
-            return (tag1.CompareTo(tag2) < 0);
-        }
+        => (tag1.CompareTo(tag2) < 0);
 
         public static bool operator >(Tag tag1, Tag tag2)
-        {
-            return (tag1.CompareTo(tag2) > 0);
-        }
+        => (tag1.CompareTo(tag2) > 0);
 
         #endregion
     }

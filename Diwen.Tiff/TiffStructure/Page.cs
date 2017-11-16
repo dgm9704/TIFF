@@ -695,161 +695,50 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Software
-        /// </summary>
         public string Software
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.Software);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.Software, value);
-            }
+            get => GetAsciiFieldValue(TagType.Software);
+            set => SetAsciiFieldValue(TagType.Software, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag StripByteCounts
-        /// </summary>
         public uint[] StripByteCounts
         {
-            get
-            {
-                if (this.Contains(TagType.StripByteCounts))
-                {
-                    return (uint[])this[TagType.StripByteCounts].Values;
-                }
-                else
-                {
-                    return new uint[] { };
-                }
-            }
-            set
-            {
-                if (value == null)
-                {
-                    value = new uint[] { };
-                }
-
-                this.Add(TagType.StripByteCounts, FieldType.Long, value);
-            }
+            get => this.Contains(TagType.StripByteCounts)
+                ? (uint[])this[TagType.StripByteCounts].Values
+                : new uint[0];
+            set => this.Add(TagType.StripByteCounts, FieldType.Long, value ?? new uint[0]);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag StripOffsets
-        /// </summary>
         public uint[] StripOffsets
         {
-            get
-            {
-                if (this.Contains(TagType.StripOffsets))
-                {
-                    return (uint[])this[TagType.StripOffsets].Values;
-                }
-                else
-                {
-                    return new uint[] { };
-                }
-            }
-            set
-            {
-                if (value == null)
-                {
-                    value = new uint[] { };
-                }
-
-                this.Add(TagType.StripOffsets, FieldType.Long, value);
-            }
+            get => this.Contains(TagType.StripOffsets)
+                ? (uint[])this[TagType.StripOffsets].Values
+                : new uint[0];
+            set => this.Add(TagType.StripOffsets, FieldType.Long, value ?? new uint[0]);
         }
 
-        ///// <summary>
-        ///// Gets or sets the values of baseline tag SubfileType
-        ///// </summary>
-        //public SubfileType SubfileType
-        //{
-        //    get
-        //    {
-        //        if (this.Contains(tag.SubfileType))
-        //        {
-        //            return (SubfileType)this[tag.SubfileType].Value;
-        //        }
-        //        else
-        //        {
-        //            return default(SubfileType);
-        //        }
-        //    }
-        //    set
-        //    {
-        //        this.Add(tag.SubfileType, value);
-        //    }
-        //}
-
-        /// <summary>
-        /// Gets or sets the values of baseline tag Threshholding
-        /// </summary>
         public Threshholding Threshholding
         {
-            get
-            {
-                if (this.Contains(TagType.Threshholding))
-                {
-                    return (Threshholding)this[TagType.Threshholding].Value;
-                }
-                else
-                {
-                    return Threshholding.None;
-                }
-            }
-            set
-            {
-                this.Add(TagType.Threshholding, value);
-            }
+            get => this.Contains(TagType.Threshholding)
+                ? (Threshholding)this[TagType.Threshholding].Value
+                : Threshholding.None;
+            set => this.Add(TagType.Threshholding, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag XResolution
-        /// </summary>
         public URational32 XResolution
         {
-            get
-            {
-                if (this.Contains(TagType.XResolution))
-                {
-                    return (URational32)this[TagType.XResolution].Value;
-                }
-                else
-                {
-                    return default(URational32);
-                }
-            }
-            set
-            {
-                this.Add(TagType.XResolution, value);
-            }
+            get => this.Contains(TagType.XResolution)
+                ? (URational32)this[TagType.XResolution].Value
+                : default(URational32);
+            set => this.Add(TagType.XResolution, value);
         }
 
-        /// <summary>
-        /// Gets or sets the values of baseline tag YResolution
-        /// </summary>
         public URational32 YResolution
         {
-            get
-            {
-                if (this.Contains(TagType.YResolution))
-                {
-                    return (URational32)this[TagType.YResolution].Value;
-                }
-                else
-                {
-                    return default(URational32);
-                }
-            }
-            set
-            {
-                this.Add(TagType.YResolution, value);
-            }
+            get => this.Contains(TagType.YResolution)
+                ? (URational32)this[TagType.YResolution].Value
+                : default(URational32);
+            set => this.Add(TagType.YResolution, value);
         }
     }
 }
