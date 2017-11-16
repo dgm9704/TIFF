@@ -6,7 +6,7 @@
 
     public class Rational32Test
     {
-    
+
         [Fact]
         public void Rational32ConstructorTest()
         {
@@ -30,7 +30,7 @@
         }
 
         [Fact]
-                public void Rational32ConstructorTest2()
+        public void Rational32ConstructorTest2()
         {
             byte[] data = null;
             int startIndex = 0;

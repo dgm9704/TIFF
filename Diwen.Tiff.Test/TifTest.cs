@@ -19,7 +19,7 @@
             Tif tif;
             tif = Tif.Load(testFilePath);
 
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
@@ -30,13 +30,12 @@
             using (var stream = new FileStream(testFilePath, FileMode.Open))
                 tif = Tif.Load(stream);
 
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
         public void LoadFromStreamNull()
         {
-            Tif tif;
             FileStream stream = null;
             using (stream)
                 Assert.Throws<ArgumentNullException>(() => Tif.Load(stream));
@@ -50,7 +49,7 @@
 
             tif = Tif.Load(bytes);
 
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
@@ -59,10 +58,10 @@
             Tif tif;
             tif = Tif.Load(testFilePath);
 
-            string path = @"\TIFF_file_format_test.new";
+            string path = Path.Combine("output","TIFF_file_format_test.new");
             tif.Save(path);
             tif = Tif.Load(path);
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
@@ -77,7 +76,7 @@
                 stream.Position = 0;
                 tif = Tif.Load(stream);
             }
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
@@ -104,7 +103,7 @@
 
             tif = Tif.Load(buffer);
 
-            Assert.IsType(typeof(Tif), tif);
+            Assert.IsType<Tif>(tif);
         }
 
         [Fact]
@@ -151,8 +150,8 @@
         [Fact]
         public void CopyAndModifyPages()
         {
-            string originalName = @"C:\lena_kodak.tif";
-            string newName = @"c:\copiedpages_2.tif";
+            string originalName = Path.Combine("testfiles","lena_kodak.tif");
+            string newName = Path.Combine("output","copiedpages_2.tif");
 
             var newTif = new Tif();
             var tif = Tif.Load(originalName);
@@ -160,9 +159,9 @@
             newTif.Add(tif[0]);
 
             var values = new ushort[] { 0, 2 };
-            var tag = new Field(Tag.PageNumber, FieldType.Short, values);
+            var tag = new Field(TagType.PageNumber, FieldType.Short, values);
             newTif[0].Add(tag);
-            tag = new Field(Tag.PageNumber, FieldType.Short, new ushort[] { 1, 2 });
+            tag = new Field(TagType.PageNumber, FieldType.Short, new ushort[] { 1, 2 });
             newTif[1].Add(tag);
 
             newTif.Save(newName);
@@ -172,11 +171,11 @@
             Assert.Equal(2, newTif.Count);
             ushort[] pageNumber;
 
-            pageNumber = (ushort[])newTif[0][Tag.PageNumber].Values;
+            pageNumber = (ushort[])newTif[0][TagType.PageNumber].Values;
             Assert.Equal(0, pageNumber[0]);
             Assert.Equal(2, pageNumber[1]);
 
-            pageNumber = (ushort[])newTif[1][Tag.PageNumber].Values;
+            pageNumber = (ushort[])newTif[1][TagType.PageNumber].Values;
             Assert.Equal(1, pageNumber[0]);
             Assert.Equal(2, pageNumber[1]);
 
@@ -210,7 +209,7 @@
         [Fact]
         public void TiledTiffTest()
         {
-            var tif = Tif.Load("tiled.tif");
+            var tif = Tif.Load(Path.Combine("testfiles","tiled.tif"));
             var page = tif[0];
 
         }
@@ -218,9 +217,9 @@
         [Fact]
         public void SetPagenumbersTest()
         {
-            var tif = Tif.Load(@"c:\pruned.tif");
+            var tif = Tif.Load(Path.Combine("testfiles","pruned.tif"));
             tif.SetPageNumbers();
-            tif.Save(@"C:\paged.tif");
+            tif.Save(Path.Combine("output","paged.tif"));
         }
 
         /// <summary>
@@ -268,7 +267,7 @@
         [Fact]
         public void TiffTestSuiteComplete()
         {
-            string folder = @"D:\tiff_test_images";
+            string folder = "tiff_test_images";
             foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
             {
                 Console.WriteLine(Tif.Load(file));

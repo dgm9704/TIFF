@@ -42,14 +42,14 @@
         /// <param name="tag">tag type</param>
         /// <param name="type">data type</param>
         /// <param name="values">values</param>
-        public Field(Tag tag, FieldType type, Array values)
+        public Field(TagType tag, FieldType type, Array values)
         {
             if (values == null)
             {
                 throw new ArgumentNullException("values");
             }
 
-            this.Tag = tag;
+            this.TagType = tag;
             this.FieldType = type;
             this.Values = values;
             this.Count = (uint)values.Length;
@@ -86,21 +86,15 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the field type of the field
-        /// </summary>
-        public Tag Tag { get; set; }
+        public TagType TagType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the data type of the field
-        /// </summary>
         public FieldType FieldType { get; set; }
 
         internal uint Count { get; set; }
 
         internal uint ValueOffset { get; set; }
 
-        private static Field Create(Tag tag, FieldType type, int count, byte[] data, bool flip)
+        private static Field Create(TagType tag, FieldType type, int count, byte[] data, bool flip)
         {
             if (data == null)
             {
@@ -121,21 +115,17 @@
 
             return new Field
             {
-                Tag = tag,
+                TagType = tag,
                 FieldType = type,
                 Values = values,
                 Count = (uint)values.Length,
             };
         }
 
-        /// <summary>
-        /// Returns a string representation of the field
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}\t{1}\t", this.Tag, this.FieldType);
+            sb.Append($"{TagType}\t{FieldType}\t");
 
             if (this.FieldType == FieldType.Ascii)
             {
@@ -151,7 +141,7 @@
                 sb.Append("[");
                 if (this.Count > 10)
                 {
-                    sb.AppendFormat("({0})", this.Count);
+                    sb.Append($"({Count})");
                     return sb.ToString() + "]";
                 }
                 else
@@ -163,10 +153,6 @@
             }
         }
 
-        /// <summary>
-        /// Returns a deep copy of this Tag instance
-        /// </summary>
-        /// <returns></returns>
         public Field Copy()
         {
             using (MemoryStream stream = new MemoryStream())
@@ -180,7 +166,7 @@
 
         internal static Field Read(byte[] data, int startPosition, bool flip)
         {
-            Tag tag = (Tag)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition, 2, flip), 0);
+            TagType tag = (TagType)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition, 2, flip), 0);
             FieldType type = (FieldType)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition + 2, 2, flip), 0);
             if (!Enum.IsDefined(typeof(FieldType), type))
             {
@@ -193,21 +179,12 @@
         }
 
         internal static Enum EnumeratedFieldValue(Type enumType, string value)
-        {
-            if (enumType != null)
-            {
-                return (Enum)Enum.Parse(enumType, value);
-            }
-            else
-            {
-                return null;
-            }
-        }
+            => enumType != null
+                ?  (Enum)Enum.Parse(enumType, value)
+                :  null;
 
         private static byte[] GetValueBytes(byte[] data, uint valueCount, FieldType type, uint offset, bool flip)
         {
-
-
             byte[] valuebytes;
             int valueLength = (int)valueCount * Tif.GetValueLength(type);
 
@@ -397,7 +374,7 @@
 
         private void AppendValues(StringBuilder sb)
         {
-            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.Tag);
+            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.TagType);
 
             foreach (var value in this.Values)
             {
@@ -416,7 +393,7 @@
         private void AppendSingleValue(StringBuilder sb)
         {
             string v = this.Value.ToString();
-            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.Tag);
+            Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.TagType);
             Enum temp = EnumeratedFieldValue(enumType, v);
             if (temp != null)
             {
@@ -437,7 +414,7 @@
 
         internal bool IsIfdField()
         {
-            return new List<Tag> { Tag.ExifIFD }.Contains(this.Tag);
+            return new List<TagType> { TagType.ExifIFD }.Contains(this.TagType);
         }
     }
 }

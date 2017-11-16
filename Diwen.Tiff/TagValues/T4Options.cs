@@ -2,7 +2,7 @@
 {
     using System;
 
-    [Flags()]
+    [Flags]
     public enum T4Options : uint
     {
         OneDimensional = 0,

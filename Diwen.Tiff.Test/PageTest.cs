@@ -17,7 +17,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(true, page.Contains(Tag.NewSubfileType));
+            Assert.Equal(true, page.Contains(TagType.NewSubfileType));
         }
 
         [Fact]
@@ -25,7 +25,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(Tag.TargetPrinter));
+            Assert.Equal(false, page.Contains(TagType.TargetPrinter));
         }
 
         [Fact]
@@ -33,7 +33,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            var tag = page[Tag.ImageWidth];
+            var tag = page[TagType.ImageWidth];
             Assert.NotNull(tag);
             Assert.Equal(FieldType.Short, tag.FieldType);
             Assert.Equal(1, tag.Values.Length);
@@ -46,7 +46,7 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Throws<KeyNotFoundException>(() => page[Tag.AliasLayerMetadata]);
+            Assert.Throws<KeyNotFoundException>(() => page[TagType.AliasLayerMetadata]);
         }
 
         [Fact]
@@ -54,10 +54,10 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(Tag.Artist));
+            Assert.Equal(false, page.Contains(TagType.Artist));
             var name = "Leonardo DaVinci";
-            page.Add(Tag.Artist, FieldType.Ascii, name.ToCharArray());
-            var tag = page[Tag.Artist];
+            page.Add(TagType.Artist, FieldType.Ascii, name.ToCharArray());
+            var tag = page[TagType.Artist];
             var values = (char[])tag.Values;
             string value = new String(values);
             Assert.Equal(name, value);
@@ -68,14 +68,14 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(Tag.Artist));
+            Assert.Equal(false, page.Contains(TagType.Artist));
             var name = "Leonardo DaVinci";
             page.Artist = name;
 
             tif.Save("modified.tif");
             tif = Tif.Load("modified.tif");
             page = tif[0];
-            var tag = page[Tag.Artist];
+            var tag = page[TagType.Artist];
             var values = (char[])tag.Values;
             string value = new String(values);
             Assert.Equal(name, value);
@@ -86,12 +86,12 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(Tag.PageNumber));
+            Assert.Equal(false, page.Contains(TagType.PageNumber));
             ushort number = 42;
             ushort total = 666;
             page.PageNumber = number;
             page.PageTotal = total;
-            var tag = page[Tag.PageNumber];
+            var tag = page[TagType.PageNumber];
             var values = (ushort[])tag.Values;
             Assert.Equal(number, values[0]);
             Assert.Equal(total, values[1]);
@@ -107,7 +107,7 @@
 
             page.BitsPerSample = bitsper;
 
-            var tag = page[Tag.BitsPerSample];
+            var tag = page[TagType.BitsPerSample];
             var values = (ushort[])tag.Values;
             Assert.Equal(bitsper, values[0]);
         }
@@ -126,9 +126,9 @@
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            page.Add(Tag.Predictor, Predictor.NoPredictionScheme);
+            page.Add(TagType.Predictor, Predictor.NoPredictionScheme);
 
-            page.Add(Tag.NewSubfileType, NewSubfileType.Page | NewSubfileType.ReducedResolutionVersion | NewSubfileType.TransparencyMask);
+            page.Add(TagType.NewSubfileType, NewSubfileType.Page | NewSubfileType.ReducedResolutionVersion | NewSubfileType.TransparencyMask);
         }
 
         [Fact]
@@ -141,7 +141,7 @@
         public void AddTest2()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             uint value = 0;
             target.Add(Tag, value);
         }
@@ -150,7 +150,7 @@
         public void AddTest3()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             FieldType type = new FieldType();
             string value = string.Empty;
             target.Add(Tag, type, value);
@@ -160,7 +160,7 @@
         public void AddTest3withnull()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             FieldType type = new FieldType();
             string value = null;
             target.Add(Tag, type, value);
@@ -170,7 +170,7 @@
         public void AddTest4()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             URational32 value = new URational32();
             target.Add(Tag, value);
         }
@@ -179,7 +179,7 @@
         public void AddTest5()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             string value = string.Empty;
             target.Add(Tag, value);
         }
@@ -188,7 +188,7 @@
         public void AddTest6()
         {
             Page target = new Page();
-            Tag Tag = new Tag();
+            TagType Tag = new TagType();
             ushort value = 0;
             target.Add(Tag, value);
         }
@@ -202,7 +202,7 @@
             Assert.Equal(original.Count, copy.Count);
             foreach (var tag in original)
             {
-                Assert.Equal(true, copy.Contains(tag.Tag));
+                Assert.Equal(true, copy.Contains(tag.TagType));
             }
 
         }
@@ -667,7 +667,7 @@
             var page = tif[0];
             string expected = string.Empty;
             string actual;
-            actual = page.GetAsciiFieldValue(Tag.PageName);
+            actual = page.GetAsciiFieldValue(TagType.PageName);
             Assert.Equal(expected, actual);
         }
 
@@ -675,7 +675,7 @@
         public void SetAsciiFieldValueNullTest()
         {
             Page target = new Page();
-            Tag tag = Tag.Software;
+            TagType tag = TagType.Software;
             string value = null;
             target.SetAsciiFieldValue(tag, value);
             Assert.Equal(string.Empty, target.GetAsciiFieldValue(tag));

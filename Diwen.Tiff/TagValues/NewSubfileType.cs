@@ -2,7 +2,7 @@
 {
     using System;
 
-    [Flags()]
+    [Flags]
     public enum NewSubfileType : uint
     {
         None = 0,

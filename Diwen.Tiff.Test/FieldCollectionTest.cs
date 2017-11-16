@@ -73,9 +73,9 @@
         {
             var target = new Ifd
             {
-                new Field(Tag.Artist, FieldType.Short, new short[]{ }),
-                new Field(Tag.BitsPerSample, FieldType.Short, new short[]{ }),
-                new Field(Tag.CellLength, FieldType.Short, new short[]{ }),
+                new Field(TagType.Artist, FieldType.Short, new short[]{ }),
+                new Field(TagType.BitsPerSample, FieldType.Short, new short[]{ }),
+                new Field(TagType.CellLength, FieldType.Short, new short[]{ }),
             };
             target.Sort();
         }

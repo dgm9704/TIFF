@@ -58,10 +58,8 @@
         [Fact]
         public void ToStringTest1()
         {
-            PageCollection target = new PageCollection { new Page { new Field(Tag.Software, FieldType.Ascii, new string[] { "Diwen.Tiff" }) } };
-            string actual;
-            actual = target.ToString();
-            Assert.Equal(false, string.IsNullOrEmpty(actual));
+            PageCollection target = new PageCollection { new Page { new Field(TagType.Software, FieldType.Ascii, new string[] { "Diwen.Tiff" }) } };
+            Assert.False(string.IsNullOrEmpty(target.ToString()));
         }
     }
 }

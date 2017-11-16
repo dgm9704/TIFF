@@ -1,13 +1,13 @@
-﻿using System;
-
-namespace Diwen.Tiff.Tags
+﻿namespace Diwen.Tiff.Tags
 {
-    [Serializable()]
-    public class LongTag : TiffTag
+    using System;
+    
+    [Serializable]
+    public class LongTag : Tag
     {
         public LongTag()
         {
-            this.DataType = TiffDataType.Long;
+            this.FieldType = FieldType.Long;
         }
 
         public LongTag(params uint[] args)

@@ -2,13 +2,13 @@
 {
     using System;
 
-    [Serializable()]
+    [Serializable]
     public class PageNumberTag : ShortTag
     {
         public PageNumberTag(ushort pageNumber, ushort totalPages)
             : base(pageNumber, totalPages)
         {
-            this.Tag = Tag.PageNumber;
+            this.TagType = TagType.PageNumber;
         }
 
     }

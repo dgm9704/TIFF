@@ -2,7 +2,7 @@
 {
     using System;
 
-    [Flags()]
+    [Flags]
     public enum T6Options : uint
     {
         None = 0,

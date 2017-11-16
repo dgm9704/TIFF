@@ -4,33 +4,13 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
-    /// <summary>
-    /// Represents a collection of tags
-    /// </summary>
-    [Serializable()]
-    public class FieldCollection : KeyedCollection<Tag, Field>
+    [Serializable]
+    public class FieldCollection : KeyedCollection<TagType, Field>
     {
         internal FieldCollection() : base(null, 0) 
         { 
         }
 
-        //public Tag this[Tag tag]
-        //{
-        //    get
-        //    {
-        //        return base[tag];
-        //    }
-
-        //    set
-        //    {
-        //        base.Insert(0, value);
-        //    }
-        //}
-
-        /// <summary>
-        /// Adds a new tag to the collection
-        /// </summary>
-        /// <param name="item"></param>
         public new void Add(Field item)
         {
             if (item == null)
@@ -38,14 +18,10 @@
                 throw new ArgumentNullException("item");
             }
 
-            this.Remove(item.Tag);
+            this.Remove(item.TagType);
             base.Add(item);
         }
 
-        /// <summary>
-        /// Adds a range of tags to collection
-        /// </summary>
-        /// <param name="items"></param>
         public void AddRange(IEnumerable<Field> items)
         {
             if (items == null)
@@ -59,27 +35,19 @@
             }
         }
 
-        /// <summary>
-        /// Sorts the fields in the collection
-        /// </summary>
         public void Sort()
         {
-            ((List<Field>)Items).Sort((t1, t2) => { return t1.Tag.CompareTo(t2.Tag); });
+            ((List<Field>)Items).Sort((t1, t2) => { return t1.TagType.CompareTo(t2.TagType); });
         }
 
-        /// <summary>
-        /// Returns the key of an item
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        protected override Tag GetKeyForItem(Field item)
+        protected override TagType GetKeyForItem(Field item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
 
-            return item.Tag;
+            return item.TagType;
         }
     }
 }

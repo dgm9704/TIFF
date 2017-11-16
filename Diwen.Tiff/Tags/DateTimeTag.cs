@@ -3,7 +3,7 @@
     using System;
     using System.Globalization;
 
-    [Serializable()]
+    [Serializable]
     public class DateTimeTag : AsciiTag
     {
         public DateTimeTag()
@@ -12,7 +12,7 @@
         }
 
         public DateTimeTag(DateTime value)
-            : base(Tag.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss", CultureInfo.InvariantCulture))
+            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss", CultureInfo.InvariantCulture))
         {
         }
 

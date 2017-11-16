@@ -9,7 +9,7 @@
         [Fact]
         public void FieldConstructorTest()
         {
-            Tag tag = new Tag();
+            TagType tag = new TagType();
             FieldType type = new FieldType();
             Array values = null;
             Assert.Throws<ArgumentNullException>(() => new Field(tag, type, values));
@@ -21,9 +21,9 @@
         [Fact]
         public void CopyTest()
         {
-            Field original = new Field { Tag = Tag.Artist, FieldType = FieldType.Ascii, Value = "Diwen.Tiff" };
+            Field original = new Field { TagType = TagType.Artist, FieldType = FieldType.Ascii, Value = "Diwen.Tiff" };
             Field copy = original.Copy();
-            Assert.Equal(original.Tag, copy.Tag);
+            Assert.Equal(original.TagType, copy.TagType);
             Assert.Equal(original.FieldType, copy.FieldType);
             Assert.Equal(original.Value, copy.Value);
         }
@@ -39,9 +39,9 @@
         [Fact]
         public void EnumeratedFieldValueTest()
         {
-            var fld = new Field(Tag.Compression, FieldType.Short, new ushort[] { 2 });
+            var fld = new Field(TagType.Compression, FieldType.Short, new ushort[] { 2 });
             Assert.Contains("CCITTRLE", fld.ToString());
-            fld = new Field((Tag)0, FieldType.Short, new ushort[] { 666 });
+            fld = new Field((TagType)0, FieldType.Short, new ushort[] { 666 });
             Assert.Contains("666", fld.ToString());
         }
     }

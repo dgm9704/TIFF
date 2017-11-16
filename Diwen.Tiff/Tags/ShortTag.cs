@@ -1,13 +1,13 @@
-﻿using System;
-
-namespace Diwen.Tiff.Tags
+﻿namespace Diwen.Tiff.Tags
 {
-    [Serializable()]
-    public class ShortTag : TiffTag
+    using System;
+
+    [Serializable]
+    public class ShortTag : Tag
     {
         public ShortTag()
         {
-            this.DataType = TiffDataType.Short;
+            this.FieldType = FieldType.Short;
         }
 
         public ShortTag(params ushort[] args) : this()

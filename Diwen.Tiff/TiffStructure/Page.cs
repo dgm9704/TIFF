@@ -29,12 +29,12 @@
             return sb.ToString();
         }
 
-        public void SetAsciiFieldValue(Tag tag, string value)
+        public void SetAsciiFieldValue(TagType tag, string value)
         {
             this.Add(tag, value ?? string.Empty);
         }
 
-        public string GetAsciiFieldValue(Tag tag)
+        public string GetAsciiFieldValue(TagType tag)
         {
             if (this.Contains(tag))
             {
@@ -46,35 +46,29 @@
             }
         }
 
-        public void Add(Tag tag, FieldType type, Array values)
+        public void Add(TagType tag, FieldType type, Array values)
         {
             this.Add(new Field(tag, type, values));
         }
 
-        public void Add(TiffTag tag)
+        public void Add(Tag tag)
         {
-            this.Add(new Field(tag.Tag, (FieldType)tag.DataType, tag.Values));
+            this.Add(new Field(tag.TagType, (FieldType)tag.FieldType, tag.Values));
         }
 
         public string Artist
         {
-            get
-            {
-                return this.GetAsciiFieldValue(Tag.Artist);
-            }
-            set
-            {
-                this.SetAsciiFieldValue(Tag.Artist, value);
-            }
+            get => GetAsciiFieldValue(TagType.Artist);
+            set => SetAsciiFieldValue(TagType.Artist, value);
         }
 
         public ushort PageNumber
         {
             get
             {
-                if (this.Contains(Tag.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
-                    return (ushort)this[Tag.PageNumber].Value;
+                    return (ushort)this[TagType.PageNumber].Value;
                 }
                 else
                 {
@@ -83,13 +77,13 @@
             }
             set
             {
-                if (this.Contains(Tag.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
-                    this[Tag.PageNumber].Values.SetValue(value, 0);
+                    this[TagType.PageNumber].Values.SetValue(value, 0);
                 }
                 else
                 {
-                    this.Add(Tag.PageNumber, FieldType.Short, new ushort[] { value, 0 });
+                    this.Add(TagType.PageNumber, FieldType.Short, new ushort[] { value, 0 });
                 }
             }
         }
@@ -98,9 +92,9 @@
         {
             get
             {
-                if (this.Contains(Tag.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
-                    return (ushort)this[Tag.PageNumber].Values.GetValue(1);
+                    return (ushort)this[TagType.PageNumber].Values.GetValue(1);
                 }
                 else
                 {
@@ -109,13 +103,13 @@
             }
             set
             {
-                if (this.Contains(Tag.PageNumber))
+                if (this.Contains(TagType.PageNumber))
                 {
-                    this[Tag.PageNumber].Values.SetValue(value, 1);
+                    this[TagType.PageNumber].Values.SetValue(value, 1);
                 }
                 else
                 {
-                    this.Add(Tag.PageNumber, FieldType.Short, new ushort[] { 0, value });
+                    this.Add(TagType.PageNumber, FieldType.Short, new ushort[] { 0, value });
                 }
             }
         }
@@ -124,9 +118,9 @@
         {
             get
             {
-                if (this.Contains(Tag.BitsPerSample))
+                if (this.Contains(TagType.BitsPerSample))
                 {
-                    return (ushort)this[Tag.BitsPerSample].Value;
+                    return (ushort)this[TagType.BitsPerSample].Value;
                 }
                 else
                 {
@@ -135,7 +129,7 @@
             }
             set
             {
-                this.Add(Tag.BitsPerSample, value);
+                this.Add(TagType.BitsPerSample, value);
             }
         }
 
@@ -143,9 +137,9 @@
         {
             get
             {
-                if (this.Contains(Tag.CellLength))
+                if (this.Contains(TagType.CellLength))
                 {
-                    return (ushort)this[Tag.CellLength].Value;
+                    return (ushort)this[TagType.CellLength].Value;
                 }
                 else
                 {
@@ -154,7 +148,7 @@
             }
             set
             {
-                this.Add(Tag.CellLength, value);
+                this.Add(TagType.CellLength, value);
             }
         }
 
@@ -162,9 +156,9 @@
         {
             get
             {
-                if (this.Contains(Tag.CellWidth))
+                if (this.Contains(TagType.CellWidth))
                 {
-                    return (ushort)this[Tag.CellWidth].Value;
+                    return (ushort)this[TagType.CellWidth].Value;
                 }
                 else
                 {
@@ -173,7 +167,7 @@
             }
             set
             {
-                this.Add(Tag.CellWidth, value);
+                this.Add(TagType.CellWidth, value);
             }
         }
 
@@ -184,9 +178,9 @@
         {
             get
             {
-                if (this.Contains(Tag.ColorMap))
+                if (this.Contains(TagType.ColorMap))
                 {
-                    return (ushort[])this[Tag.ColorMap].Values;
+                    return (ushort[])this[TagType.ColorMap].Values;
                 }
                 else
                 {
@@ -195,7 +189,7 @@
             }
             set
             {
-                this.Add(Tag.ColorMap, FieldType.Short, value);
+                this.Add(TagType.ColorMap, FieldType.Short, value);
             }
         }
 
@@ -206,9 +200,9 @@
         {
             get
             {
-                if (this.Contains(Tag.Compression))
+                if (this.Contains(TagType.Compression))
                 {
-                    return (Compression)this[Tag.Compression].Value;
+                    return (Compression)this[TagType.Compression].Value;
                 }
                 else
                 {
@@ -217,7 +211,7 @@
             }
             set
             {
-                this.Add(Tag.Compression, value);
+                this.Add(TagType.Compression, value);
             }
         }
 
@@ -228,11 +222,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.Copyright);
+                return GetAsciiFieldValue(TagType.Copyright);
             }
             set
             {
-                SetAsciiFieldValue(Tag.Copyright, value);
+                SetAsciiFieldValue(TagType.Copyright, value);
             }
         }
 
@@ -243,11 +237,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.DateTime);
+                return GetAsciiFieldValue(TagType.DateTime);
             }
             set
             {
-                SetAsciiFieldValue(Tag.DateTime, value);
+                SetAsciiFieldValue(TagType.DateTime, value);
             }
         }
 
@@ -258,9 +252,9 @@
         {
             get
             {
-                if (this.Contains(Tag.ExtraSamples))
+                if (this.Contains(TagType.ExtraSamples))
                 {
-                    return (ExtraSampleType[])this[Tag.ExtraSamples].Values;
+                    return (ExtraSampleType[])this[TagType.ExtraSamples].Values;
                 }
                 else
                 {
@@ -274,7 +268,7 @@
                     value = new ExtraSampleType[] { };
                 }
 
-                this.Add(Tag.ExtraSamples, FieldType.Short, value);
+                this.Add(TagType.ExtraSamples, FieldType.Short, value);
             }
         }
 
@@ -285,9 +279,9 @@
         {
             get
             {
-                if (this.Contains(Tag.FillOrder))
+                if (this.Contains(TagType.FillOrder))
                 {
-                    return (FillOrder)this[Tag.FillOrder].Value;
+                    return (FillOrder)this[TagType.FillOrder].Value;
                 }
                 else
                 {
@@ -296,7 +290,7 @@
             }
             set
             {
-                this.Add(Tag.FillOrder, value);
+                this.Add(TagType.FillOrder, value);
             }
         }
 
@@ -307,9 +301,9 @@
         {
             get
             {
-                if (this.Contains(Tag.FreeByteCounts))
+                if (this.Contains(TagType.FreeByteCounts))
                 {
-                    return (uint)this[Tag.FreeByteCounts].Value;
+                    return (uint)this[TagType.FreeByteCounts].Value;
                 }
                 else
                 {
@@ -318,7 +312,7 @@
             }
             set
             {
-                this.Add(Tag.FreeByteCounts, value);
+                this.Add(TagType.FreeByteCounts, value);
             }
         }
 
@@ -329,9 +323,9 @@
         {
             get
             {
-                if (this.Contains(Tag.FreeOffsets))
+                if (this.Contains(TagType.FreeOffsets))
                 {
-                    return (uint)this[Tag.FreeOffsets].Value;
+                    return (uint)this[TagType.FreeOffsets].Value;
                 }
                 else
                 {
@@ -340,7 +334,7 @@
             }
             set
             {
-                this.Add(Tag.FreeOffsets, value);
+                this.Add(TagType.FreeOffsets, value);
             }
         }
 
@@ -351,9 +345,9 @@
         {
             get
             {
-                if (this.Contains(Tag.GrayResponseCurve))
+                if (this.Contains(TagType.GrayResponseCurve))
                 {
-                    return (ushort[])this[Tag.GrayResponseCurve].Values;
+                    return (ushort[])this[TagType.GrayResponseCurve].Values;
                 }
                 else
                 {
@@ -362,7 +356,7 @@
             }
             set
             {
-                this.Add(Tag.GrayResponseCurve, FieldType.Short, value);
+                this.Add(TagType.GrayResponseCurve, FieldType.Short, value);
             }
         }
 
@@ -373,9 +367,9 @@
         {
             get
             {
-                if (this.Contains(Tag.GrayResponseUnit))
+                if (this.Contains(TagType.GrayResponseUnit))
                 {
-                    return (GrayResponseUnit)this[Tag.GrayResponseUnit].Value;
+                    return (GrayResponseUnit)this[TagType.GrayResponseUnit].Value;
                 }
                 else
                 {
@@ -384,7 +378,7 @@
             }
             set
             {
-                this.Add(Tag.GrayResponseUnit, value);
+                this.Add(TagType.GrayResponseUnit, value);
             }
         }
 
@@ -395,11 +389,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.HostComputer);
+                return GetAsciiFieldValue(TagType.HostComputer);
             }
             set
             {
-                SetAsciiFieldValue(Tag.HostComputer, value);
+                SetAsciiFieldValue(TagType.HostComputer, value);
             }
         }
 
@@ -410,11 +404,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.ImageDescription);
+                return GetAsciiFieldValue(TagType.ImageDescription);
             }
             set
             {
-                SetAsciiFieldValue(Tag.ImageDescription, value);
+                SetAsciiFieldValue(TagType.ImageDescription, value);
             }
         }
 
@@ -425,9 +419,9 @@
         {
             get
             {
-                if (this.Contains(Tag.ImageLength))
+                if (this.Contains(TagType.ImageLength))
                 {
-                    return Convert.ToUInt32(this[Tag.ImageLength].Value);
+                    return Convert.ToUInt32(this[TagType.ImageLength].Value);
                 }
                 else
                 {
@@ -436,7 +430,7 @@
             }
             set
             {
-                this.Add(Tag.ImageLength, value);
+                this.Add(TagType.ImageLength, value);
             }
         }
 
@@ -447,9 +441,9 @@
         {
             get
             {
-                if (this.Contains(Tag.ImageWidth))
+                if (this.Contains(TagType.ImageWidth))
                 {
-                    return (uint)this[Tag.ImageWidth].Value;
+                    return (uint)this[TagType.ImageWidth].Value;
                 }
                 else
                 {
@@ -458,7 +452,7 @@
             }
             set
             {
-                this.Add(Tag.ImageWidth, value);
+                this.Add(TagType.ImageWidth, value);
             }
         }
 
@@ -469,11 +463,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.Make);
+                return GetAsciiFieldValue(TagType.Make);
             }
             set
             {
-                SetAsciiFieldValue(Tag.Make, value);
+                SetAsciiFieldValue(TagType.Make, value);
             }
         }
 
@@ -484,9 +478,9 @@
         {
             get
             {
-                if (this.Contains(Tag.MaxSampleValue))
+                if (this.Contains(TagType.MaxSampleValue))
                 {
-                    return (ushort)this[Tag.MaxSampleValue].Value;
+                    return (ushort)this[TagType.MaxSampleValue].Value;
                 }
                 else
                 {
@@ -495,7 +489,7 @@
             }
             set
             {
-                this.Add(Tag.MaxSampleValue, value);
+                this.Add(TagType.MaxSampleValue, value);
             }
         }
 
@@ -506,9 +500,9 @@
         {
             get
             {
-                if (this.Contains(Tag.MinSampleValue))
+                if (this.Contains(TagType.MinSampleValue))
                 {
-                    return (ushort)this[Tag.MinSampleValue].Value;
+                    return (ushort)this[TagType.MinSampleValue].Value;
                 }
                 else
                 {
@@ -517,7 +511,7 @@
             }
             set
             {
-                this.Add(Tag.MinSampleValue, value);
+                this.Add(TagType.MinSampleValue, value);
             }
         }
 
@@ -528,11 +522,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.Model);
+                return GetAsciiFieldValue(TagType.Model);
             }
             set
             {
-                SetAsciiFieldValue(Tag.Model, value);
+                SetAsciiFieldValue(TagType.Model, value);
             }
         }
 
@@ -543,9 +537,9 @@
         {
             get
             {
-                if (this.Contains(Tag.NewSubfileType))
+                if (this.Contains(TagType.NewSubfileType))
                 {
-                    return (NewSubfileType)this[Tag.NewSubfileType].Value;
+                    return (NewSubfileType)this[TagType.NewSubfileType].Value;
                 }
                 else
                 {
@@ -554,7 +548,7 @@
             }
             set
             {
-                this.Add(Tag.NewSubfileType, value);
+                this.Add(TagType.NewSubfileType, value);
             }
         }
 
@@ -565,9 +559,9 @@
         {
             get
             {
-                if (this.Contains(Tag.Orientation))
+                if (this.Contains(TagType.Orientation))
                 {
-                    return (Orientation)this[Tag.Orientation].Value;
+                    return (Orientation)this[TagType.Orientation].Value;
                 }
                 else
                 {
@@ -576,7 +570,7 @@
             }
             set
             {
-                this.Add(Tag.Orientation, value);
+                this.Add(TagType.Orientation, value);
             }
         }
 
@@ -587,9 +581,9 @@
         {
             get
             {
-                if (this.Contains(Tag.PhotometricInterpretation))
+                if (this.Contains(TagType.PhotometricInterpretation))
                 {
-                    return (PhotometricInterpretation)this[Tag.PhotometricInterpretation].Value;
+                    return (PhotometricInterpretation)this[TagType.PhotometricInterpretation].Value;
                 }
                 else
                 {
@@ -598,7 +592,7 @@
             }
             set
             {
-                this.Add(Tag.PhotometricInterpretation, value);
+                this.Add(TagType.PhotometricInterpretation, value);
             }
         }
 
@@ -609,9 +603,9 @@
         {
             get
             {
-                if (this.Contains(Tag.PlanarConfiguration))
+                if (this.Contains(TagType.PlanarConfiguration))
                 {
-                    return (PlanarConfiguration)this[Tag.PlanarConfiguration].Value;
+                    return (PlanarConfiguration)this[TagType.PlanarConfiguration].Value;
                 }
                 else
                 {
@@ -620,7 +614,7 @@
             }
             set
             {
-                this.Add(Tag.PlanarConfiguration, value);
+                this.Add(TagType.PlanarConfiguration, value);
             }
         }
 
@@ -631,9 +625,9 @@
         {
             get
             {
-                if (this.Contains(Tag.ResolutionUnit))
+                if (this.Contains(TagType.ResolutionUnit))
                 {
-                    return (ResolutionUnit)this[Tag.ResolutionUnit].Value;
+                    return (ResolutionUnit)this[TagType.ResolutionUnit].Value;
                 }
                 else
                 {
@@ -642,7 +636,7 @@
             }
             set
             {
-                this.Add(Tag.ResolutionUnit, value);
+                this.Add(TagType.ResolutionUnit, value);
             }
         }
 
@@ -653,9 +647,9 @@
         {
             get
             {
-                if (this.Contains(Tag.RowsPerStrip))
+                if (this.Contains(TagType.RowsPerStrip))
                 {
-                    return Convert.ToUInt32(this[Tag.RowsPerStrip].Value);
+                    return Convert.ToUInt32(this[TagType.RowsPerStrip].Value);
                 }
                 else
                 {
@@ -664,7 +658,7 @@
             }
             set
             {
-                this.Add(Tag.RowsPerStrip, value);
+                this.Add(TagType.RowsPerStrip, value);
             }
         }
 
@@ -686,9 +680,9 @@
         {
             get
             {
-                if (this.Contains(Tag.SamplesPerPixel))
+                if (this.Contains(TagType.SamplesPerPixel))
                 {
-                    return (ushort)this[Tag.SamplesPerPixel].Value;
+                    return (ushort)this[TagType.SamplesPerPixel].Value;
                 }
                 else
                 {
@@ -697,7 +691,7 @@
             }
             set
             {
-                this.Add(Tag.SamplesPerPixel, value);
+                this.Add(TagType.SamplesPerPixel, value);
             }
         }
 
@@ -708,11 +702,11 @@
         {
             get
             {
-                return GetAsciiFieldValue(Tag.Software);
+                return GetAsciiFieldValue(TagType.Software);
             }
             set
             {
-                SetAsciiFieldValue(Tag.Software, value);
+                SetAsciiFieldValue(TagType.Software, value);
             }
         }
 
@@ -723,9 +717,9 @@
         {
             get
             {
-                if (this.Contains(Tag.StripByteCounts))
+                if (this.Contains(TagType.StripByteCounts))
                 {
-                    return (uint[])this[Tag.StripByteCounts].Values;
+                    return (uint[])this[TagType.StripByteCounts].Values;
                 }
                 else
                 {
@@ -739,7 +733,7 @@
                     value = new uint[] { };
                 }
 
-                this.Add(Tag.StripByteCounts, FieldType.Long, value);
+                this.Add(TagType.StripByteCounts, FieldType.Long, value);
             }
         }
 
@@ -750,9 +744,9 @@
         {
             get
             {
-                if (this.Contains(Tag.StripOffsets))
+                if (this.Contains(TagType.StripOffsets))
                 {
-                    return (uint[])this[Tag.StripOffsets].Values;
+                    return (uint[])this[TagType.StripOffsets].Values;
                 }
                 else
                 {
@@ -766,7 +760,7 @@
                     value = new uint[] { };
                 }
 
-                this.Add(Tag.StripOffsets, FieldType.Long, value);
+                this.Add(TagType.StripOffsets, FieldType.Long, value);
             }
         }
 
@@ -799,9 +793,9 @@
         {
             get
             {
-                if (this.Contains(Tag.Threshholding))
+                if (this.Contains(TagType.Threshholding))
                 {
-                    return (Threshholding)this[Tag.Threshholding].Value;
+                    return (Threshholding)this[TagType.Threshholding].Value;
                 }
                 else
                 {
@@ -810,7 +804,7 @@
             }
             set
             {
-                this.Add(Tag.Threshholding, value);
+                this.Add(TagType.Threshholding, value);
             }
         }
 
@@ -821,9 +815,9 @@
         {
             get
             {
-                if (this.Contains(Tag.XResolution))
+                if (this.Contains(TagType.XResolution))
                 {
-                    return (URational32)this[Tag.XResolution].Value;
+                    return (URational32)this[TagType.XResolution].Value;
                 }
                 else
                 {
@@ -832,7 +826,7 @@
             }
             set
             {
-                this.Add(Tag.XResolution, value);
+                this.Add(TagType.XResolution, value);
             }
         }
 
@@ -843,9 +837,9 @@
         {
             get
             {
-                if (this.Contains(Tag.YResolution))
+                if (this.Contains(TagType.YResolution))
                 {
-                    return (URational32)this[Tag.YResolution].Value;
+                    return (URational32)this[TagType.YResolution].Value;
                 }
                 else
                 {
@@ -854,7 +848,7 @@
             }
             set
             {
-                this.Add(Tag.YResolution, value);
+                this.Add(TagType.YResolution, value);
             }
         }
     }

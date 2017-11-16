@@ -2,16 +2,16 @@
 {
     using System;
 
-    [Serializable()]
-    public class AsciiTag : TiffTag
+    [Serializable]
+    public class AsciiTag : Tag
     {
-        public AsciiTag(Tag type)
+        public AsciiTag(TagType type)
         {
-            this.DataType = TiffDataType.Ascii;
-            this.Tag = type;
+            this.FieldType = FieldType.Ascii;
+            this.TagType = type;
         }
 
-        public AsciiTag(Tag type, string value)
+        public AsciiTag(TagType type, string value)
             : this(type)
         {
             this.Values = (value + '\0').ToCharArray();

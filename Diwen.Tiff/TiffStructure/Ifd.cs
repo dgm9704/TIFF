@@ -5,7 +5,7 @@
     using System.Collections.ObjectModel;
 
     [Serializable]
-    public class Ifd : KeyedCollection<Tag, Field>
+    public class Ifd : KeyedCollection<TagType, Field>
     {
         public List<Ifd> SubIfds { get; set; }
 
@@ -35,7 +35,9 @@
                     {
                         if (field.IsIfdField())
                         {
-                            page.SubIfds.Add(Ifd.ReadSubIfd(field, data, flip));
+                            var subIfd = Ifd.ReadSubIfd(field, data, flip);
+                            if (subIfd != null)
+                                page.SubIfds.Add(subIfd);
                         }
 
                         page.Add(field);
@@ -54,15 +56,15 @@
             Field offsetTag = null;
             Field countTag = null;
 
-            if (page.Contains(Tag.StripOffsets) && page.Contains(Tag.StripByteCounts))
+            if (page.Contains(TagType.StripOffsets) && page.Contains(TagType.StripByteCounts))
             {
-                offsetTag = page[Tag.StripOffsets];
-                countTag = page[Tag.StripByteCounts];
+                offsetTag = page[TagType.StripOffsets];
+                countTag = page[TagType.StripByteCounts];
             }
-            else if (page.Contains(Tag.TileOffsets) && page.Contains(Tag.TileByteCounts))
+            else if (page.Contains(TagType.TileOffsets) && page.Contains(TagType.TileByteCounts))
             {
-                offsetTag = page[Tag.TileOffsets];
-                countTag = page[Tag.TileByteCounts];
+                offsetTag = page[TagType.TileOffsets];
+                countTag = page[TagType.TileByteCounts];
             }
 
             if (offsetTag != null)
@@ -79,7 +81,7 @@
 
         private static Ifd ReadSubIfd(Field field, byte[] data, bool flip)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         private static List<byte[]> GetImageData(byte[] data, Field stripOffsetTag, Field stripByteCountTag)
@@ -121,7 +123,7 @@
                 throw new ArgumentNullException("item");
             }
 
-            this.Remove(item.Tag);
+            this.Remove(item.TagType);
             base.Add(item);
         }
 
@@ -138,7 +140,7 @@
             }
         }
 
-        public void AddRange(IEnumerable<TiffTag> items)
+        public void AddRange(IEnumerable<Tag> items)
         {
             if (items == null)
             {
@@ -147,7 +149,7 @@
 
             foreach (var item in items)
             {
-                this.Add(new Field(item.Tag, (FieldType)item.DataType, item.Values));
+                this.Add(new Field(item.TagType, (FieldType)item.FieldType, item.Values));
             }
         }
 
@@ -155,18 +157,18 @@
         {
             ((List<Field>)Items).Sort((t1, t2) =>
                 {
-                    return t1.Tag.CompareTo(t2.Tag);
+                    return t1.TagType.CompareTo(t2.TagType);
                 });
         }
 
-        protected override Tag GetKeyForItem(Field item)
+        protected override TagType GetKeyForItem(Field item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
 
-            return item.Tag;
+            return item.TagType;
         }
     }
 }

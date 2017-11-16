@@ -6,35 +6,17 @@
 
     public static class PageExtensions
     {
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, ushort value)
+        public static void Add(this Page page, TagType tag, ushort value)
         {
             page.Add(tag, FieldType.Short, new ushort[] { value });
         }
 
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, uint value)
+        public static void Add(this Page page, TagType tag, uint value)
         {
             page.Add(tag, FieldType.Long, new uint[] { value });
         }
 
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, Enum value)
+        public static void Add(this Page page, TagType tag, Enum value)
         {
             Type underType = Enum.GetUnderlyingType(value.GetType());
 
@@ -51,14 +33,7 @@
             }
         }
 
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="type">type of data contained in the field</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, FieldType type, string value)
+        public static void Add(this Page page, TagType tag, FieldType type, string value)
         {
             if (value == null)
             {
@@ -68,32 +43,16 @@
             page.Add(tag, type, value.ToCharArray());
         }
 
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, string value)
+        public static void Add(this Page page, TagType tag, string value)
         {
             page.Add(tag, FieldType.Ascii, value);
         }
 
-        /// <summary>
-        /// Adds a new tag to the page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="tag">tag type</param>
-        /// <param name="value">field data</param>
-        public static void Add(this Page page, Tag tag, URational32 value)
+        public static void Add(this Page page, TagType tag, URational32 value)
         {
             page.Add(tag, FieldType.Rational, new URational32[] { value });
         }
 
-        /// <summary>
-        /// Creates a deep copy of the Page object
-        /// </summary>
-        /// <returns></returns>
         public static Page Copy(this Page page)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -104,7 +63,5 @@
                 return (Page)formatter.Deserialize(stream);
             }
         }
-
-
     }
 }

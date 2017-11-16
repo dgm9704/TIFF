@@ -6,11 +6,9 @@
     using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
+    using Diwen.Tiff.Extensions;
     using Diwen.Tiff.TiffStructure;
 
-    /// <summary>
-    /// Represents a TIF tif
-    /// </summary>
     [Serializable]
     public class Tif : PageCollection
     {
@@ -22,7 +20,7 @@
 
         private static Dictionary<FieldType, ValueBytesMethod> valueByteMethods =
             new Dictionary<FieldType, ValueBytesMethod>
-            { 
+            {
                 { FieldType.Byte, GetBytes },
                 { FieldType.SByte, GetBytes },
                 { FieldType.Undefined, GetBytes },
@@ -39,25 +37,22 @@
 
         private static ASCIIEncoding ascii = new ASCIIEncoding();
 
-        private static Dictionary<FieldType, int> valueLength = new Dictionary<FieldType, int>
-        { 
-            { FieldType.Ascii, 1 }, 
-            { FieldType.Byte, 1 }, 
-            { FieldType.SByte, 1 }, 
+        internal static Dictionary<FieldType, int> ValueLength = new Dictionary<FieldType, int>
+        {
+            { FieldType.Ascii, 1 },
+            { FieldType.Byte, 1 },
+            { FieldType.SByte, 1 },
             { FieldType.Undefined, 1 },
-            { FieldType.Short, 2 }, 
-            { FieldType.SShort, 2 }, 
-            { FieldType.Long, 4 }, 
-            { FieldType.SLong, 4 }, 
+            { FieldType.Short, 2 },
+            { FieldType.SShort, 2 },
+            { FieldType.Long, 4 },
+            { FieldType.SLong, 4 },
             { FieldType.Float, 4 },
             { FieldType.Rational, 8 },
             { FieldType.SRational, 8 },
             { FieldType.Double,8 },
         };
 
-        /// <summary>
-        /// Creates a new instance of the Tif class
-        /// </summary>
         public Tif()
             : base()
         {
@@ -66,34 +61,6 @@
 
         private delegate byte[] ValueBytesMethod(Array values);
 
-        ///// <summary>
-        ///// Gets the collection of pages contained within the tif
-        ///// </summary>
-        //public PageCollection Pages { get; internal set; }
-
-        ///// <summary>
-        ///// Gets or sets the page at the specified position in the tif
-        ///// </summary>
-        ///// <param name="index">A zero-based page position in the current Tif object</param>
-        ///// <returns></returns>
-        //public Page this[int index]
-        //{
-        //    get
-        //    {
-        //        return this.Pages[index];
-        //    }
-
-        //    set
-        //    {
-        //        this.Pages[index] = value;
-        //    }
-        //}
-
-        /// <summary>
-        /// Creates a Tif from the specified stream
-        /// </summary>
-        /// <param name="stream">Stream containing a TIFF tif</param>
-        /// <returns></returns>
         public static Tif Load(Stream stream)
         {
 
@@ -109,11 +76,6 @@
             return tif;
         }
 
-        /// <summary>
-        /// Creates a Tif from the specified tif
-        /// </summary>
-        /// <param name="path">A path to a TIF tif</param>
-        /// <returns></returns>
         public static Tif Load(string path)
         {
             Tif tif = Load(File.ReadAllBytes(path));
@@ -121,11 +83,6 @@
             return tif;
         }
 
-        /// <summary>
-        /// Creates a Tif from the specified bytes
-        /// </summary>
-        /// <param name="data">Array of bytes representing a TIF tif</param>
-        /// <returns></returns>
         public static Tif Load(byte[] data)
         {
             Tif tif;
@@ -162,19 +119,11 @@
             return tif;
         }
 
-        /// <summary>
-        /// Writes the TIFF data into a tif
-        /// </summary>
-        /// <param name="path">File to write the data to</param>
         public void Save(string path)
         {
             File.WriteAllBytes(path, this.GetData());
         }
 
-        /// <summary>
-        /// Returns the contents of the Tif as a byte array
-        /// </summary>
-        /// <returns></returns>
         public byte[] GetData()
         {
             var pageDatas = new List<List<byte>>();
@@ -191,10 +140,6 @@
             return fileData.ToArray();
         }
 
-        /// <summary>
-        /// Creates a deep copy of the current Tif
-        /// </summary>
-        /// <returns></returns>
         public Tif Copy()
         {
             using (MemoryStream stream = new MemoryStream())
@@ -206,10 +151,6 @@
             }
         }
 
-        /// <summary>
-        /// Saves the Tif to a stream
-        /// </summary>
-        /// <param name="stream">An open Stream object</param>
         public void Save(Stream stream)
         {
             if (stream == null)
@@ -224,7 +165,7 @@
         internal static int GetValueLength(FieldType type)
         {
             int len = 0;
-            valueLength.TryGetValue(type, out len);
+            ValueLength.TryGetValue(type, out len);
             return len;
         }
 
@@ -301,7 +242,7 @@
 
             foreach (var tag in page)
             {
-                fileData.AddRange(BitConverter.GetBytes((ushort)tag.Tag));
+                fileData.AddRange(BitConverter.GetBytes((ushort)tag.TagType));
                 fileData.AddRange(BitConverter.GetBytes((ushort)tag.FieldType));
                 fileData.AddRange(BitConverter.GetBytes((uint)tag.Count));
                 fileData.AddRange(BitConverter.GetBytes((uint)tag.ValueOffset));
@@ -329,10 +270,6 @@
             return file;
         }
 
-        /// <summary>
-        /// Returns a String with information about the Tif, it's pages and their tags
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -443,8 +380,8 @@
             page.Sort();
             int ifdlen = 2 + (this[i].Count * 12) + 4;
 
-            var offsetTag = page[Tag.StripOffsets] ?? page[Tag.TileOffsets];
-            var countTag = page[Tag.StripByteCounts] ?? page[Tag.TileByteCounts];
+            var offsetTag = page[TagType.StripOffsets] ?? page[TagType.TileOffsets];
+            var countTag = page[TagType.StripByteCounts] ?? page[TagType.TileByteCounts];
 
             var offsetData = new List<byte>();
             uint offset = (uint)filelen;
@@ -545,5 +482,79 @@
             return (ulong)(((SwapUInt32((uint)v) & 0xffffffffL) << 0x20) |
             (SwapUInt32((uint)(v >> 0x20)) & 0xffffffffL));
         }
+
+        internal static Array ReadValues(byte[] data, FieldType type, int count)
+        { // TODO: split into FieldType specific methods
+            Array values = null;
+
+            switch (type)
+            {
+                case FieldType.Byte:
+                case FieldType.Undefined:
+                    values = data;
+                    break;
+                case FieldType.SByte:
+                    values = new sbyte[data.Length];
+                    Buffer.BlockCopy(data, 0, values, 0, count);
+                    break;
+                case FieldType.Ascii:
+                    values = Tif.Ascii.GetString(data).ToCharArray();
+                    break;
+                case FieldType.Short:
+                    values = new ushort[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
+                    break;
+                case FieldType.SShort:
+                    values = new short[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 2);
+                    break;
+                case FieldType.Long:
+                    values = new uint[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case FieldType.SLong:
+                    values = new int[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case FieldType.Rational:
+                    values = new URational32[count];
+                    for (int i = 0; i < count; i++)
+                        values.SetValue(new URational32(data, i * 4), i);
+                    break;
+                case FieldType.SRational:
+                    values = new Rational32[count];
+                    for (int i = 0; i < count; i++)
+                        values.SetValue(new Rational32(data, i * 4), i);
+                    break;
+                case FieldType.Float:
+                    values = new float[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 4);
+                    break;
+                case FieldType.Double:
+                    values = new double[count];
+                    Buffer.BlockCopy(data, 0, values, 0, count * 8);
+                    break;
+                default:
+                    break;
+            }
+
+            return values;
+        }
+
+        internal static byte[] SwitchEndian(byte[] data, int typeLength)
+        {
+            byte[] temp = new byte[typeLength];
+            byte[] switched = new byte[data.Length];
+            for (int i = 0; i < data.Length; i += typeLength)
+            {
+                Buffer.BlockCopy(data, i, temp, 0, typeLength);
+                Array.Reverse(temp);
+                Buffer.BlockCopy(temp, 0, switched, i, typeLength);
+            }
+
+            return switched;
+        }
+
+
     }
 }

@@ -2,11 +2,11 @@
 {
     using System;
 
-    [Serializable()]
+    [Serializable]
     public class SoftwareTag : AsciiTag
     {
         public SoftwareTag(string value)
-            : base(Tag.Software, value)
+            : base(TagType.Software, value)
         {
         }
 

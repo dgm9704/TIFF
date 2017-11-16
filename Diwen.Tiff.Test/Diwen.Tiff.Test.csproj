@@ -16,4 +16,12 @@
     <ProjectReference Include="..\Diwen.Tiff\Diwen.Tiff.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+    <Content Include="testfiles\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="testfiles\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
