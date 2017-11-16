@@ -210,7 +210,7 @@
         [Fact]
         public void SetPagenumbersTest()
         {
-            var tif = Tif.Load(Path.Combine("testfiles", "pruned.tif"));
+            var tif = Tif.Load(Path.Combine("testfiles", "Multi_page24bpp.tif"));
             tif.SetPageNumbers();
             tif.Save(Path.Combine("output", "paged.tif"));
         }
