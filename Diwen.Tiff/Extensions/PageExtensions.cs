@@ -68,6 +68,7 @@
         => page.Contains(tagType)
             ? (T)page[tagType].Value
             : defaultValue;
+
         public static T TagValueOrDefault<T>(this Page page, TagType tagType)
         => page.Contains(tagType)
             ? (T)page[tagType].Value

@@ -493,41 +493,16 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag MinSampleValue
-        /// </summary>
         public ushort MinSampleValue
         {
-            get
-            {
-                if (this.Contains(TagType.MinSampleValue))
-                {
-                    return (ushort)this[TagType.MinSampleValue].Value;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                this.Add(TagType.MinSampleValue, value);
-            }
+            get => this.TagValueOrDefault<ushort>(TagType.MinSampleValue, 0);
+            set => this.Add(TagType.MinSampleValue, value);
         }
 
-        /// <summary>
-        /// Gets or sets the value of baseline tag Model
-        /// </summary>
         public string Model
         {
-            get
-            {
-                return GetAsciiFieldValue(TagType.Model);
-            }
-            set
-            {
-                SetAsciiFieldValue(TagType.Model, value);
-            }
+            get => GetAsciiFieldValue(TagType.Model);
+            set => SetAsciiFieldValue(TagType.Model, value);
         }
 
         public NewSubfileType NewSubfileType
@@ -562,7 +537,9 @@
 
         public uint RowsPerStrip
         {
-            get => this.TagValueOrDefault<uint>(TagType.RowsPerStrip, uint.MaxValue);
+            get => this.Contains(TagType.RowsPerStrip)
+                ? Convert.ToUInt32(this[TagType.RowsPerStrip].Value) // TODO: check special case for this tag
+                : uint.MaxValue;
             set => this.Add(TagType.RowsPerStrip, value);
         }
 
@@ -571,7 +548,7 @@
 
         public ushort SamplesPerPixel
         {
-            get => this.TagValueOrDefault<ushort>(TagType.SamplesPerPixel);
+            get => this.TagValueOrDefault<ushort>(TagType.SamplesPerPixel, 1);
             set => this.Add(TagType.SamplesPerPixel, value);
         }
 
