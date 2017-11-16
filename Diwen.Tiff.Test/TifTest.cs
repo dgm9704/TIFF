@@ -150,7 +150,7 @@
         [Fact]
         public void CopyAndModifyPages()
         {
-            string originalName = Path.Combine("testfiles","lena_kodak.tif");
+            string originalName = Path.Combine("testfiles","4.2.04.tiff");
             string newName = Path.Combine("output","copiedpages_2.tif");
 
             var newTif = new Tif();
@@ -222,9 +222,6 @@
             tif.Save(Path.Combine("output","paged.tif"));
         }
 
-        /// <summary>
-        ///A test for Copy
-        ///</summary>
         [Fact]
         public void CopyTest()
         {
@@ -232,37 +229,6 @@
             Tif copy = original.Copy();
             Assert.NotSame(original, copy);
         }
-
-
-        //[Fact]
-        //public void LibTiffPicTest()
-        //{
-        //    string folder = @"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic";
-        //    foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
-        //    {
-        //        Console.WriteLine(Tif.Load(file));
-        //    }
-        //}
-
-        //[Fact]
-        //public void LibTiffPicTest1()
-        //{
-        //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\cramps-tile.tif"));
-        //}
-
-        //[Fact]
-        //public void LibTiffPicTest2()
-        //{
-        //    Console.WriteLine(Tif.Load(@"C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif"));
-        //}
-
-        ////C:\Documents and Settings\John\Desktop\pics-3.8.0.tar\pics-3.8.0\libtiffpic\dscf0013.tif
-
-        //[Fact]
-        //public void MMTest1()
-        //{
-        //    Console.WriteLine(Tif.Load(@"c:\lena.tif"));
-        //}
 
         [Fact]
         public void TiffTestSuiteComplete()
