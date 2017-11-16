@@ -8,6 +8,7 @@
     using Diwen.Tiff;
     using System.Diagnostics;
     using Xunit;
+    using System.Collections.Generic;
 
     public class TifTest
     {
@@ -223,14 +224,18 @@
             Assert.NotSame(original, copy);
         }
 
-        [Fact]
-        public void TiffTestSuiteComplete()
+        [Theory]
+        [MemberData("TestData", MemberType = typeof(TiffTestSuiteDataSource))]
+        public void TiffTestSuite(string file)
         {
-            string folder = "libtiffpic";
-            foreach (var file in Directory.EnumerateFiles(folder, "*.tif", SearchOption.TopDirectoryOnly))
-            {
-                Console.WriteLine(Tif.Load(file));
-            }
+            Console.WriteLine(Tif.Load(file));
         }
+
     }
+    public static class TiffTestSuiteDataSource
+    {
+        public static IEnumerable<object[]> TestData
+        => Directory.EnumerateFiles("libtiffpic", "*.tif", SearchOption.TopDirectoryOnly).Select(f => new[] { f });
+    }
+
 }
