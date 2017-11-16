@@ -14,9 +14,11 @@
   <ItemGroup>
     <Content Include="testfiles\*" />
     <Content Include="libtiffpic\*" />
+    <Content Include="output\*" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="testfiles\*" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="libtiffpic\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="output\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

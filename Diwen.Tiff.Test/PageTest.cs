@@ -72,8 +72,9 @@
             var name = "Leonardo DaVinci";
             page.Artist = name;
 
-            tif.Save("modified.tif");
-            tif = Tif.Load("modified.tif");
+            var path = Path.Combine("output","modified.tif");
+            tif.Save(path);
+            tif = Tif.Load(path);
             page = tif[0];
             var tag = page[TagType.Artist];
             var values = (char[])tag.Values;
