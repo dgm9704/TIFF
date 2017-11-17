@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace Diwen.Tiff.Extensions
+﻿namespace Diwen.Tiff.Extensions
 {
+    using System;
     public static class BitConverterExtensions
     {
         public static byte[] GetBytes(Rational32 value)

@@ -8,14 +8,10 @@
     public static class PageExtensions
     {
         public static void Add(this Page page, TagType tag, ushort value)
-        {
-            page.Add(tag, FieldType.Short, new ushort[] { value });
-        }
+        => page.Add(tag, FieldType.Short, new ushort[] { value });
 
         public static void Add(this Page page, TagType tag, uint value)
-        {
-            page.Add(tag, FieldType.Long, new uint[] { value });
-        }
+        => page.Add(tag, FieldType.Long, new uint[] { value });
 
         public static void Add(this Page page, TagType tag, Enum value)
         {

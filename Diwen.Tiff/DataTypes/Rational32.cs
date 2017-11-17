@@ -33,15 +33,12 @@
 
         public int Denominator { get; set; }
 
-        public static bool operator ==(Rational32 value1, Rational32 value2)
-        {
-            return value1.Numerator == value2.Numerator && value1.Denominator == value2.Denominator;
-        }
+        public static bool operator ==(Rational32 left, Rational32 right)
+        => left.Numerator == right.Numerator
+        && left.Denominator == right.Denominator;
 
         public static bool operator !=(Rational32 value1, Rational32 value2)
-        {
-            return !(value1 == value2);
-        }
+        => !(value1 == value2);
 
         public byte[] GetBytes()
         {
@@ -52,9 +49,7 @@
         }
 
         public override string ToString()
-        {
-            return this.Numerator + "/" + this.Denominator;
-        }
+        => this.Numerator + "/" + this.Denominator;
 
         //public override string ToString(bool reduce)
         //{
@@ -69,9 +64,7 @@
         //}
 
         public override int GetHashCode()
-        {
-            return this.Numerator / this.Denominator;
-        }
+        => this.Numerator / this.Denominator;
 
         public override bool Equals(object obj)
         {
@@ -84,18 +77,14 @@
         }
 
         public Rational32 Inverse()
-        {
-            return new Rational32 { Denominator = this.Numerator, Numerator = this.Denominator };
-        }
+        => new Rational32(numerator: this.Denominator, denominator: this.Numerator);
 
         public Rational32 Reduce()
         {
             int gcd = (int)Util.GCD(this.Numerator, this.Denominator);
-            if (gcd != 1)
-            {
-                return new Rational32 { Numerator = this.Numerator / gcd, Denominator = this.Denominator / gcd };
-            }
-            return this;
+            return gcd != 1
+                ? new Rational32(numerator: this.Numerator / gcd, denominator: this.Denominator / gcd)
+                : this;
         }
     }
 }

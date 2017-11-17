@@ -33,20 +33,15 @@
 
         public uint Denominator { get; set; }
 
-        public static bool operator ==(URational32 value1, URational32 value2)
-        {
-            return value1.Numerator == value2.Numerator && value1.Denominator == value2.Denominator;
-        }
+        public static bool operator ==(URational32 left, URational32 right)
+        => left.Numerator == right.Numerator
+        && left.Denominator == right.Denominator;
 
-        public static bool operator !=(URational32 value1, URational32 value2)
-        {
-            return !(value1 == value2);
-        }
+        public static bool operator !=(URational32 left, URational32 right)
+        => !(left == right);
 
         public override string ToString()
-        {
-            return this.Numerator + "/" + this.Denominator;
-        }
+        => this.Numerator + "/" + this.Denominator;
 
         //public override string ToString(bool reduce)
         //{
@@ -79,23 +74,17 @@
         }
 
         public override int GetHashCode()
-        {
-            return (int)(this.Numerator / this.Denominator);
-        }
+        => (int)(this.Numerator / this.Denominator);
 
         public URational32 Inverse()
-        {
-            return new URational32 { Denominator = this.Numerator, Numerator = this.Denominator };
-        }
+        => new URational32(denominator: Numerator, numerator: Denominator);
 
         public URational32 Reduce()
         {
             uint gcd = (uint)Util.GCD(this.Numerator, this.Denominator);
-            if (gcd != 1)
-            {
-                return new URational32 { Numerator = this.Numerator / gcd, Denominator = this.Denominator / gcd };
-            }
-            return this;
+            return gcd != 1
+                ? new URational32(numerator: Numerator / gcd, denominator: Denominator / gcd)
+                : this;
         }
     }
 }
