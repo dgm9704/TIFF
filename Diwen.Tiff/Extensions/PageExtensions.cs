@@ -31,24 +31,13 @@
         }
 
         public static void Add(this Page page, TagType tag, FieldType type, string value)
-        {
-            if (value == null)
-            {
-                value = string.Empty;
-            }
-
-            page.Add(tag, type, value.ToCharArray());
-        }
+        => page.Add(tag, type, (value ?? "").ToCharArray());
 
         public static void Add(this Page page, TagType tag, string value)
-        {
-            page.Add(tag, FieldType.Ascii, value);
-        }
+        => page.Add(tag, FieldType.Ascii, value);
 
         public static void Add(this Page page, TagType tag, URational32 value)
-        {
-            page.Add(tag, FieldType.Rational, new URational32[] { value });
-        }
+        => page.Add(tag, FieldType.Rational, new URational32[] { value });
 
         public static Page Copy(this Page page)
         {
