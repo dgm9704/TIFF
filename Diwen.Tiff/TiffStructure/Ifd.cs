@@ -9,10 +9,7 @@
     {
         public List<Ifd> SubIfds { get; set; }
 
-        public Ifd()
-            : base(null, 0)
-        {
-        }
+        public Ifd() : base(null, 0) { }
 
         internal static Page Read(byte[] data, int pos, bool flip)
         {
@@ -67,26 +64,18 @@
                 countTag = page[TagType.TileByteCounts];
             }
 
-            if (offsetTag != null)
-            {
-                page.ImageData = GetImageData(data, offsetTag, countTag);
-            }
-            else
-            {
-                page.ImageData = new List<byte[]>();
-            }
+            page.ImageData = offsetTag != null
+                ? GetImageData(data, offsetTag, countTag)
+                : new List<byte[]>();
 
             return page;
         }
 
         private static Ifd ReadSubIfd(Field field, byte[] data, bool flip)
-        {
-            return null;
-        }
+        => null;
 
         private static List<byte[]> GetImageData(byte[] data, Field stripOffsetTag, Field stripByteCountTag)
         {
-
 
             if (data == null || stripOffsetTag == null || stripByteCountTag == null || stripByteCountTag.Count != stripOffsetTag.Count)
             {
@@ -130,27 +119,19 @@
         public void AddRange(IEnumerable<Field> items)
         {
             if (items == null)
-            {
                 throw new ArgumentNullException("items");
-            }
 
             foreach (var item in items)
-            {
-                this.Add(item);
-            }
+                this.AddRange(items);
         }
 
         public void AddRange(IEnumerable<Tag> items)
         {
             if (items == null)
-            {
                 throw new ArgumentNullException("items");
-            }
 
             foreach (var item in items)
-            {
-                this.Add(new Field(item.TagType, (FieldType)item.FieldType, item.Values));
-            }
+                this.Add(new Field(item.TagType, item.FieldType, item.Values));
         }
 
         public void Sort()

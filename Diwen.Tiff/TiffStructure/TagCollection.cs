@@ -12,9 +12,7 @@
         public new void Add(Tag item)
         {
             if (item == null)
-            {
                 throw new ArgumentNullException("item");
-            }
 
             this.Remove(item.TagType);
             base.Add(item);
@@ -23,14 +21,10 @@
         public void AddRange(IEnumerable<Tag> items)
         {
             if (items == null)
-            {
                 throw new ArgumentNullException("items");
-            }
 
             foreach (var item in items)
-            {
                 this.Add(item);
-            }
         }
 
         public void Sort()

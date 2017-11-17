@@ -15,16 +15,16 @@
         private static Dictionary<FieldType, FieldValueReader> fieldValueReaders =
             new Dictionary<FieldType, FieldValueReader>
             {
-                { FieldType.SByte, ReadSByteValues },
-                { FieldType.Ascii, ReadAsciiValues },
-                { FieldType.Short, ReadShortValues },
-                { FieldType.SShort, ReadSShortValues },
-                { FieldType.Long, ReadLongValues },
-                { FieldType.SLong, ReadSLongValues },
-                { FieldType.Rational, ReadRationalValues },
-                { FieldType.SRational, ReadSRationalValues },
-                { FieldType.Float, ReadFloatValues },
-                { FieldType.Double, ReadDoubleValues },
+                [FieldType.SByte] = ReadSByteValues,
+                [FieldType.Ascii] = ReadAsciiValues,
+                [FieldType.Short] = ReadShortValues,
+                [FieldType.SShort] = ReadSShortValues,
+                [FieldType.Long] = ReadLongValues,
+                [FieldType.SLong] = ReadSLongValues,
+                [FieldType.Rational] = ReadRationalValues,
+                [FieldType.SRational] = ReadSRationalValues,
+                [FieldType.Float] = ReadFloatValues,
+                [FieldType.Double] = ReadDoubleValues,
             };
 
         #endregion
@@ -44,25 +44,16 @@
             this.Count = (uint)values.Length;
         }
 
+
         private delegate Array FieldValueReader(int count, byte[] data, bool flip);
 
         public Array Values { get; private set; }
 
-        /// <summary>
-        /// Return the value of the field object
-        /// If the field has more than one value, then the first value is returned.
-        /// </summary>
         public object Value
         {
-            get
-            {
-                if (this.Values == null || this.Values.Length == 0)
-                {
-                    return null;
-                }
-
-                return this.Values.GetValue(0);
-            }
+            get => (this.Values == null || this.Values.Length == 0)
+                ? null
+                : this.Values.GetValue(0);
             set
             {
                 if (this.Values == null)
@@ -87,25 +78,9 @@
                 throw new ArgumentNullException("data");
             }
 
-            Array values = null;
+            var values = fieldValueReaders.ValueOrDefault(type, (c, d, f) => d)(count, data, flip);
 
-            if (fieldValueReaders.ContainsKey(type))
-            {
-                //TODO: Move the flippin flippin here
-                values = fieldValueReaders[type](count, data, flip);
-            }
-            else
-            {
-                values = data;
-            }
-
-            return new Field
-            {
-                TagType = tag,
-                FieldType = type,
-                Values = values,
-                Count = (uint)values.Length,
-            };
+            return new Field(tag, type, values);
         }
 
         public override string ToString()

@@ -16,9 +16,7 @@
         {
             var sb = new StringBuilder();
             foreach (var tag in this)
-            {
                 sb.AppendLine(tag.ToString());
-            }
 
             return sb.ToString();
         }

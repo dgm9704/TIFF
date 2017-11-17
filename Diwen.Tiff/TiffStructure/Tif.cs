@@ -57,11 +57,8 @@
 
         public static Tif Load(Stream stream)
         {
-
             if (stream == null)
-            {
                 throw new ArgumentNullException("stream");
-            }
 
             byte[] bytes = new byte[stream.Length];
             stream.Read(bytes, 0, (int)stream.Length - 1);
@@ -83,7 +80,7 @@
             int pos;
             bool flip = false;
 
-            ByteOrder byteOrder = (ByteOrder)BitConverter.ToUInt16(data, 0);
+            var byteOrder = (ByteOrder)BitConverter.ToUInt16(data, 0);
 
             switch (byteOrder)
             {
@@ -96,17 +93,14 @@
                     throw new NotSupportedException("Not a TIF file");
             }
 
-            ushort magic = BitConverter.ToUInt16(Tif.GetBytes(data, 2, 2, flip), 0);
-            if (magic != 42)
-            {
+            ushort meaning = BitConverter.ToUInt16(Tif.GetBytes(data, 2, 2, flip), 0);
+            if (meaning != 42)
                 throw new NotSupportedException("Not a TIF file");
-            }
 
             pos = (int)BitConverter.ToUInt32(Tif.GetBytes(data, 4, 4, flip), 0);
             if (pos > data.Length)
-            {
-                return null;
-            }
+                throw new NotSupportedException("Not a TIF file");
+
             tif = ReadPages(data, pos, flip);
             tif.ByteOrder = byteOrder;
             tif.Source = data.ToString();
@@ -146,9 +140,7 @@
         public void Save(Stream stream)
         {
             if (stream == null)
-            {
                 throw new ArgumentNullException("stream");
-            }
 
             byte[] buffer = this.GetData();
             stream.Write(buffer, 0, buffer.Length);
@@ -197,14 +189,11 @@
             {
                 for (int o = 0; o < offsetTag.Count; o++)
                 {
-                    if (offsetTag.FieldType == FieldType.Short)
-                    {
-                        offsetData.AddRange(BitConverter.GetBytes((ushort)offset));
-                    }
-                    else
-                    {
-                        offsetData.AddRange(BitConverter.GetBytes((uint)offset));
-                    }
+                    var address = offsetTag.FieldType == FieldType.Short
+                        ? (ushort)offset
+                        : (uint)offset;
+
+                    offsetData.AddRange(BitConverter.GetBytes(address);
 
                     offsetTag.Values.SetValue(offset, o);
                     offset += (uint)byteCountTag.Values.GetValue(o);
@@ -490,6 +479,7 @@
             var values = new Rational32[count];
             for (int i = 0; i < count; i++)
                 values.SetValue(new Rational32(data, i * 4), i);
+
             return values;
         }
 
@@ -540,7 +530,5 @@
 
             return switched;
         }
-
-
     }
 }
