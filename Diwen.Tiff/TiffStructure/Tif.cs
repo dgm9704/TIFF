@@ -193,7 +193,7 @@
                         ? (ushort)offset
                         : (uint)offset;
 
-                    offsetData.AddRange(BitConverter.GetBytes(address);
+                    offsetData.AddRange(BitConverter.GetBytes(address));
 
                     offsetTag.Values.SetValue(offset, o);
                     offset += (uint)byteCountTag.Values.GetValue(o);
