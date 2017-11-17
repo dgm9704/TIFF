@@ -6,15 +6,9 @@
     [Serializable]
     public class DateTimeTag : AsciiTag
     {
-        public DateTimeTag()
-            : this(DateTime.Now)
-        {
-        }
+        public DateTimeTag() : this(DateTime.Now) { }
 
         public DateTimeTag(DateTime value)
-            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss", CultureInfo.InvariantCulture))
-        {
-        }
-
+            : base(TagType.DateTime, value.ToString("yyyy:MM:dd hh:mm:ss", CultureInfo.InvariantCulture)) { }
     }
 }
