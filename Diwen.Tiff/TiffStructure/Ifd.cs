@@ -122,7 +122,7 @@
                 throw new ArgumentNullException("items");
 
             foreach (var item in items)
-                this.AddRange(items);
+                this.Add(item);
         }
 
         public void AddRange(IEnumerable<Tag> items)
