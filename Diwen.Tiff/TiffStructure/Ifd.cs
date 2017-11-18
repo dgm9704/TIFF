@@ -18,9 +18,7 @@
 
             tagCount = BitConverter.ToUInt16(Tif.GetBytes(data, pos, 2, flip), 0);
             if (tagCount == 0)
-            {
                 return null;
-            }
 
             pos += 2;
             for (int i = 0; i < tagCount && pos < data.Length; i++)
@@ -50,26 +48,37 @@
 
             page.NextIfdAddress = BitConverter.ToUInt32(Tif.GetBytes(data, pos, 4, flip), 0);
 
-            Field offsetTag = null;
-            Field countTag = null;
+            var (offsetField, countField) = GetOffsetAndCount(page);
 
-            if (page.Contains(TagType.StripOffsets) && page.Contains(TagType.StripByteCounts))
-            {
-                offsetTag = page[TagType.StripOffsets];
-                countTag = page[TagType.StripByteCounts];
-            }
-            else if (page.Contains(TagType.TileOffsets) && page.Contains(TagType.TileByteCounts))
-            {
-                offsetTag = page[TagType.TileOffsets];
-                countTag = page[TagType.TileByteCounts];
-            }
-
-            page.ImageData = offsetTag != null
-                ? GetImageData(data, offsetTag, countTag)
+            page.ImageData = offsetField != null
+                ? GetImageData(data, offsetField, countField)
                 : new List<byte[]>();
 
             return page;
         }
+
+        private static (Field offsetField, Field countField) GetOffsetAndCount(Page page)
+        => IsStriped(page)
+            ? StripedOffsetAndCount(page)
+            : IsTiled(page)
+                ? TiledOffsetAndCount(page)
+                : (null, null);
+
+        private static (Field offsetField, Field countField) StripedOffsetAndCount(Page page)
+        => (page[TagType.StripOffsets],
+            page[TagType.StripByteCounts]);
+
+        private static (Field offsetField, Field countField) TiledOffsetAndCount(Page page)
+        => (page[TagType.TileOffsets],
+            page[TagType.TileByteCounts]);
+
+        private static bool IsTiled(Page page)
+        => page.Contains(TagType.TileOffsets)
+        && page.Contains(TagType.TileByteCounts);
+
+        private static bool IsStriped(Page page)
+        => page.Contains(TagType.StripOffsets)
+        && page.Contains(TagType.StripByteCounts);
 
         private static Ifd ReadSubIfd(Field field, byte[] data, bool flip)
         => null;

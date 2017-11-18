@@ -34,16 +34,13 @@
         public Field(TagType tag, FieldType type, Array values)
         {
             if (values == null)
-            {
-                throw new ArgumentNullException("values");
-            }
+                throw new ArgumentNullException(nameof(values));
 
             this.TagType = tag;
             this.FieldType = type;
             this.Values = values;
             this.Count = (uint)values.Length;
         }
-
 
         private delegate Array FieldValueReader(int count, byte[] data, bool flip);
 
@@ -74,9 +71,7 @@
         private static Field Create(TagType tag, FieldType type, int count, byte[] data, bool flip)
         {
             if (data == null)
-            {
-                throw new ArgumentNullException("data");
-            }
+                throw new ArgumentNullException(nameof(data));
 
             var values = fieldValueReaders.ValueOrDefault(type, (c, d, f) => d)(count, data, flip);
 
