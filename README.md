@@ -1,5 +1,5 @@
 # TIFF
-A .NET library for handling Tagged Image Files + related tests and tools
+A .NET library for handling Tagged Image File Format + related tests and tools
 
 ## Environment
 I use [Visual Studio Code](https://code.visualstudio.com/) 
@@ -10,6 +10,13 @@ Code is written in [C#](https://docs.microsoft.com/en-us/dotnet/csharp/index) 7.
 [.NET Core 2.0](https://docs.microsoft.com/en-us/dotnet/core/)
 
 Test framework is [xUnit.net](https://xunit.github.io/)
+
+## TIFF info
+
+The are excellent resources :
+
+[LibTIFF homepage](http://www.libtiff.org/) 
+[AWare Systems](https://www.awaresystems.be/imaging/tiff.html)
 
 ## Diwen.Tiff
 netstandard 2.0 library for handling TIFF
