@@ -3,29 +3,37 @@ A .NET library for handling Tagged Image File Format + related tests and tools
 
 ## Environment
 I use [Visual Studio Code](https://code.visualstudio.com/) 
+
 on [Ubuntu 17.10](https://www.ubuntu.com/desktop/1710)
 
 Code is written in [C#](https://docs.microsoft.com/en-us/dotnet/csharp/index) 7.0, targeting 
+
 [.NET Standard 2.0](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md) / 
+
 [.NET Core 2.0](https://docs.microsoft.com/en-us/dotnet/core/)
 
 Test framework is [xUnit.net](https://xunit.github.io/)
 
 ## TIFF info
 
-The are excellent resources :
+These are excellent resources :
 
 [LibTIFF homepage](http://www.libtiff.org/) 
+
 [AWare Systems](https://www.awaresystems.be/imaging/tiff.html)
 
 ## Diwen.Tiff
 netstandard 2.0 library for handling TIFF
+
 Started out in VB 6.0 as tool for tag dumping and page counting, 
+
 then ported to .NET 2.0 as a learning project which became a sanity project.
 
 ### License
 GNU Lesser General Public License v3.0
+
 [http://www.gnu.org/licenses/gpl.txt](http://www.gnu.org/licenses/gpl.txt)
+
 [http://www.gnu.org/licenses/lgpl.txt](http://www.gnu.org/licenses/lgpl.txt)
 
 ## Diwen.Tiff.Test
