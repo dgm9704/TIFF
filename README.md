@@ -1,6 +1,19 @@
 # TIFF
 A .NET library for handling Tagged Image File Format + related tests and tools
 
+Main goals are to 
+
+a) read and show as much info as possible from any correct TIF 
+
+b) read, modify and write baseline compliant files correctly
+
+
+## Caveat
+Not production safe for output when the file contains non-baseline tags.
+
+For example SubIFDS, Exif etc will most likely result in a broken file.
+
+
 ## Environment
 I use [Visual Studio Code](https://code.visualstudio.com/) 
 
