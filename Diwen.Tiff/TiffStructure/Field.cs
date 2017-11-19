@@ -54,9 +54,7 @@
             set
             {
                 if (this.Values == null)
-                {
                     this.Values = new object[] { value };
-                }
             }
         }
 
@@ -105,7 +103,6 @@
                     this.AppendValues(sb);
                     return sb.ToString().Remove(sb.Length - 1) + "]";
                 }
-
             }
         }
 
@@ -145,16 +142,13 @@
             int valueLength = (int)valueCount * Tif.GetValueLength(type);
 
             if (data == null || valueLength == 0 || data.Length < valueLength)
-            {
                 return new byte[] { };
-            }
 
             if (valueLength > 4)
             {
                 if (flip)
-                {
                     offset = Tif.SwapUInt32(offset);
-                }
+
                 valuebytes = new byte[valueLength];
                 Buffer.BlockCopy(data, (int)offset, valuebytes, 0, valueLength);
             }
@@ -169,115 +163,104 @@
         private static double[] ReadDoubleValues(int count, byte[] data, bool flip)
         {
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new double[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 8);
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static float[] ReadFloatValues(int count, byte[] data, bool flip)
         {
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new float[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static Rational32[] ReadSRationalValues(int count, byte[] data, bool flip)
         {
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new Rational32[count];
             for (int i = 0; i < count; i++)
             {
                 var value = new Rational32(data, i * 4);
                 if (flip)
-                {
                     value = value.Inverse();
-                }
+
                 values.SetValue(value, i);
             }
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static URational32[] ReadRationalValues(int count, byte[] data, bool flip)
         {
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new URational32[count];
             for (int i = 0; i < count; i++)
             {
                 var value = new URational32(data, i * 4);
                 if (flip)
-                {
                     value = value.Inverse();
-                }
+
                 values.SetValue(value, i);
             }
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static int[] ReadSLongValues(int count, byte[] data, bool flip)
         {
             if (data == null || data.Length < count * 4)
-            {
                 return new int[] { };
-            }
+
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new int[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static uint[] ReadLongValues(int count, byte[] data, bool flip)
         {
-
             if (data == null || data.Length < count * 4)
-            {
                 return new uint[] { };
-            }
+
             if (flip)
-            {
                 Array.Reverse(data);
-            }
+
             var values = new uint[count];
             Buffer.BlockCopy(data, 0, values, 0, count * 4);
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
@@ -292,9 +275,8 @@
             var values = new short[count];
             Buffer.BlockCopy(data, pos, values, 0, count * 2);
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
@@ -306,20 +288,18 @@
                 Array.Reverse(data);
                 pos = data.Length - count * 2;
             }
+
             var values = new ushort[count];
             Buffer.BlockCopy(data, pos, values, 0, count * 2);
+
             if (flip)
-            {
                 Array.Reverse(values);
-            }
+
             return values;
         }
 
         private static char[] ReadAsciiValues(int count, byte[] data, bool flip)
-        {
-            var values = Tif.Ascii.GetString(data).ToCharArray();
-            return values;
-        }
+        => Tif.Ascii.GetString(data).ToCharArray();
 
         private static sbyte[] ReadSByteValues(int count, byte[] data, bool flip)
         {
@@ -348,13 +328,13 @@
 
         private void AppendSingleValue(StringBuilder sb)
         {
-            string v = this.Value.ToString();
+            string v = null;
             Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.TagType);
             Enum temp = EnumeratedFieldValue(enumType, v);
-            if (temp != null)
-            {
-                v = temp.ToString();
-            }
+
+            v = temp != null
+                ? temp.ToString()
+                : this.Value.ToString();
 
             sb.Append(v);
         }
@@ -368,9 +348,9 @@
             return sb.ToString();
         }
 
+        private static List<TagType> ifdTags = new List<TagType> { TagType.ExifIFD };
+
         internal bool IsIfdField()
-        {
-            return new List<TagType> { TagType.ExifIFD }.Contains(this.TagType);
-        }
+        => ifdTags.Contains(this.TagType);
     }
 }

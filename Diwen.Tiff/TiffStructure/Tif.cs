@@ -58,7 +58,7 @@
         public static Tif Load(Stream stream)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             byte[] bytes = new byte[stream.Length];
             stream.Read(bytes, 0, (int)stream.Length - 1);
@@ -140,7 +140,7 @@
         public void Save(Stream stream)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             byte[] buffer = this.GetData();
             stream.Write(buffer, 0, buffer.Length);

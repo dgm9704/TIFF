@@ -12,7 +12,7 @@
         public new void Add(Tag item)
         {
             if (item == null)
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
 
             this.Remove(item.TagType);
             base.Add(item);
@@ -21,7 +21,7 @@
         public void AddRange(IEnumerable<Tag> items)
         {
             if (items == null)
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
 
             foreach (var item in items)
                 this.Add(item);
@@ -33,6 +33,6 @@
         protected override TagType GetKeyForItem(Tag item)
         => item != null
             ? item.TagType
-            : throw new ArgumentNullException("item");
+            : throw new ArgumentNullException(nameof(item));
     }
 }
