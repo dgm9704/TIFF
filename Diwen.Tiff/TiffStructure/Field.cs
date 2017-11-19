@@ -328,13 +328,12 @@
 
         private void AppendSingleValue(StringBuilder sb)
         {
-            string v = null;
+            string v = this.Value.ToString();
             Type enumType = Type.GetType("Diwen.Tiff.FieldValues." + this.TagType);
             Enum temp = EnumeratedFieldValue(enumType, v);
 
-            v = temp != null
-                ? temp.ToString()
-                : this.Value.ToString();
+            if(temp != null)
+                v = temp.ToString();
 
             sb.Append(v);
         }
