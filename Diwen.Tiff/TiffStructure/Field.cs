@@ -27,6 +27,8 @@
                 [FieldType.Double] = ReadDoubleValues,
             };
 
+        private delegate Array FieldValueReader(int count, byte[] data, bool flip);
+
         #endregion
 
         public Field() { }
@@ -41,8 +43,6 @@
             this.Values = values;
             this.Count = (uint)values.Length;
         }
-
-        private delegate Array FieldValueReader(int count, byte[] data, bool flip);
 
         public Array Values { get; private set; }
 
@@ -123,7 +123,7 @@
             FieldType type = (FieldType)BitConverter.ToUInt16(Tif.GetBytes(data, startPosition + 2, 2, flip), 0);
             if (!Enum.IsDefined(typeof(FieldType), type))
             {
-                return null;
+                return null; // TODO: also add info about field to "Errors" and/or stdout
             }
             uint count = BitConverter.ToUInt32(Tif.GetBytes(data, startPosition + 4, 4, flip), 0);
             uint offset = BitConverter.ToUInt32(data, startPosition + 8);

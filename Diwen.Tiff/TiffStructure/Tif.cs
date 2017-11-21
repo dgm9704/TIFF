@@ -282,9 +282,7 @@
             var rationalArray = values as Rational32[];
             var bytes = new byte[values.Length * 8];
             for (int i = 0; i < values.Length; i++)
-            {
                 Buffer.BlockCopy(rationalArray[i].GetBytes(), 0, bytes, i * 8, 8);
-            }
 
             return bytes;
         }
@@ -294,9 +292,7 @@
             var rationals = values as URational32[];
             var bytes = new byte[values.Length * 8];
             for (int i = 0; i < values.Length; i++)
-            {
                 Buffer.BlockCopy(rationals[i].GetBytes(), 0, bytes, i * 8, 8);
-            }
 
             return bytes;
         }
