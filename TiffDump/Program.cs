@@ -1,4 +1,7 @@
-﻿namespace TiffDump
+﻿// Copyright (C) 2005-2017 by John Nordberg <john.nordberg@gmail.com>
+// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted. 
+
+namespace TiffDump
 {
     using Diwen.Tiff;
     using System;
