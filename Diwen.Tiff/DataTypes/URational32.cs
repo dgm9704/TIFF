@@ -4,7 +4,7 @@
 //  Author:
 //       John Nordberg <john.nordberg@gmail.com>
 //
-//  Copyright (c) 2005-2017 John Nordberg
+//  Copyright (c) 2005-2018 John Nordberg
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published by
@@ -50,9 +50,9 @@ namespace Diwen.Tiff
             this.Denominator = BitConverter.ToUInt32(data, startIndex + 4);
         }
 
-        public uint Numerator { get; set; }
+        public uint Numerator { get; }
 
-        public uint Denominator { get; set; }
+        public uint Denominator { get; }
 
         public static bool operator ==(URational32 left, URational32 right)
         => left.Numerator == right.Numerator
@@ -62,7 +62,7 @@ namespace Diwen.Tiff
         => !(left == right);
 
         public override string ToString()
-        => this.Numerator + "/" + this.Denominator;
+        => $"{Numerator}/{Denominator}";
 
         //public override string ToString(bool reduce)
         //{

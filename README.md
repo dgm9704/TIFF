@@ -14,18 +14,16 @@ Not production safe for output when the file contains non-baseline tags.
 For example SubIFDS, Exif etc will most likely result in a broken file.
 
 
-## Environment
+# Environment
 I use [Visual Studio Code](https://code.visualstudio.com/) 
-
-on [Ubuntu 17.10](https://www.ubuntu.com/desktop/1710)
+on [Arch Linux](https://www.archlinux.org/)
 
 Code is written in [C#](https://docs.microsoft.com/en-us/dotnet/csharp/index) 7.0, targeting 
-
-[.NET Standard 2.0](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md) / 
-
-[.NET Core 2.0](https://docs.microsoft.com/en-us/dotnet/core/)
+[.NET Standard 2.0](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)  
 
 Test framework is [xUnit.net](https://xunit.github.io/)
+
+and test code is targeting [.NET Core 2.1](https://docs.microsoft.com/en-us/dotnet/core/)
 
 ## TIFF info
 
@@ -52,7 +50,7 @@ GNU Lesser General Public License v3.0
 [http://www.gnu.org/licenses/lgpl.txt](http://www.gnu.org/licenses/lgpl.txt)
 
 ## Diwen.Tiff.Test
-netcore 2.0 project for testing the library (and acting as documentation)
+netcore 2.1 project for testing the library (and acting as documentation)
 
 ### License
 [Free Public License 1.0.0](https://opensource.org/licenses/FPL-1.0.0)

@@ -1,5 +1,12 @@
-﻿// Copyright (C) 2005-2017 by John Nordberg <john.nordberg@gmail.com>
-// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted. 
+﻿// Copyright (C) 2005-2018 by John Nordberg <john.nordberg@gmail.com>
+// Free Public License 1.0.0
+
+// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
+
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR
+// ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+// ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace Diwen.Tiff.Test
 {
@@ -20,7 +27,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(true, page.Contains(TagType.NewSubfileType));
+            Assert.True(page.Contains(TagType.NewSubfileType));
         }
 
         [Fact]
@@ -28,7 +35,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(TagType.TargetPrinter));
+            Assert.False(page.Contains(TagType.TargetPrinter));
         }
 
         [Fact]
@@ -39,7 +46,7 @@ namespace Diwen.Tiff.Test
             var tag = page[TagType.ImageWidth];
             Assert.NotNull(tag);
             Assert.Equal(FieldType.Short, tag.FieldType);
-            Assert.Equal(1, tag.Values.Length);
+            Assert.Single(tag.Values);
             var values = (ushort[])tag.Values;
             Assert.Equal(288, values[0]);
         }
@@ -57,7 +64,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(TagType.Artist));
+            Assert.False(page.Contains(TagType.Artist));
             var name = "Leonardo DaVinci";
             page.Add(TagType.Artist, FieldType.Ascii, name.ToCharArray());
             var tag = page[TagType.Artist];
@@ -71,7 +78,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(TagType.Artist));
+            Assert.False(page.Contains(TagType.Artist));
             var name = "Leonardo DaVinci";
             page.Artist = name;
 
@@ -90,7 +97,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             var page = tif[0];
-            Assert.Equal(false, page.Contains(TagType.PageNumber));
+            Assert.False(page.Contains(TagType.PageNumber));
             ushort number = 42;
             ushort total = 666;
             page.PageNumber = number;
@@ -206,7 +213,7 @@ namespace Diwen.Tiff.Test
             Assert.Equal(original.Count, copy.Count);
             foreach (var tag in original)
             {
-                Assert.Equal(true, copy.Contains(tag.TagType));
+                Assert.True(copy.Contains(tag.TagType));
             }
 
         }
@@ -690,7 +697,7 @@ namespace Diwen.Tiff.Test
         {
             var tif = Tif.Load(testFilePath);
             string foo = tif[0].ToString();
-            Assert.Equal(false, string.IsNullOrEmpty(foo));
+            Assert.False(string.IsNullOrEmpty(foo));
         }
 
         [Fact]
@@ -987,18 +994,18 @@ namespace Diwen.Tiff.Test
         public void PageNumberTest2()
         {
             Page target = new Page();
-            Assert.Equal(target.PageNumber, 0);
-            Assert.Equal(target.PageTotal, 0);
+            Assert.Equal(0, target.PageNumber);
+            Assert.Equal(0, target.PageTotal);
             target.PageNumber = 5;
             target.PageTotal = 7;
-            Assert.Equal(target.PageNumber, 5);
-            Assert.Equal(target.PageTotal, 7);
+            Assert.Equal(5, target.PageNumber);
+            Assert.Equal(7, target.PageTotal);
             target.PageTotal = 8;
-            Assert.Equal(target.PageNumber, 5);
-            Assert.Equal(target.PageTotal, 8);
+            Assert.Equal(5, target.PageNumber);
+            Assert.Equal(8, target.PageTotal);
             target.PageNumber = 3;
-            Assert.Equal(target.PageNumber, 3);
-            Assert.Equal(target.PageTotal, 8);
+            Assert.Equal(3, target.PageNumber);
+            Assert.Equal(8, target.PageTotal);
         }
 
         [Fact]

@@ -1,5 +1,12 @@
-﻿// Copyright (C) 2005-2017 by John Nordberg <john.nordberg@gmail.com>
-// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted. 
+﻿// Copyright (C) 2005-2018 by John Nordberg <john.nordberg@gmail.com>
+// Free Public License 1.0.0
+
+// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
+
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR
+// ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+// ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 namespace Diwen.Tiff.Test
 {
@@ -115,22 +122,14 @@ namespace Diwen.Tiff.Test
         public void DenominatorTest()
         {
             URational32 target = new URational32(42, 666);
-            uint expected = 666;
-            uint actual;
-            target.Denominator = expected;
-            actual = target.Denominator;
-            Assert.Equal(expected, actual);
+            Assert.Equal(666u, target.Denominator);
         }
 
         [Fact]
         public void NumeratorTest()
         {
             URational32 target = new URational32(42, 666);
-            uint expected = 0;
-            uint actual;
-            target.Numerator = expected;
-            actual = target.Numerator;
-            Assert.Equal(expected, actual);
+            Assert.Equal(42u, target.Numerator);
         }
 
         [Fact]
